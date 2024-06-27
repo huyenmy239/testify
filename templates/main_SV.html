@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-    <title>Testify - Giảng viên</title>
+    <title>Testify - Sinh viên</title>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Datatable -->
@@ -42,8 +42,8 @@
                 <div class="header-left">
                     <nav>
                         <ul class="nav-links">
-                            <li><a href="{% url 'cauhoi' %}">Bộ đề</a></li>
-                            <li><a href="{% url 'dangkythi-gv' %}">Đăng ký thi</a></li>
+                            <li><a href="{% url 'danhsachthi' %}">Đợt thi</a></li>
+                            <li><a href="{% url 'dangkythi-gv' %}">Đã thi</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -55,7 +55,7 @@
                             <a href="#">
                                 Mã: {{thongtin.0}} | 
                                 Tên: {{thongtin.1}} | 
-                                Nhóm: {{thongtin.2}}
+                                Lớp: {{thongtin.2}}
                             </a>
                             <a href="{% url 'login-register' %}">Đăng xuất</a>
                         </div>

@@ -43,7 +43,9 @@ def login_sv(request):
             if con is not None:
                 con.close()
 
-        return redirect("coso")
+
+        request.session["base_template"] = "main_SV.html"
+        return redirect("danhsachthi")
 
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect("login-register")
@@ -128,6 +130,8 @@ def login_gv(request):
             result = cur.fetchall()[0]
             print(f"Result: {result}")
 
+            request.session['current_info'] = [result[0], result[1], result[2]]
+
             if result[2] == "Truong":
                 request.session["base_template"] = "main_Truong.html"
             elif result[2] == "Coso":
@@ -136,7 +140,6 @@ def login_gv(request):
                 request.session["base_template"] = "main_GV.html"
                 return redirect("cauhoi")
 
-            request.session['current_info'] = [result[0], result[1], result[2]]
 
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")

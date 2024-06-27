@@ -49,7 +49,11 @@
                                         <td>{{ ch.c }}</td>
                                         <td>{{ ch.d }}</td>
                                         <td><b>{{ ch.dapan }}</b></td>
+                                        {% if request.session.base_template == "main_GV.html" %}
+                                        <td>{{ ch.gv}}</td>
+                                        {% else %}
                                         <td>{{ ch.gv.ho }} {{ ch.gv.ten }}</td>
+                                        {% endif %}
                                         <td>
                                             {% if request.session.base_template == "main_CS.html" %}
                                             <button type="button" class="btn btn-warning btn-edit"

@@ -17,4 +17,5 @@ urlpatterns = [
     path('cauhoi/', views.bode_table_gv, name='cauhoi'),
     path('dangkythi/', views.dangky_table, name='dangkythi'),
     path('dangkythi_gv/', views.dangky_table_gv, name='dangkythi-gv'),
+    path('danhsachthi/', views.dangky_table_sv, name='danhsachthi'),
 ]

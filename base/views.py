@@ -18,6 +18,8 @@ CURRENT_DB = DatabaseModel
 # Create your views here.
 
 def login_register(request):
+    if request.session.get("current-info"):
+        del request.session['current-info']
     danhsach_cs = DB_CONNECTION["coso"][0:-1]
 
     con, cur = None, None
@@ -349,7 +351,7 @@ def bode_table_gv(request):
         bode = []
         for row in bode_rows:
             bode_object = Bode(cauhoi=row[0], monhoc=mon[row[1]], trinhdo=row[2], noidung=row[3],
-                               a=row[4], b=row[5], c=row[6], d=row[7], dapan=row[8], gv=gv)
+                               a=row[4], b=row[5], c=row[6], d=row[7], dapan=row[8], gv=gv[magv]["tengv"])
             bode.append(bode_object)
 
     except pyodbc.Error as e:
@@ -371,15 +373,9 @@ def dangky_table(request):
     db_alias = request.session.get('current_server')
 
     try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
         con = db.connect_to_database()
         cur = con.cursor()
-        cur.execute("SELECT * FROM GIAOVIEN")
-        gv_rows = cur.fetchall()
-
-        gv = {}
-        for row in gv_rows:
-            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
         cur.execute("SELECT * FROM LOP")
         lop_rows = cur.fetchall()
@@ -401,6 +397,14 @@ def dangky_table(request):
         db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
         con = db.connect_to_database()
         cur = con.cursor()
+
+        cur.execute("SELECT * FROM GIAOVIEN")
+        gv_rows = cur.fetchall()
+
+        gv = {}
+        for row in gv_rows:
+            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+
         cur.execute("SELECT * FROM MONHOC")
         mon_rows = cur.fetchall()
 
@@ -437,7 +441,7 @@ def dangky_table_gv(request):
     db_alias = request.session.get('current_server')
 
     try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM LOP")
@@ -477,6 +481,74 @@ def dangky_table_gv(request):
         dangky = []
         for row in dangky_rows:
             dangky_object = Dangky(gv=gv, monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
+                                   ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
+            dangky.append(dangky_object)
+
+    except pyodbc.Error as e:
+        print(f"Error connecting to database: {e}")
+        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'con' in locals():
+            con.close()
+
+    info = request.session.get('current_info')
+
+    context = {"dangky": dangky, "thongtin": info}
+    return render(request, 'base/dangkythi.html', context)
+
+
+def dangky_table_sv(request):
+    db_alias = request.session.get('current_server')
+
+    try:
+        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
+        con = db.connect_to_database()
+        cur = con.cursor()
+        cur.execute("SELECT * FROM LOP")
+        lop_rows = cur.fetchall()
+
+        lop = {}
+        for row in lop_rows:
+            lop[row[0]] = {"tenlop": row[1], "makh": row[2]}
+
+    except pyodbc.Error as e:
+        print(f"Error connecting to database: {e}")
+        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'con' in locals():
+            con.close()
+    
+    try:
+        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        con = db.connect_to_database()
+        cur = con.cursor()
+        cur.execute("SELECT * FROM MONHOC")
+        mon_rows = cur.fetchall()
+
+        mon = {}
+        for row in mon_rows:
+            mon[row[0]] = {"tenmh": row[1]}
+
+        masv = request.session.get("current_info")[0]
+
+        cur.execute("SELECT * FROM GIAOVIEN")
+        gv_rows = cur.fetchall()
+
+        gv = {}
+        for row in gv_rows:
+            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+
+        cur.execute(f"EXEC SP_LayDangKyTheoMASV '{masv}'")
+
+        dangky_rows = cur.fetchall()
+
+        dangky = []
+        for row in dangky_rows:
+            dangky_object = Dangky(gv=gv[row[0]], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
                                    ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
             dangky.append(dangky_object)
 

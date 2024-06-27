@@ -47,7 +47,7 @@
                                         <td>{{dk.socauthi}}</td>
                                         <td>{{dk.thoigian}}</td>
                                         <td>
-                                            {% if request.session.base_template == "main_CS.html" %}
+                                            {% if request.session.base_template == "main_CS.html" or request.session.base_template == "main_GV.html" %}
                                             <button type="button" class="btn btn-warning btn-edit"
                                                 data-toggle="modal" data-target="#editModal"
                                                 data-id="{{ dk.id }}" data-monhoc="{{ dk.monhoc.tenmh }}"
@@ -56,9 +56,13 @@
                                                 data-socauthi="{{ dk.socauthi }}" data-thoigian="{{ dk.thoigian }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
+                                            {% if request.session.base_template == "main_CS.html" %}
                                             <a href="#" class="btn btn-danger">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </a>
+                                            {% endif %}
+                                            {% elif request.session.base_template == "main_SV.html" %}
+                                            <button type="button" class="btn btn-success">Thi</button>
                                             {% endif %}
                                         </td>
                                     </tr>
