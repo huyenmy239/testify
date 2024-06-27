@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <title>Testify - Cơ sở</title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Datatable -->
+    <link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'styles/main.css'  %}">
+</head>
+
+<body>
+
+    {% include 'preloader.html' %}
+
+    <!-- ***** Sidebar Start ***** -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-logo" onclick="toggleSidebar()">
+            <div class="logo">Tính năng</div>
+        </div>
+        <a class="link" href="#"><i class="fas fa-info-circle"></i><span class="menu-a">Tạo Login (Cơ sở)</span></a>
+        <a class="link" href="#"><i class="fas fa-concierge-bell"></i><span class="menu-a">Tạo Tài khoản (Giảng viên)</span></a>
+        <!-- <a class="link" href="#"><i class="fas fa-users"></i><span class="menu-a">Clients</span></a>
+        <a class="link" href="#"><i class="fas fa-envelope"></i><span class="menu-a">Contact</span></a> -->
+    </div>
+    <!-- ***** Sidebar End ***** -->
+
+    <div id="main">
+
+        <!-- ***** Header Area Start ***** -->
+        <header>
+            <div class="header-container">
+                <div class="header-left">
+                    <nav>
+                        <ul class="nav-links">
+                            <li><a href="/">Cơ sở</a></li>
+                            <li><a href="{% url 'khoa' %}">Khoa</a></li>
+                            <li><a href="{% url 'lop' %}">Lớp</a></li>
+                            <li><a href="{% url 'giangvien' %}">Giảng viên</a></li>
+                            <li><a href="{% url 'sinhvien' %}">Sinh viên</a></li>
+                            <li><a href="{% url 'monhoc' %}">Môn học</a></li>
+                            <li><a href="{% url 'bode' %}">Bộ đề</a></li>
+                            <li><a href="{% url 'dangkythi' %}">Đăng ký thi</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu">
+                        <img src="./assets/images/testimonial-author.jpg" alt="User Icon" class="user-icon"
+                            onclick="toggleUserMenu()">
+                        <div id="userMenu" class="user-menu-dropdown">
+                            <a href="#">
+                                Mã: {{thongtin.0}} | 
+                                Tên: {{thongtin.1}} | 
+                                Nhóm: {{thongtin.2}}
+                            </a>
+                            <a href="{% url 'login-register' %}">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- ***** Header Area End ***** -->
+
+        {% block content %}
+
+        {% endblock content %}
+
+        {% include 'footer.html' %}
+    </div>
+
+    <!-- Scripts -->
+
+    <script src="{% static 'scripts/toggle.js' %}"></script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/isotope.min.js' %}"></script>
+    <script src="{static 'js/owl-carousel.js'}"></script>
+    <script src="{% static 'js/counter.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <!-- Datatable -->
+    <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+</body>
+
+</html>
