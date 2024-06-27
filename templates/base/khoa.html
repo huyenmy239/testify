@@ -1,0 +1,115 @@
+{% extends request.session.base_template %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="feature">
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/add.png' %}"/>
+                        Thêm</a>
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/undo.png' %}"/>
+                        Undo</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Mã khoa</th>
+                                        <th>Tên khoa</th>
+                                        <th>Cơ sở</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for k in khoa %}
+                                    <tr>
+                                        <td>{{ k.makh }}</td>
+                                        <td>{{ k.tenkh }}</td>
+                                        <td>{{ k.coso.tencs }}</td>
+                                        <td>
+                                            {% if request.session.base_template == "main_CS.html" %}
+                                            <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-makh="{{ k.makh }}" data-tenkh="{{ k.tenkh }}">
+                                                <img src="{% static 'images/save.png' %}"/>
+                                                Sửa
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-delete">
+                                                <img src="{% static 'images/bin.png' %}"/>
+                                                Xóa
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Mã khoa</th>
+                                        <th>Tên khoa</th>
+                                        <th>Cơ sở</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin khoa</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-group">
+                        <label for="editMakh">Mã khoa:</label>
+                        <input type="text" class="form-control" id="editMakh" name="editMakh" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTenkh">Tên khoa:</label>
+                        <input type="text" class="form-control" id="editTenkh" name="editTenkh">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var editButtons = document.querySelectorAll('.btn-edit');
+
+        editButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('editModal');
+                var makh = button.getAttribute('data-makh');
+                var tenkh = button.getAttribute('data-tenkh');
+
+                modal.querySelector('#editMakh').value = makh;
+                modal.querySelector('#editTenkh').value = tenkh;
+
+                $(modal).modal('show');
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

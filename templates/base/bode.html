@@ -1,0 +1,194 @@
+{% extends request.session.base_template %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="feature">
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/add.png' %}"/>
+                        Thêm</a>
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/undo.png' %}"/>
+                        Undo</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Câu hỏi</th>
+                                        <th>Môn học</th>
+                                        <th>Trình độ</th>
+                                        <th>Nội dung</th>
+                                        <th>A</th>
+                                        <th>B</th>
+                                        <th>C</th>
+                                        <th>D</th>
+                                        <th>Đáp án</th>
+                                        <th>Giáo viên</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ch in bode %}
+                                    <tr>
+                                        <td>{{ ch.cauhoi }}</td>
+                                        <td>{{ ch.monhoc.tenmh }}</td>
+                                        <td>{{ ch.trinhdo }}</td>
+                                        <td>{{ ch.noidung }}</td>
+                                        <td>{{ ch.a }}</td>
+                                        <td>{{ ch.b }}</td>
+                                        <td>{{ ch.c }}</td>
+                                        <td>{{ ch.d }}</td>
+                                        <td><b>{{ ch.dapan }}</b></td>
+                                        <td>{{ ch.gv.ho }} {{ ch.gv.ten }}</td>
+                                        <td>
+                                            {% if request.session.base_template == "main_CS.html" %}
+                                            <button type="button" class="btn btn-warning btn-edit"
+                                                data-toggle="modal" data-target="#editModal"
+                                                data-cauhoi="{{ ch.cauhoi }}" data-monhoc="{{ ch.monhoc.tenmh }}"
+                                                data-trinhdo="{{ ch.trinhdo }}" data-noidung="{{ ch.noidung }}"
+                                                data-a="{{ ch.a }}" data-b="{{ ch.b }}" data-c="{{ ch.c }}"
+                                                data-d="{{ ch.d }}" data-dapan="{{ ch.dapan }}"
+                                                data-giaovien="{{ ch.gv.ho }} {{ ch.gv.ten }}">
+                                                <img src="{% static 'images/save.png' %}"/> Sửa
+                                            </button>
+                                            <a href="#" class="btn btn-danger">
+                                                <img src="{% static 'images/bin.png' %}"/> Xóa
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Câu hỏi</th>
+                                        <th>Môn học</th>
+                                        <th>Trình độ</th>
+                                        <th>Nội dung</th>
+                                        <th>A</th>
+                                        <th>B</th>
+                                        <th>C</th>
+                                        <th>D</th>
+                                        <th>Đáp án</th>
+                                        <th>Giáo viên</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin câu hỏi</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="post" action="/">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="cauhoi">Câu hỏi:</label>
+                        <input type="text" class="form-control" name="cauhoi" id="cauhoi" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="monhoc">Môn học:</label>
+                        <input type="text" class="form-control" id="monhoc" name="monhoc">
+                    </div>
+                    <div class="form-group">
+                        <label for="trinhdo">Trình độ:</label>
+                        <input type="text" class="form-control" id="trinhdo" name="trinhdo">
+                    </div>
+                    <div class="form-group">
+                        <label for="noidung">Nội dung:</label>
+                        <textarea class="form-control" id="noidung" name="noidung"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="a">Đáp án A:</label>
+                        <input type="text" class="form-control" id="a" name="a">
+                    </div>
+                    <div class="form-group">
+                        <label for="b">Đáp án B:</label>
+                        <input type="text" class="form-control" id="b" name="b">
+                    </div>
+                    <div class="form-group">
+                        <label for="c">Đáp án C:</label>
+                        <input type="text" class="form-control" id="c" name="c">
+                    </div>
+                    <div class="form-group">
+                        <label for="d">Đáp án D:</label>
+                        <input type="text" class="form-control" id="d" name="d">
+                    </div>
+                    <div class="form-group">
+                        <label for="dapan">Đáp án đúng:</label>
+                        <select class="form-control" id="dapan" name="dapan">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="giaovien">Giáo viên:</label>
+                        <input type="text" class="form-control" id="giaovien" name="giaovien">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var editButtons = document.querySelectorAll('.btn-edit');
+
+        editButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('editModal');
+                var cauhoi = button.getAttribute('data-cauhoi');
+                var monhoc = button.getAttribute('data-monhoc');
+                var trinhdo = button.getAttribute('data-trinhdo');
+                var noidung = button.getAttribute('data-noidung');
+                var a = button.getAttribute('data-a');
+                var b = button.getAttribute('data-b');
+                var c = button.getAttribute('data-c');
+                var d = button.getAttribute('data-d');
+                var dapan = button.getAttribute('data-dapan');
+                var giaovien = button.getAttribute('data-giaovien');
+
+                modal.querySelector('#cauhoi').value = cauhoi;
+                modal.querySelector('#monhoc').value = monhoc;
+                modal.querySelector('#trinhdo').value = trinhdo;
+                modal.querySelector('#noidung').value = noidung;
+                modal.querySelector('#a').value = a;
+                modal.querySelector('#b').value = b;
+                modal.querySelector('#c').value = c;
+                modal.querySelector('#d').value = d;
+                modal.querySelector('#dapan').value = dapan;
+                modal.querySelector('#giaovien').value = giaovien;
+
+                $(modal).modal('show');
+            });
+        });
+    });
+</script>
+
+
+{% endblock content %}
