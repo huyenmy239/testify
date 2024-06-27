@@ -47,7 +47,7 @@
                                         <td>{{dk.socauthi}}</td>
                                         <td>{{dk.thoigian}}</td>
                                         <td>
-                                            {% if request.session.base_template == "main_CS.html" or request.session.base_template == "main_GV.html" %}
+                                            {% if request.session.base_template == "main_CS.html" and request.session.base_template == "main_GV.html" %}
                                             <button type="button" class="btn btn-warning btn-edit"
                                                 data-toggle="modal" data-target="#editModal"
                                                 data-id="{{ dk.id }}" data-monhoc="{{ dk.monhoc.tenmh }}"
@@ -62,7 +62,10 @@
                                             </a>
                                             {% endif %}
                                             {% elif request.session.base_template == "main_SV.html" %}
-                                            <button type="button" class="btn btn-success">Thi</button>
+                                            <button type="button" class="btn btn-success btn-thi" data-toggle="modal" data-target="#thiModal"
+                                                data-cauhoi="Câu hỏi ví dụ?" data-a="Lựa chọn A" data-b="Lựa chọn B" data-c="Lựa chọn C" data-d="Lựa chọn D">
+                                                Thi
+                                            </button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -135,6 +138,48 @@
     </div>
 </div>
 
+<!-- Modal Thi -->
+<div class="modal fade" id="thiModal" tabindex="-1" role="dialog" aria-labelledby="thiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="thiModalLabel">Trả lời câu hỏi</h5>
+            </div>
+            <div class="modal-body">
+                <form id="thiForm" method="post" action="#">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label id="cauhoi">Câu 1:</label>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
+                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
+                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
+                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
+                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="timer">Thời gian còn lại: <span id="timer">00:00</span></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var editButtons = document.querySelectorAll('.btn-edit');
@@ -166,6 +211,86 @@
             });
         });
     });
+
+document.addEventListener("DOMContentLoaded", function() {
+    var thiButtons = document.querySelectorAll('.btn-thi');
+
+    thiButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var modal = document.getElementById('thiModal');
+            var cauhoi = button.getAttribute('data-cauhoi');
+            var optionA = button.getAttribute('data-a');
+            var optionB = button.getAttribute('data-b');
+            var optionC = button.getAttribute('data-c');
+            var optionD = button.getAttribute('data-d');
+
+            modal.querySelector('#cauhoi').innerText = cauhoi;
+            modal.querySelector('#labelA').innerText = optionA;
+            modal.querySelector('#labelB').innerText = optionB;
+            modal.querySelector('#labelC').innerText = optionC;
+            modal.querySelector('#labelD').innerText = optionD;
+
+            $(modal).modal('show');
+        });
+    });
+    
+});
+
+    document.addEventListener("DOMContentLoaded", function() {
+    var thiButtons = document.querySelectorAll('.btn-thi');
+    var timerInterval;
+
+    thiButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var modal = document.getElementById('thiModal');
+            var cauhoi = button.getAttribute('data-cauhoi');
+            var optionA = button.getAttribute('data-a');
+            var optionB = button.getAttribute('data-b');
+            var optionC = button.getAttribute('data-c');
+            var optionD = button.getAttribute('data-d');
+            var timeLimit = 5 * 60; // thời gian làm bài, ví dụ: 5 phút (300 giây)
+
+            modal.querySelector('#cauhoi').innerText = cauhoi;
+            modal.querySelector('#labelA').innerText = optionA;
+            modal.querySelector('#labelB').innerText = optionB;
+            modal.querySelector('#labelC').innerText = optionC;
+            modal.querySelector('#labelD').innerText = optionD;
+
+            function startTimer(duration, display) {
+                var timer = duration, minutes, seconds;
+                timerInterval = setInterval(function () {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    display.textContent = minutes + ":" + seconds;
+
+                    if (--timer < 0) {
+                        clearInterval(timerInterval);
+                        // Tự động nộp bài khi hết giờ
+                        document.getElementById('thiForm').submit();
+                    }
+                }, 1000);
+            }
+
+            // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+            $(modal).on('shown.bs.modal', function () {
+                var display = modal.querySelector('#timer');
+                startTimer(timeLimit, display);
+            });
+
+            // Hủy đếm ngược khi modal bị ẩn
+            $(modal).on('hidden.bs.modal', function () {
+                clearInterval(timerInterval);
+            });
+
+            $(modal).modal('show');
+        });
+    });
+});
+
 </script>
 
 
