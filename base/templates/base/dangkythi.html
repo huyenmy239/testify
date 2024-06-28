@@ -4,6 +4,20 @@
 
 {% block content %}
 
+<style>
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-check {
+        margin-bottom: 10px;
+    }
+</style>
+
 <div class="content-body">
     <div class="container-fluid">
         <!-- row -->
@@ -62,10 +76,10 @@
                                             </a>
                                             {% endif %}
                                             {% elif request.session.base_template == "main_SV.html" %}
-                                            <button type="button" class="btn btn-success btn-thi" data-toggle="modal" data-target="#thiModal"
-                                                data-cauhoi="Câu hỏi ví dụ?" data-a="Lựa chọn A" data-b="Lựa chọn B" data-c="Lựa chọn C" data-d="Lựa chọn D">
-                                                Thi
-                                            </button>
+                                            <button type="button" class="btn btn-success btn-thi" 
+                                                data-toggle="modal" data-target="#thiModal" 
+                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.id }}"
+                                                data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -138,14 +152,6 @@
     </div>
 </div>
 
-<style>
-.sticky{
-    position: -webkit-sticky;
-    position: sticky;
-    /* top: -50%; */
-}
-</style>
-
 <!-- Modal Thi -->
 <div class="modal fade" id="thiModal" tabindex="-1" role="dialog" aria-labelledby="thiModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -155,214 +161,82 @@
                     <div class="row">
                         <h5 class="modal-title col-md-6" id="thiModalLabel">Trả lời câu hỏi</h5>
                         <div class="col-md-6 text-right">
-                            <label class="text-right" for="timer">Thời gian còn lại: <span id="timer">00:00</span></label>
+                            <label class="text-right" for="timer">Thời gian còn lại: <span id="timer"></span></label>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                <form id="thiForm" method="post" action="#">
+                <form id="thiForm" method="post" action="submit">
+                    {% for question in questions %}
                     <div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
+                        <label>Câu {{ question.id }}: </label>
+                        <lable>{{ question.question_text }}</label>
                     </div>
                     <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionA" value="A" {% if question.answer == 'A' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionA" id="labelA">{{ question.A }}</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionB" value="B" {% if question.answer == 'B' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionB" id="labelB">{{ question.B }}</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionC" value="C" {% if question.answer == 'C' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionC" id="labelC">{{ question.C }}</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
-                        </div>
-                    </div><div class="form-group">
-                        <label id="cauhoi">Câu 1:</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionA" value="A">
-                            <label class="form-check-label" for="optionA" id="labelA">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionB" value="B">
-                            <label class="form-check-label" for="optionB" id="labelB">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionC" value="C">
-                            <label class="form-check-label" for="optionC" id="labelC">Có một con mèo và một con chó đang đánh lộn với nhau.</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="answer" id="optionD" value="D">
-                            <label class="form-check-label" for="optionD" id="labelD">Có một con mèo và một con chó.</label>
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionD" value="D" {% if question.answer == 'D' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionD" id="labelD">{{ question.D }}</label>
                         </div>
                     </div>
+                    {% endfor %}
                     <button type="submit" class="btn btn-primary">Nộp bài</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% comment %} 
+<script>
 
-<style>
-.modal-body {
-    padding: 20px;
-}
+    var countDownDate = {{ time }};
+  // Update the count down every 1 second
+    var x = setInterval(function() {
+        countDownDate -= 1;
+        // Time calculations for days, hours, minutes and seconds
+        var minutes = Math.floor(countDownDate / 60);
+        var seconds = Math.floor(countDownDate % 60);
+        
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-.form-group {
-    margin-bottom: 15px;
-}
+        document.getElementById("time").innerHTML = minutes + ":" + seconds + ".";
 
-.form-check {
-    margin-bottom: 10px;
-}
-</style>
+        $.ajax({
+        url: 'update-time',  // Adjust the URL
+        type: 'POST',  // Adjust the method if needed
+        data: {
+            time: countDownDate,
+        },
+        success: function(response) {
+            console.log("Updated count down");
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+        }
+        });
+
+        if (countDownDate <= 0) {
+            setTimeout(function() {
+                document.getElementById("time").innerHTML = "EXPIRED";
+            }, 500)
+            window.location.replace('submit')
+        }
+    }, 1000);
+</script> 
+{% endcomment %}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -396,84 +270,125 @@
         });
     });
 
-document.addEventListener("DOMContentLoaded", function() {
-    var thiButtons = document.querySelectorAll('.btn-thi');
-
-    thiButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            var modal = document.getElementById('thiModal');
-            var cauhoi = button.getAttribute('data-cauhoi');
-            var optionA = button.getAttribute('data-a');
-            var optionB = button.getAttribute('data-b');
-            var optionC = button.getAttribute('data-c');
-            var optionD = button.getAttribute('data-d');
-
-            modal.querySelector('#cauhoi').innerText = cauhoi;
-            modal.querySelector('#labelA').innerText = optionA;
-            modal.querySelector('#labelB').innerText = optionB;
-            modal.querySelector('#labelC').innerText = optionC;
-            modal.querySelector('#labelD').innerText = optionD;
-
-            $(modal).modal('show');
+    //Update the answer
+    $(document).ready(function() {
+        $('input[name^="Answer-"]').change(function() {
+            // Execute the AJAX request when a radio button is selected
+            $.ajax({
+                url: 'answer-question',  // Adjust the URL
+                type: 'POST',  // Adjust the method if needed
+                data: {
+                    maBT: '',
+                    cauhoi: $(this).attr('name').split('-')[1],  // Include the question ID as a hidden fielde
+                    selectedOption: $(this).val(),  // Include the selected option
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
         });
     });
-    
-});
 
+// This function is used to call POST methods to get list questions from the server
     document.addEventListener("DOMContentLoaded", function() {
-    var thiButtons = document.querySelectorAll('.btn-thi');
-    var timerInterval;
+        var thiButtons = document.querySelectorAll('.btn-thi');
 
-    thiButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            var modal = document.getElementById('thiModal');
-            var cauhoi = button.getAttribute('data-cauhoi');
-            var optionA = button.getAttribute('data-a');
-            var optionB = button.getAttribute('data-b');
-            var optionC = button.getAttribute('data-c');
-            var optionD = button.getAttribute('data-d');
-            var timeLimit = 5 * 60; // thời gian làm bài, ví dụ: 5 phút (300 giây)
-
-            modal.querySelector('#cauhoi').innerText = cauhoi;
-            modal.querySelector('#labelA').innerText = optionA;
-            modal.querySelector('#labelB').innerText = optionB;
-            modal.querySelector('#labelC').innerText = optionC;
-            modal.querySelector('#labelD').innerText = optionD;
-
-            function startTimer(duration, display) {
-                var timer = duration, minutes, seconds;
-                timerInterval = setInterval(function () {
-                    minutes = parseInt(timer / 60, 10);
-                    seconds = parseInt(timer % 60, 10);
-
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                    display.textContent = minutes + ":" + seconds;
-
-                    if (--timer < 0) {
-                        clearInterval(timerInterval);
-                        // Tự động nộp bài khi hết giờ
-                        document.getElementById('thiForm').submit();
+        thiButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('thiModal');
+                var monhoc = button.getAttribute('data-monhoc');
+                var lan = button.getAttribute('data-lan');
+                var trinhdo = button.getAttribute('data-trinhdo');
+                var socauthi = button.getAttribute('data-socauthi');
+                $.ajax({
+                    url: '/list-question',  // Adjust the URL
+                    type: 'POST',  // Adjust the method if needed
+                    data: {
+                        MaSV: {{ thongtin.0 }},
+                        mamh: monhoc,
+                        lan: lan,
+                        trinhdo: trinhdo,
+                        socau: socauthi,
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        console.log("Get data successfully!");
+                    },
+                    error: function(xhr, status, error) {
+                    console.error('Error:', error);
                     }
-                }, 1000);
-            }
+                });
 
-            // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
-            $(modal).on('shown.bs.modal', function () {
-                var display = modal.querySelector('#timer');
-                startTimer(timeLimit, display);
+                $(modal).modal('show');
             });
+        });
+        
+    });
 
-            // Hủy đếm ngược khi modal bị ẩn
-            $(modal).on('hidden.bs.modal', function () {
-                clearInterval(timerInterval);
+    // Countdown time for doing exam and update time into database
+    document.addEventListener("DOMContentLoaded", function() {
+        var thiButtons = document.querySelectorAll('.btn-thi');
+        var timerInterval;
+
+        thiButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('thiModal');
+                var timeLimit = {{ time }}; 
+
+                function startTimer(duration, display) {
+                    var timer = duration, minutes, seconds;
+                    timerInterval = setInterval(function () {
+                        $.ajax({
+                            url: 'update-time',  // Adjust the URL
+                            type: 'POST',  // Adjust the method if needed
+                            data: {
+                                maBT: '', // Mã bài thi
+                                time: timer,
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                console.log("Updated count down");
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+
+                        minutes = Math.floor(countDownDate / 60);
+                        seconds = Math.floor(countDownDate % 60);
+                        // Time calculations for days, hours, minutes and seconds
+                        minutes = minutes < 10 ? "0" + minutes : minutes;
+                        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                        display.textContent = minutes + ":" + seconds;
+
+                        if (--timer < 0) {
+                            clearInterval(timerInterval);
+                            // Tự động nộp bài khi hết giờ
+                            aler("Đã hết thời gian làm bài");
+                            document.getElementById('thiForm').submit();
+                        }
+                    }, 1000);
+                }
+
+                // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+                $(modal).on('shown.bs.modal', function () {
+                    var display = modal.querySelector('#timer');
+                    startTimer(timeLimit, display);
+                });
+
+                // Hủy đếm ngược khi modal bị ẩn
+                $(modal).on('hidden.bs.modal', function () {
+                    clearInterval(timerInterval);
+                });
+
+                $(modal).modal('show');
             });
-
-            $(modal).modal('show');
         });
     });
-});
 
 </script>
 

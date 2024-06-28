@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.db import connection, connections
 from .models import *
 from .views import DATABASE, DB_CONNECTION
+from datetime import datetime
 
 db_alias = "default"
 
@@ -154,3 +155,107 @@ def login_gv(request):
 
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect("login-register")
+
+def get_list_questions(request):
+    if request.method == 'POST':
+        coso = request.POST.get('sv_coso')
+        if "1" in coso:
+            db_alias = DB_CONNECTION["servers"][1]
+        else:
+            db_alias = DB_CONNECTION["servers"][2]
+
+        request.session['current_server'] = db_alias
+        print(f"Current: {request.session.get('current_server')}")
+        
+        ma_sv = request.POST.get('MaSV')
+        ma_mh = request.POST.get('mamh')
+        lan = request.POST.get('lan')
+        trinh_do = request.POST.get('trinhdo')
+        so_cau = request.POST.get('socau')
+        cur, con = None, None
+        try:
+            print("do something here")
+            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+            con = db.connect_to_database()
+            cur = con.cursor()
+            cur.execute(f"EXEC SP_THONG_TIN_BAI_THI '{ma_sv}', '{ma_mh}', '{lan}'")
+            result = cur.fetchone()
+            if result is None:
+                now = datetime.now()
+                current_date_time = now.strftime('%Y-%m-%d')
+                mabt = 'test'
+                cur.execute(f"EXEC SP_TAO_BAI_THI '{mabt}', '{ma_sv}', '{ma_mh}', '{lan}', \"{current_date_time}\", '{trinh_do}', {so_cau}")
+            
+            cur.execute(f"EXEC SP_LAY_CAU_HOI '{mabt}'")
+            result = cur.fetchall()
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        context = {"questions": result, "time": time} #Lay them time tu sp
+        return render(request, 'base/dangkythi.html', context)
+
+def update_time(request):
+    if request.method == 'POST':
+        coso = request.POST.get('sv_coso')
+        if "1" in coso:
+            db_alias = DB_CONNECTION["servers"][1]
+        else:
+            db_alias = DB_CONNECTION["servers"][2]
+            
+        request.session['current_server'] = db_alias
+        print(f"Current: {request.session.get('current_server')}")
+
+        maBT = request.POST.get('maBT')
+        timer = request.POST.get('time')
+        
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+            con = db.connect_to_database()
+            cur = con.cursor()
+            cur.execute(f"EXEC SP_UPDATE_TIME '{maBT}', \"{timer}\"")
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        HttpResponse("Update left time successfully!")
+                
+def update_answer(request):
+    if request.method == 'POST':
+        coso = request.POST.get('sv_coso')
+        if "1" in coso:
+            db_alias = DB_CONNECTION["servers"][1]
+        else:
+            db_alias = DB_CONNECTION["servers"][2]
+            
+        request.session['current_server'] = db_alias
+        print(f"Current: {request.session.get('current_server')}")
+
+        maBT = request.POST.get('maBT')
+        cau_hoi = request.POST.get('cauhoi')
+        cau_tra_loi = request.POST.get('selectedOption')
+        
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+            con = db.connect_to_database()
+            cur = con.cursor()
+            cur.execute(f"EXEC SP_TRA_LOI_CAU_HOI '{maBT}', '{cau_hoi}', '{cau_tra_loi}'")
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        HttpResponse("Update the answer successfully!")
