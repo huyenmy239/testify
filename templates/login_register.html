@@ -8,6 +8,7 @@
     <!-- Liên kết tới Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/message.css' %}">
 </head>
 <body>
     {% if messages %}
@@ -39,11 +40,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="giangvienUsername">Username:</label>
+                        <label for="giangvienUsername">Tên đăng nhập:</label>
                         <input type="text" class="form-control" id="giangvienUsername" name="giangvienUsername" required>
                     </div>
                     <div class="form-group">
-                        <label for="giangvienPassword">Password:</label>
+                        <label for="giangvienPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="giangvienPassword" name="giangvienPassword" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
@@ -62,11 +63,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="sinhvienUsername">Username:</label>
+                        <label for="sinhvienUsername">Mã sinh viên:</label>
                         <input type="text" class="form-control" id="sinhvienUsername" name="sinhvienUsername" required>
                     </div>
                     <div class="form-group">
-                        <label for="sinhvienPassword">Password:</label>
+                        <label for="sinhvienPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="sinhvienPassword" name="sinhvienPassword" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Đăng nhập</button>
@@ -84,7 +85,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="dangkyPassword">Password:</label>
+                        <label for="dangkyPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="dangkyPassword" name="dangkyPassword" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Đăng ký</button>
@@ -95,22 +96,7 @@
     </div>
 
     <!-- Tin nhắn thông báo -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const messages = document.querySelectorAll(".messages li");
-            messages.forEach((message, index) => {
-                setTimeout(() => {
-                    message.style.opacity = 1;
-                    setTimeout(() => {
-                        message.style.opacity = 0;
-                        setTimeout(() => {
-                            message.remove();
-                        }, 500); // Duration for fade out
-                    }, 5000); // Duration for display
-                }, index * 3000); // Staggered display
-            });
-        });
-    </script>
+    <script src="{% static 'scripts/message.js' %}"></script>
 
     <!-- Liên kết tới jQuery và Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -122,6 +108,8 @@
                 $('#formGiangVien').removeClass('hidden');
                 $('#formSinhVien').addClass('hidden');
                 $('#formDangKy').addClass('hidden');
+                $('#btnGiangVien').removeClass('btn-secondary').addClass('btn-primary');
+                $('#btnSinhVien').removeClass('btn-primary').addClass('btn-secondary');
             });
 
             $('#btnSinhVien').click(function() {
@@ -129,7 +117,8 @@
                 $('#formDangNhap').removeClass('hidden');
                 $('#formDangKy').addClass('hidden');
                 $('#formGiangVien').addClass('hidden');
-                $('#formDangKy').addClass('hidden');
+                $('#btnSinhVien').removeClass('btn-secondary').addClass('btn-primary');
+                $('#btnGiangVien').removeClass('btn-primary').addClass('btn-secondary');
             });
 
             $('#toggleDangKy').click(function() {

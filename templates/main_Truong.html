@@ -16,6 +16,7 @@
     <link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="{% static 'styles/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'styles/message.css' %}">
 </head>
 
 <body>
@@ -42,7 +43,7 @@
                 <div class="header-left">
                     <nav>
                         <ul class="nav-links">
-                            <li><a href="/">Cơ sở</a></li>
+                            <li><a href="{% url 'coso' %}">Cơ sở</a></li>
                             <li><a href="{% url 'khoa' %}">Khoa</a></li>
                             <li><a href="{% url 'lop' %}">Lớp</a></li>
                             <li><a href="{% url 'giangvien' %}">Giảng viên</a></li>

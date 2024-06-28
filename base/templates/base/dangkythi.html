@@ -47,7 +47,7 @@
                                         <td>{{dk.socauthi}}</td>
                                         <td>{{dk.thoigian}}</td>
                                         <td>
-                                            {% if request.session.base_template == "main_CS.html" and request.session.base_template == "main_GV.html" %}
+                                            {% if request.session.base_template == "main_CS.html" or request.session.base_template == "main_GV.html" %}
                                             <button type="button" class="btn btn-warning btn-edit"
                                                 data-toggle="modal" data-target="#editModal"
                                                 data-id="{{ dk.id }}" data-monhoc="{{ dk.monhoc.tenmh }}"

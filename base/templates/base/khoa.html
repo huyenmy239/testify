@@ -10,12 +10,12 @@
         <div class="row">
             <div class="col-12">
                 <div class="feature">
+                    <a href="#" class="btn btn-add btn-primary" data-toggle="modal" data-target="#addModal">
+                        <img src="{% static 'images/add.png' %}"/> Thêm
+                    </a>
                     <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/add.png' %}"/>
-                        Thêm</a>
-                    <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/undo.png' %}"/>
-                        Undo</a>
+                        <img src="{% static 'images/undo.png' %}"/> Undo
+                    </a>
                 </div>
 
                 <div class="card">
@@ -39,12 +39,10 @@
                                         <td>
                                             {% if request.session.base_template == "main_CS.html" %}
                                             <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-makh="{{ k.makh }}" data-tenkh="{{ k.tenkh }}">
-                                                <img src="{% static 'images/save.png' %}"/>
-                                                Sửa
+                                                <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-delete">
-                                                <img src="{% static 'images/bin.png' %}"/>
-                                                Xóa
+                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-makh="{{ k.makh }}">
+                                                <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
                                         </td>
@@ -68,7 +66,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -76,7 +74,7 @@
                 <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin khoa</h5>
             </div>
             <div class="modal-body">
-                <form id="editForm">
+                <form id="editForm" action="{% url 'update-khoa' %}" method="POST">
                     <div class="form-group">
                         <label for="editMakh">Mã khoa:</label>
                         <input type="text" class="form-control" id="editMakh" name="editMakh" readonly>
@@ -86,6 +84,52 @@
                         <input type="text" class="form-control" id="editTenkh" name="editTenkh">
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Thêm Khoa Mới</h5>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" action="{% url 'add-khoa' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addMakh">Mã khoa:</label>
+                        <input type="text" class="form-control" id="addMakh" name="addMakh" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTenkh">Tên khoa:</label>
+                        <input type="text" class="form-control" id="addTenkh" name="addTenkh" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn xóa khoa này không?
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" action="{% url 'delete-khoa' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="deleteMakh" name="deleteMakh">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
         </div>
@@ -105,6 +149,28 @@
 
                 modal.querySelector('#editMakh').value = makh;
                 modal.querySelector('#editTenkh').value = tenkh;
+
+                $(modal).modal('show');
+            });
+        });
+
+        var addButton = document.querySelectorAll('.btn-add');
+
+        addButton.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('addModal');
+
+                $(modal).modal('show');
+            });
+        });
+
+        var deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('deleteModal');
+                var makh = button.getAttribute('data-makh');
+                modal.querySelector('#deleteMakh').value = makh;
 
                 $(modal).modal('show');
             });

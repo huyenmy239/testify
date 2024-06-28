@@ -44,9 +44,12 @@ def login_register(request):
 
 def coso_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    # login = request.session.get('current_user')
+    # login=login.get('username'), pw=login.get('password')
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM COSO")
@@ -75,9 +78,10 @@ def coso_table(request):
 
 def khoa_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM COSO")
@@ -114,9 +118,10 @@ def khoa_table(request):
 
 def lop_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM LOP")
@@ -152,6 +157,7 @@ def lop_table(request):
 
 def gv_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
         db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw="239003")
@@ -174,7 +180,7 @@ def gv_table(request):
             con.close()
     
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM GIAOVIEN")
@@ -202,9 +208,10 @@ def gv_table(request):
 
 def sv_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM LOP")
@@ -240,9 +247,10 @@ def sv_table(request):
 
 def mon_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
@@ -270,6 +278,7 @@ def mon_table(request):
 
 def bode_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
         db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw="239003")
@@ -292,7 +301,7 @@ def bode_table(request):
             con.close()
     
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
@@ -329,9 +338,10 @@ def bode_table(request):
 
 def bode_table_gv(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
     
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
@@ -371,6 +381,7 @@ def bode_table_gv(request):
 
 def dangky_table(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
         db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
@@ -394,7 +405,7 @@ def dangky_table(request):
             con.close()
     
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
 
@@ -439,6 +450,7 @@ def dangky_table(request):
 
 def dangky_table_gv(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
         db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
@@ -461,7 +473,7 @@ def dangky_table_gv(request):
             con.close()
     
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
@@ -501,6 +513,7 @@ def dangky_table_gv(request):
 
 def dangky_table_sv(request):
     db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
     try:
         db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
@@ -521,9 +534,9 @@ def dangky_table_sv(request):
             cur.close()
         if 'con' in locals():
             con.close()
-    
+
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
@@ -533,24 +546,40 @@ def dangky_table_sv(request):
         for row in mon_rows:
             mon[row[0]] = {"tenmh": row[1]}
 
-        masv = request.session.get("current_info")[0]
-
         cur.execute("SELECT * FROM GIAOVIEN")
         gv_rows = cur.fetchall()
+        masv = request.session.get("current_info")[0]
 
         gv = {}
         for row in gv_rows:
             gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
+    except pyodbc.Error as e:
+        print(f"Error connecting to database: {e}")
+        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    finally:
+        if 'cur' in locals():
+            cur.close()
+        if 'con' in locals():
+            con.close()
+    
+    try:
+        db = DatabaseModel(server=db_alias, database=DATABASE, login="lvt", pw="239003")
+        con = db.connect_to_database()
+        cur = con.cursor()
+
         cur.execute(f"EXEC SP_LayDangKyTheoMASV '{masv}'")
 
         dangky_rows = cur.fetchall()
+        print(dangky_rows)
 
         dangky = []
         for row in dangky_rows:
             dangky_object = Dangky(gv=gv[row[0]], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
                                    ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
             dangky.append(dangky_object)
+
+        print(f"Current server: {request.session.get('current_server')}")
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
