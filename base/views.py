@@ -91,7 +91,7 @@ def khoa_table(request):
         
         coso = {}
         for row in coso_rows:
-            coso[row[0]] = {"tencs": row[1], "diachi": row[2]}
+            coso[row[0]] = {"macs": row[0], "tencs": row[1], "diachi": row[2]}
 
 
         khoa = []
@@ -131,7 +131,7 @@ def lop_table(request):
         
         khoa = {}
         for row in khoa_rows:
-            khoa[row[0]] = {"tenkh": row[1], "macs": row[2]}
+            khoa[row[0]] = {"makh": row[0], "tenkh": row[1], "macs": row[2]}
 
 
         lop = []
@@ -151,7 +151,7 @@ def lop_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"lop": lop, "thongtin": info}
+    context = {"lop": lop, "thongtin": info, "khoa_list": khoa}
     return render(request, 'base/lop.html', context)
 
 
@@ -168,7 +168,7 @@ def gv_table(request):
 
         khoa = {}
         for row in khoa_rows:
-            khoa[row[0]] = {"tenkh": row[1], "macs": row[2]}
+            khoa[row[0]] = {"makh": row[0], "tenkh": row[1], "macs": row[2]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
@@ -202,7 +202,7 @@ def gv_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"giangvien": gv, "thongtin": info}
+    context = {"giangvien": gv, "thongtin": info, "khoa_list": khoa}
     return render(request, 'base/giangvien.html', context)
 
 
@@ -221,7 +221,7 @@ def sv_table(request):
         
         lop = {}
         for row in lop_rows:
-            lop[row[0]] = {"tenlop": row[1], "makh": row[2]}
+            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
 
         sv = []
@@ -289,7 +289,7 @@ def bode_table(request):
 
         gv = {}
         for row in gv_rows:
-            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+            gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
@@ -309,7 +309,7 @@ def bode_table(request):
 
         mon = {}
         for row in mon_rows:
-            mon[row[0]] = {"tenmh": row[1]}
+            mon[row[0]] = {"mamon": row[0] , "tenmh": row[1]}
 
         
         cur.execute("SELECT * FROM BODE")
@@ -349,11 +349,11 @@ def bode_table_gv(request):
 
         mon = {}
         for row in mon_rows:
-            mon[row[0]] = {"tenmh": row[1]}
+            mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
         magv = request.session.get("current_info")[0]
         tengv = request.session.get("current_info")[1]
-        gv = {magv: {"tengv": tengv}}
+        gv = {magv: {"magv": magv, "tengv": tengv}}
         cur.execute(f"EXEC SP_LayCauHoiTheoMAGV '{magv}'")
 
         bode_rows = cur.fetchall()
@@ -393,7 +393,7 @@ def dangky_table(request):
 
         lop = {}
         for row in lop_rows:
-            lop[row[0]] = {"tenlop": row[1], "makh": row[2]}
+            lop[row[0]] = {"malop": row[0] ,"tenlop": row[1], "makh": row[2]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
@@ -414,14 +414,14 @@ def dangky_table(request):
 
         gv = {}
         for row in gv_rows:
-            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+            gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
         cur.execute("SELECT * FROM MONHOC")
         mon_rows = cur.fetchall()
 
         mon = {}
         for row in mon_rows:
-            mon[row[0]] = {"tenmh": row[1]}
+            mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
 
         cur.execute("SELECT * FROM GIAOVIEN_DANGKY")
@@ -461,7 +461,7 @@ def dangky_table_gv(request):
 
         lop = {}
         for row in lop_rows:
-            lop[row[0]] = {"tenlop": row[1], "makh": row[2]}
+            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
@@ -481,11 +481,11 @@ def dangky_table_gv(request):
 
         mon = {}
         for row in mon_rows:
-            mon[row[0]] = {"tenmh": row[1]}
+            mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
         magv = request.session.get("current_info")[0]
         tengv = request.session.get("current_info")[1]
-        gv = {magv: {"tengv": tengv}}
+        gv = {magv: {"magv": magv, "tengv": tengv}}
         cur.execute(f"EXEC SP_LayDangKyTheoMAGV '{magv}'")
 
         dangky_rows = cur.fetchall()
@@ -524,7 +524,7 @@ def dangky_table_sv(request):
 
         lop = {}
         for row in lop_rows:
-            lop[row[0]] = {"tenlop": row[1], "makh": row[2]}
+            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
@@ -544,7 +544,7 @@ def dangky_table_sv(request):
 
         mon = {}
         for row in mon_rows:
-            mon[row[0]] = {"tenmh": row[1]}
+            mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
         cur.execute("SELECT * FROM GIAOVIEN")
         gv_rows = cur.fetchall()
@@ -552,7 +552,7 @@ def dangky_table_sv(request):
 
         gv = {}
         for row in gv_rows:
-            gv[row[0]] = {"ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+            gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")

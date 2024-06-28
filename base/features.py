@@ -149,6 +149,7 @@ def login_gv(request):
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect("login-register")
 
+
 @csrf_exempt
 def add_Khoa(request):
     db_alias = request.session.get('current_server')
@@ -209,7 +210,7 @@ def update_Khoa(request):
             cur.execute(query)
             con.commit()
 
-            messages.success(request, "Sửa Khoa thành công.")
+            messages.success(request, "Thay đổi thông tin Khoa thành công.")
 
         except pyodbc.Error as e:
             messages.error(request, e.__str__().split("]")[4].split("(")[0])
@@ -257,3 +258,107 @@ def delete_Khoa(request):
 
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect('khoa')
+
+
+@csrf_exempt
+def add_Lop(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        malop = request.POST.get('addMalop').strip().upper()
+        tenlop = request.POST.get('addTenlop').strip().title()
+        makh = request.POST.get('addKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Lớp thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('lop')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('lop')
+
+
+def update_Lop(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        malop = request.POST.get('editMalop').strip().upper()
+        tenlop = request.POST.get('editTenlop').strip().title()
+        makh = request.POST.get('editKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_UPDATE_LOP '{malop}', N'{tenlop}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thay đổi thông tin Lớp thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('lop')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('lop')
+
+
+def delete_Lop(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        malop = request.POST.get('deleteMalop').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_DELETE_LOP '{malop}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Xóa Lớp thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('lop')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('lop')
