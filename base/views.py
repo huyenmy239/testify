@@ -191,6 +191,13 @@ def gv_table(request):
             gv_object = Giangvien(magv=row[0], ho=row[1], ten=row[2], diachi=row[3], khoa=khoa[row[4]])
             gv.append(gv_object)
 
+        cur.execute("SELECT * FROM KHOA")
+        khoa_rows = cur.fetchall()
+
+        khoa_list = {}
+        for row in khoa_rows:
+            khoa_list[row[0]] = {"makh": row[0], "tenkh": row[1], "macs": row[2]}
+
     except pyodbc.Error as e:
         print(f"Error connecting to database: {e}")
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -202,7 +209,7 @@ def gv_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"giangvien": gv, "thongtin": info, "khoa_list": khoa}
+    context = {"giangvien": gv, "thongtin": info, "khoa_list": khoa_list}
     return render(request, 'base/giangvien.html', context)
 
 
@@ -241,7 +248,7 @@ def sv_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"sinhvien": sv, "thongtin": info}
+    context = {"sinhvien": sv, "thongtin": info, "lop_list": lop}
     return render(request, 'base/sinhvien.html', context)
 
 

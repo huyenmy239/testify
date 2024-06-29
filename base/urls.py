@@ -29,4 +29,12 @@ urlpatterns = [
     path('add_lop/', features.add_Lop, name='add-lop'),
     path('update_lop/', features.update_Lop, name='update-lop'),
     path('delete_lop/', features.delete_Lop, name='delete-lop'),
+
+    path('add_gv/', features.add_Giangvien, name='add-gv'),
+    path('update_gv/', features.update_Giangvien, name='update-gv'),
+    path('delete_gv/', features.delete_Giangvien, name='delete-gv'),
+
+    path('add_sinhvien/', features.add_Sinhvien, name='add-sinhvien'),
+    path('update_sinhvien/', features.update_Sinhvien, name='update-sinhvien'),
+    path('delete_sinhvien/', features.delete_Sinhvien, name='delete-sinhvien'),
 ]

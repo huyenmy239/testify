@@ -303,7 +303,6 @@ def update_Lop(request):
     if request.method == 'POST':
         malop = request.POST.get('editMalop').strip().upper()
         tenlop = request.POST.get('editTenlop').strip().title()
-        makh = request.POST.get('editKhoa')
 
         con, cur = None, None
 
@@ -311,7 +310,7 @@ def update_Lop(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_UPDATE_LOP '{malop}', N'{tenlop}', '{makh}'"
+            query = f"EXEC SP_UPDATE_LOP '{malop}', N'{tenlop}'"
             cur.execute(query)
             con.commit()
 
@@ -362,3 +361,226 @@ def delete_Lop(request):
 
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect('lop')
+
+
+@csrf_exempt
+def add_Giangvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('addMagv').strip().upper()
+        ho = request.POST.get('addHo').strip().upper()
+        ten = request.POST.get('addTen').strip().upper()
+        diachi = request.POST.get('addDiachi').strip().title()
+        makh = request.POST.get('addKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('giangvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('giangvien')
+
+
+@csrf_exempt
+def update_Giangvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('editMagv').strip().upper()
+        ho = request.POST.get('editHo').strip().upper()
+        ten = request.POST.get('editTen').strip().upper()
+        diachi = request.POST.get('editDiachi').strip().title()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_UPDATE_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thay đổi thông tin Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('giangvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('giangvien')
+
+
+@csrf_exempt
+def delete_Giangvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('deleteMagv').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_DELETE_GIAOVIEN '{magv}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Xóa Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('giangvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('giangvien')
+
+
+@csrf_exempt
+def add_Sinhvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('addMagv').strip().upper()
+        ho = request.POST.get('addHo').strip().upper()
+        ten = request.POST.get('addTen').strip().upper()
+        diachi = request.POST.get('addDiachi').strip().title()
+        makh = request.POST.get('addKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('sinhvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('sinhvien')
+
+
+@csrf_exempt
+def update_Sinhvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('addMagv').strip().upper()
+        ho = request.POST.get('addHo').strip().upper()
+        ten = request.POST.get('addTen').strip().upper()
+        diachi = request.POST.get('addDiachi').strip().title()
+        makh = request.POST.get('addKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('sinhvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('sinhvien')
+
+
+@csrf_exempt
+def delete_Sinhvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('addMagv').strip().upper()
+        ho = request.POST.get('addHo').strip().upper()
+        ten = request.POST.get('addTen').strip().upper()
+        diachi = request.POST.get('addDiachi').strip().title()
+        makh = request.POST.get('addKhoa')
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Giảng viên thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('sinhvien')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('sinhvien')
