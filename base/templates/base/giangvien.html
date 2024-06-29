@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã giảng viên</th>
@@ -172,49 +172,53 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('editModal');
-                var magv = button.getAttribute('data-magv');
-                var ho = button.getAttribute('data-ho');
-                var ten = button.getAttribute('data-ten');
-                var diachi = button.getAttribute('data-diachi');
-                var khoa = button.getAttribute('data-khoa');
-
-                modal.querySelector('#editMagv').value = magv;
-                modal.querySelector('#editHo').value = ho;
-                modal.querySelector('#editTen').value = ten;
-                modal.querySelector('#editDiachi').value = diachi;
-                modal.querySelector('#editKhoa').value = khoa;
-
-                $(modal).modal('show');
-            });
+        table.on('draw', function() {
+            attachEventListeners();
         });
 
-        var addButton = document.querySelectorAll('.btn-add');
-
-        addButton.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('addModal');
-
-                $(modal).modal('show');
+        function attachEventListeners() {
+            document.querySelectorAll('.btn-add').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    $('#addModal').modal('show');
+                });
             });
-        });
 
-        var deleteButtons = document.querySelectorAll('.btn-delete');
-        deleteButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('deleteModal');
-                var magv = button.getAttribute('data-magv');
-                
-                modal.querySelector('#deleteMagv').value = magv;
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('editModal');
+                    var magv = button.getAttribute('data-magv');
+                    var ho = button.getAttribute('data-ho');
+                    var ten = button.getAttribute('data-ten');
+                    var diachi = button.getAttribute('data-diachi');
+                    var khoa = button.getAttribute('data-khoa');
 
-                $(modal).modal('show');
+                    modal.querySelector('#editMagv').value = magv;
+                    modal.querySelector('#editHo').value = ho;
+                    modal.querySelector('#editTen').value = ten;
+                    modal.querySelector('#editDiachi').value = diachi;
+                    modal.querySelector('#editKhoa').value = khoa;
+
+                    $(modal).modal('show');
+                });
             });
-        });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var magv = button.getAttribute('data-magv');
+                    
+                    modal.querySelector('#deleteMagv').value = magv;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
     });
 </script>
+
 
 {% endblock content %}

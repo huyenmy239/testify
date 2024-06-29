@@ -11,17 +11,15 @@
             <div class="col-12">
                 <div class="feature">
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
-                        <img src="{% static 'images/add.png' %}"/>
-                        Thêm</a>
+                        <img src="{% static 'images/add.png' %}"/> Thêm</a>
                     <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/undo.png' %}"/>
-                        Undo</a>
+                        <img src="{% static 'images/undo.png' %}"/> Undo</a>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã sinh viên</th>
@@ -48,7 +46,7 @@
                                                 data-toggle="modal" data-target="#editModal"
                                                 data-masv="{{ sv.masv }}" data-ho="{{ sv.ho }}"
                                                 data-ten="{{ sv.ten }}" data-ngaysinh="{{ sv.ngaysinh }}"
-                                                data-diachi="{{ sv.diachi }}" data-lop="{{ sv.lop.tenlop }}">
+                                                data-diachi="{{ sv.diachi }}" data-lop="{{ sv.lop.malop }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
                                             <button type="button" class="btn btn-danger btn-delete"
@@ -137,28 +135,28 @@
                 <form id="editForm" method="post" action="{% url 'update-sinhvien' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="masv">Mã sinh viên:</label>
-                        <input type="text" class="form-control" name="masv" id="masv" readonly>
+                        <label for="editMasv">Mã sinh viên:</label>
+                        <input type="text" class="form-control" name="editMasv" id="editMasv" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="ho">Họ:</label>
-                        <input type="text" class="form-control" id="ho" name="ho">
+                        <label for="editHo">Họ:</label>
+                        <input type="text" class="form-control" id="editHo" name="editHo">
                     </div>
                     <div class="form-group">
-                        <label for="ten">Tên:</label>
-                        <input type="text" class="form-control" id="ten" name="ten">
+                        <label for="editTen">Tên:</label>
+                        <input type="text" class="form-control" id="editTen" name="editTen">
                     </div>
                     <div class="form-group">
-                        <label for="ngaysinh">Ngày sinh:</label>
-                        <input type="date" class="form-control" id="ngaysinh" name="ngaysinh">
+                        <label for="editNgaysinh">Ngày sinh:</label>
+                        <input type="date" class="form-control" id="editNgaysinh" name="editNgaysinh">
                     </div>
                     <div class="form-group">
-                        <label for="diachi">Địa chỉ:</label>
-                        <input type="text" class="form-control" id="diachi" name="diachi">
+                        <label for="editDiachi">Địa chỉ:</label>
+                        <input type="text" class="form-control" id="editDiachi" name="editDiachi">
                     </div>
                     <div class="form-group">
-                        <label for="lop">Lớp:</label>
-                        <select class="form-control" id="lop" name="lop">
+                        <label for="editLop">Lớp:</label>
+                        <select class="form-control" id="editLop" name="editLop">
                             {% for key, value in lop_list.items %}
                                 <option value="{{ key }}">{{ value.tenlop }}</option>
                             {% endfor %}
@@ -192,53 +190,53 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var addButton = document.querySelectorAll('.btn-add');
+        var table = $('#main-table').DataTable();
 
-        addButton.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('addModal');
-
-                $(modal).modal('show');
-            });
+        table.on('draw', function() {
+            attachEventListeners();
         });
 
-        var editButtons = document.querySelectorAll('.btn-edit');
-
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('editModal');
-                var masv = button.getAttribute('data-masv');
-                var ho = button.getAttribute('data-ho');
-                var ten = button.getAttribute('data-ten');
-                var ngaysinh = button.getAttribute('data-ngaysinh');
-                var date = new Date(ngaysinh);
-                var ngaysinhFormatted = date.toLocaleDateString('en-CA');
-                var diachi = button.getAttribute('data-diachi');
-                var lop = button.getAttribute('data-lop');
-
-                modal.querySelector('#masv').value = masv;
-                modal.querySelector('#ho').value = ho;
-                modal.querySelector('#ten').value = ten;
-                modal.querySelector('#ngaysinh').value = ngaysinhFormatted;
-                modal.querySelector('#diachi').value = diachi;
-                modal.querySelector('#lop').value = lop;
-
-                $(modal).modal('show');
+        function attachEventListeners() {
+            document.querySelector('.btn-add').addEventListener('click', function() {
+                $('#addModal').modal('show');
             });
-        });
 
-        var deleteButtons = document.querySelectorAll('.btn-delete');
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('editModal');
+                    var masv = button.getAttribute('data-masv');
+                    var ho = button.getAttribute('data-ho');
+                    var ten = button.getAttribute('data-ten');
+                    var ngaysinh = button.getAttribute('data-ngaysinh');
+                    var date = new Date(ngaysinh);
+                    var ngaysinhFormatted = date.toLocaleDateString('en-CA');
+                    var diachi = button.getAttribute('data-diachi');
+                    var lop = button.getAttribute('data-lop');
 
-        deleteButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('deleteModal');
-                var masv = button.getAttribute('data-masv');
-                
-                modal.querySelector('#deleteMasv').value = masv;
+                    modal.querySelector('#editMasv').value = masv;
+                    modal.querySelector('#editHo').value = ho;
+                    modal.querySelector('#editTen').value = ten;
+                    modal.querySelector('#editNgaysinh').value = ngaysinhFormatted;
+                    modal.querySelector('#editDiachi').value = diachi;
+                    modal.querySelector('#editLop').value = lop;
 
-                $(modal).modal('show');
+                    $(modal).modal('show');
+                });
             });
-        });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var masv = button.getAttribute('data-masv');
+                    
+                    modal.querySelector('#deleteMasv').value = masv;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
     });
 </script>
 

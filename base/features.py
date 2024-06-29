@@ -478,11 +478,12 @@ def add_Sinhvien(request):
     login = request.session.get('current_user')
 
     if request.method == 'POST':
-        magv = request.POST.get('addMagv').strip().upper()
+        masv = request.POST.get('addMasv').strip().upper()
         ho = request.POST.get('addHo').strip().upper()
         ten = request.POST.get('addTen').strip().upper()
+        ngaysinh = request.POST.get('addNgaysinh')
         diachi = request.POST.get('addDiachi').strip().title()
-        makh = request.POST.get('addKhoa')
+        malop = request.POST.get('addLop')
 
         con, cur = None, None
 
@@ -490,11 +491,11 @@ def add_Sinhvien(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            query = f"EXEC SP_INSERT_SINHVIEN '{masv}', N'{ho}', N'{ten}', '{ngaysinh}', N'{diachi}', '{malop}'"
             cur.execute(query)
             con.commit()
 
-            messages.success(request, "Thêm Giảng viên thành công.")
+            messages.success(request, "Thêm Sinh viên thành công.")
 
         except pyodbc.Error as e:
             messages.error(request, e.__str__().split("]")[4].split("(")[0])
@@ -516,11 +517,11 @@ def update_Sinhvien(request):
     login = request.session.get('current_user')
 
     if request.method == 'POST':
-        magv = request.POST.get('addMagv').strip().upper()
-        ho = request.POST.get('addHo').strip().upper()
-        ten = request.POST.get('addTen').strip().upper()
-        diachi = request.POST.get('addDiachi').strip().title()
-        makh = request.POST.get('addKhoa')
+        masv = request.POST.get('editMasv').strip()
+        ho = request.POST.get('editHo').strip().upper()
+        ten = request.POST.get('editTen').strip().upper()
+        ngaysinh = request.POST.get('editNgaysinh')
+        diachi = request.POST.get('editDiachi').strip().title()
 
         con, cur = None, None
 
@@ -528,11 +529,11 @@ def update_Sinhvien(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            query = f"EXEC SP_UPDATE_SINHVIEN '{masv}', N'{ho}', N'{ten}', '{ngaysinh}', N'{diachi}'"
             cur.execute(query)
             con.commit()
 
-            messages.success(request, "Thêm Giảng viên thành công.")
+            messages.success(request, "Thay đổi thông tin Sinh viên thành công.")
 
         except pyodbc.Error as e:
             messages.error(request, e.__str__().split("]")[4].split("(")[0])
@@ -554,11 +555,7 @@ def delete_Sinhvien(request):
     login = request.session.get('current_user')
 
     if request.method == 'POST':
-        magv = request.POST.get('addMagv').strip().upper()
-        ho = request.POST.get('addHo').strip().upper()
-        ten = request.POST.get('addTen').strip().upper()
-        diachi = request.POST.get('addDiachi').strip().title()
-        makh = request.POST.get('addKhoa')
+        masv = request.POST.get('deleteMasv').strip()
 
         con, cur = None, None
 
@@ -566,11 +563,11 @@ def delete_Sinhvien(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
+            query = f"EXEC SP_DELETE_SINHVIEN '{masv}'"
             cur.execute(query)
             con.commit()
 
-            messages.success(request, "Thêm Giảng viên thành công.")
+            messages.success(request, "Xóa Sinh viên thành công.")
 
         except pyodbc.Error as e:
             messages.error(request, e.__str__().split("]")[4].split("(")[0])

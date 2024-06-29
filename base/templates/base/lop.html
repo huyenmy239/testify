@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã lớp</th>
@@ -149,46 +149,49 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('editModal');
-                var malop = button.getAttribute('data-malop');
-                var tenlop = button.getAttribute('data-tenlop');
-                var khoa = button.getAttribute('data-khoa');
-
-                modal.querySelector('#editMalop').value = malop;
-                modal.querySelector('#editTenlop').value = tenlop;
-                modal.querySelector('#editKhoa').value = khoa;
-
-                $(modal).modal('show');
-            });
+        table.on('draw', function() {
+            attachEventListeners();
         });
 
-        var addButton = document.querySelectorAll('.btn-add');
-
-        addButton.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('addModal');
-
-                $(modal).modal('show');
+        function attachEventListeners() {
+            document.querySelectorAll('.btn-add').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    $('#addModal').modal('show');
+                });
             });
-        });
 
-        var deleteButtons = document.querySelectorAll('.btn-delete');
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('editModal');
+                    var malop = button.getAttribute('data-malop');
+                    var tenlop = button.getAttribute('data-tenlop');
+                    var khoa = button.getAttribute('data-khoa');
 
-        deleteButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('deleteModal');
-                var malop = button.getAttribute('data-malop');
-                
-                modal.querySelector('#deleteMalop').value = malop;
+                    modal.querySelector('#editMalop').value = malop;
+                    modal.querySelector('#editTenlop').value = tenlop;
+                    modal.querySelector('#editKhoa').value = khoa;
 
-                $(modal).modal('show');
+                    $(modal).modal('show');
+                });
             });
-        });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var malop = button.getAttribute('data-malop');
+                    
+                    modal.querySelector('#deleteMalop').value = malop;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
     });
 </script>
+
 
 {% endblock content %}
