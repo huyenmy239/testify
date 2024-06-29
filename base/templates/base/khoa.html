@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã khoa</th>
@@ -139,9 +139,20 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
+        table.on('draw', function() {
+            attachEventListeners();
+        });
+
+        function attachEventListeners() {
+            document.querySelectorAll('.btn-add').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    $('#addModal').modal('show');
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
             button.addEventListener('click', function() {
                 var modal = document.getElementById('editModal');
                 var makh = button.getAttribute('data-makh');
@@ -154,27 +165,30 @@
             });
         });
 
-        var addButton = document.querySelectorAll('.btn-add');
+            var addButton = document.querySelectorAll('.btn-add');
 
-        addButton.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('addModal');
+            addButton.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('addModal');
 
-                $(modal).modal('show');
+                    $(modal).modal('show');
+                });
             });
-        });
 
-        var deleteButtons = document.querySelectorAll('.btn-delete');
+            var deleteButtons = document.querySelectorAll('.btn-delete');
 
-        deleteButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('deleteModal');
-                var makh = button.getAttribute('data-makh');
-                modal.querySelector('#deleteMakh').value = makh;
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var makh = button.getAttribute('data-makh');
+                    modal.querySelector('#deleteMakh').value = makh;
 
-                $(modal).modal('show');
+                    $(modal).modal('show');
+                });
             });
-        });
+        }
+
+        attachEventListeners();
     });
 </script>
 

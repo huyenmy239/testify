@@ -10,10 +10,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="feature">
-                    <a href="" class="btn btn-primary">
+                    <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/>
                         Thêm</a>
-                    <a href="" class="btn btn-primary">
+                    <a href="#" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/>
                         Undo</a>
                 </div>
@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã lớp</th>
@@ -38,12 +38,12 @@
                                         <td>{{l.khoa.tenkh}}</td>
                                         <td>
                                             {% if request.session.base_template == "main_CS.html" %}
-                                            <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-malop="{{ l.malop }}" data-tenlop="{{ l.tenlop }}" data-khoa="{{ l.khoa.tenkh }}">
+                                            <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-malop="{{ l.malop }}" data-tenlop="{{ l.tenlop }}" data-khoa="{{ l.khoa.makh }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <a href="" class="btn btn-danger">
+                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-malop="{{ l.malop }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
-                                            </a>
+                                            </button>
                                             {% endif %}
                                         </td>                                        
                                     </tr>
@@ -66,7 +66,40 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Thêm Lớp Mới</h5>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" method="post" action="{% url 'add-lop' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addMalop">Mã lớp:</label>
+                        <input type="text" class="form-control" id="addMalop" name="addMalop" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTenlop">Tên lớp:</label>
+                        <input type="text" class="form-control" id="addTenlop" name="addTenlop" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addKhoa">Khoa:</label>
+                        <select class="form-control" id="addKhoa" name="addKhoa" required>
+                            {% for key, value in khoa_list.items %}
+                                <option value="{{ key }}">{{ value.tenkh }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -74,19 +107,19 @@
                 <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin lớp</h5>
             </div>
             <div class="modal-body">
-                <form id="editForm" method="post" action="/">
+                <form id="editForm" method="post" action="{% url 'update-lop' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="tenlop">Mã lớp:</label>
-                        <input type="text" class="form-control" name="malop" id="malop" readonly>
+                        <label for="editMalop">Mã lớp:</label>
+                        <input type="text" class="form-control" name="editMalop" id="editMalop" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="tenlop">Tên lớp:</label>
-                        <input type="text" class="form-control" id="tenlop" name="tenlop">
+                        <label for="editTenlop">Tên lớp:</label>
+                        <input type="text" class="form-control" id="editTenlop" name="editTenlop">
                     </div>
                     <div class="form-group">
-                        <label for="khoa">Khoa:</label>
-                        <input type="text" class="form-control" id="khoa" name="khoa">
+                        <label for="editKhoa">Khoa:</label>
+                        <input type="text" class="form-control" id="editKhoa" name="editKhoa" readonly>
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </form>
@@ -95,25 +128,68 @@
     </div>
 </div>
 
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa Lớp</h5>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa lớp này không?</p>
+                <form id="deleteForm" method="post" action="{% url 'delete-lop' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="deleteMalop" name="deleteMalop">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
+        table.on('draw', function() {
+            attachEventListeners();
+        });
+
+        function attachEventListeners() {
+            document.querySelectorAll('.btn-add').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    $('#addModal').modal('show');
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
             button.addEventListener('click', function() {
                 var modal = document.getElementById('editModal');
                 var malop = button.getAttribute('data-malop');
                 var tenlop = button.getAttribute('data-tenlop');
                 var khoa = button.getAttribute('data-khoa');
 
-                modal.querySelector('#malop').value = malop;
-                modal.querySelector('#tenlop').value = tenlop;
-                modal.querySelector('#khoa').value = khoa;
+                    modal.querySelector('#editMalop').value = malop;
+                    modal.querySelector('#editTenlop').value = tenlop;
+                    modal.querySelector('#editKhoa').value = khoa;
 
                 $(modal).modal('show');
             });
         });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var malop = button.getAttribute('data-malop');
+                    
+                    modal.querySelector('#deleteMalop').value = malop;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
     });
 </script>
 

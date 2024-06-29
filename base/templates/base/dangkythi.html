@@ -198,45 +198,6 @@
         </div>
     </div>
 </div>
-{% comment %} 
-<script>
-
-    var countDownDate = {{ time }};
-  // Update the count down every 1 second
-    var x = setInterval(function() {
-        countDownDate -= 1;
-        // Time calculations for days, hours, minutes and seconds
-        var minutes = Math.floor(countDownDate / 60);
-        var seconds = Math.floor(countDownDate % 60);
-        
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        document.getElementById("time").innerHTML = minutes + ":" + seconds + ".";
-
-        $.ajax({
-        url: 'update-time',  // Adjust the URL
-        type: 'POST',  // Adjust the method if needed
-        data: {
-            time: countDownDate,
-        },
-        success: function(response) {
-            console.log("Updated count down");
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error);
-        }
-        });
-
-        if (countDownDate <= 0) {
-            setTimeout(function() {
-                document.getElementById("time").innerHTML = "EXPIRED";
-            }, 500)
-            window.location.replace('submit')
-        }
-    }, 1000);
-</script> 
-{% endcomment %}
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -303,24 +264,24 @@
                 var lan = button.getAttribute('data-lan');
                 var trinhdo = button.getAttribute('data-trinhdo');
                 var socauthi = button.getAttribute('data-socauthi');
-                $.ajax({
-                    url: '/list-question',  // Adjust the URL
-                    type: 'POST',  // Adjust the method if needed
-                    data: {
-                        MaSV: {{ thongtin.0 }},
-                        mamh: monhoc,
-                        lan: lan,
-                        trinhdo: trinhdo,
-                        socau: socauthi,
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        console.log("Get data successfully!");
-                    },
-                    error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    }
-                });
+                // $.ajax({
+                //     url: '/list-question',  // Adjust the URL
+                //     type: 'POST',  // Adjust the method if needed
+                //     data: {
+                //         MaSV: {{ thongtin.0 }},
+                //         mamh: monhoc,
+                //         lan: lan,
+                //         trinhdo: trinhdo,
+                //         socau: socauthi,
+                //     },
+                //     success: function(response) {
+                //         console.log(response);
+                //         console.log("Get data successfully!");
+                //     },
+                //     error: function(xhr, status, error) {
+                //     console.error('Error:', error);
+                //     }
+                // });
 
                 $(modal).modal('show');
             });
@@ -329,6 +290,7 @@
     });
 
     // Countdown time for doing exam and update time into database
+    /*
     document.addEventListener("DOMContentLoaded", function() {
         var thiButtons = document.querySelectorAll('.btn-thi');
         var timerInterval;
@@ -389,8 +351,11 @@
             });
         });
     });
+    */
 
 </script>
+
+
 
 
 {% endblock content %}

@@ -11,7 +11,6 @@ urlpatterns = [
     path('list-question', features.get_list_questions, name='list-question'),
     path('answer-question', features.update_answer, name='answer-question'),
     path('update-time', features.update_time, name='update-time'),
-    path('', views.coso_table, name='coso'),
     path('khoa/', views.khoa_table, name='khoa'),
     path('lop/', views.lop_table, name='lop'),
     path('giangvien/', views.gv_table, name='giangvien'),
@@ -27,4 +26,16 @@ urlpatterns = [
     path('add_khoa/', features.add_Khoa, name='add-khoa'),
     path('update_khoa/', features.update_Khoa, name='update-khoa'),
     path('delete_khoa/', features.delete_Khoa, name='delete-khoa'),
+
+    path('add_lop/', features.add_Lop, name='add-lop'),
+    path('update_lop/', features.update_Lop, name='update-lop'),
+    path('delete_lop/', features.delete_Lop, name='delete-lop'),
+
+    path('add_gv/', features.add_Giangvien, name='add-gv'),
+    path('update_gv/', features.update_Giangvien, name='update-gv'),
+    path('delete_gv/', features.delete_Giangvien, name='delete-gv'),
+
+    path('add_sinhvien/', features.add_Sinhvien, name='add-sinhvien'),
+    path('update_sinhvien/', features.update_Sinhvien, name='update-sinhvien'),
+    path('delete_sinhvien/', features.delete_Sinhvien, name='delete-sinhvien'),
 ]
