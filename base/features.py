@@ -687,6 +687,127 @@ def delete_Monhoc(request):
     return redirect('monhoc')
 
 
+@csrf_exempt
+def add_Bode(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        cauhoi = ""
+        mamh = request.POST.get('addMonhoc').strip().upper()
+        print(f"Mã môn học: {mamh}")
+        trinhdo = request.POST.get('addTrinhdo').strip().upper()
+        noidung = request.POST.get('addNoidung').strip().capitalize()
+        a = request.POST.get('addA').strip().capitalize()
+        b = request.POST.get('addB').strip().capitalize()
+        c = request.POST.get('addC').strip().capitalize()
+        d = request.POST.get('addD').strip().capitalize()
+        dapan = request.POST.get('addDapan').strip().upper()
+        magv = request.POST.get('addGiaovien').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+
+            cur.execute("EXEC SP_TaoMaCauHoi")
+            cauhoi = int(cur.fetchone()[0])
+
+            query = f"EXEC SP_INSERT_BODE '{cauhoi}', '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Câu hỏi thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('bode')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('bode')
+
+
+@csrf_exempt
+def update_Bode(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        cauhoi = request.POST.get('editCauhoi').strip().upper()
+        trinhdo = request.POST.get('addTrinhdo').strip().upper()
+        noidung = request.POST.get('addNoidung').strip().capitalize()
+        a = request.POST.get('addA').strip().capitalize()
+        b = request.POST.get('addB').strip().capitalize()
+        c = request.POST.get('addC').strip().capitalize()
+        d = request.POST.get('addD').strip().capitalize()
+        dapan = request.POST.get('addDapan').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_UPDATE_BODE '{cauhoi}', '{trinhdo}', '{noidung}', '{a}', '{b}', '{c}', '{d}', '{dapan}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thay đổi nội dung Câu hỏi thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('bode')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('bode')
+
+
+@csrf_exempt
+def delete_Bode(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        cauhoi = request.POST.get('deleteCauhoi').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_DELETE_BODE '{cauhoi}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Xóa Câu hỏi thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('bode')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('bode')
 
 
 

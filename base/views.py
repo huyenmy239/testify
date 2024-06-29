@@ -286,11 +286,12 @@ def mon_table(request):
 def bode_table(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
-
+    
     try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw="239003")
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
+
         cur.execute("SELECT * FROM GIAOVIEN")
         gv_rows = cur.fetchall()
 
@@ -298,19 +299,6 @@ def bode_table(request):
         for row in gv_rows:
             gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
-    except pyodbc.Error as e:
-        print(f"Error connecting to database: {e}")
-        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-    finally:
-        if 'cur' in locals():
-            cur.close()
-        if 'con' in locals():
-            con.close()
-    
-    try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        con = db.connect_to_database()
-        cur = con.cursor()
         cur.execute("SELECT * FROM MONHOC")
         mon_rows = cur.fetchall()
 
@@ -339,7 +327,7 @@ def bode_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"bode": bode, "thongtin": info}
+    context = {"bode": bode, "thongtin": info, "gv": gv, "mon": mon}
     return render(request, 'base/bode.html', context)
 
 

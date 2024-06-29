@@ -43,4 +43,8 @@ urlpatterns = [
     path('add_monhoc/', features.add_Monhoc, name='add-monhoc'),
     path('update_monhoc/', features.update_Monhoc, name='update-monhoc'),
     path('delete_monhoc/', features.delete_Monhoc, name='delete-monhoc'),
+
+    path('add_bode/', features.add_Bode, name='add-bode'),
+    path('update_bode/', features.update_Bode, name='update-bode'),
+    path('delete_bode/', features.delete_Bode, name='delete-bode'),
 ]

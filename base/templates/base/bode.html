@@ -10,18 +10,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="feature">
+                    <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
+                        <img src="{% static 'images/add.png' %}"/> Thêm
+                    </a>
                     <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/add.png' %}"/>
-                        Thêm</a>
-                    <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/undo.png' %}"/>
-                        Undo</a>
+                        <img src="{% static 'images/undo.png' %}"/> Undo
+                    </a>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Câu hỏi</th>
@@ -50,7 +50,7 @@
                                         <td>{{ ch.d }}</td>
                                         <td><b>{{ ch.dapan }}</b></td>
                                         {% if request.session.base_template == "main_GV.html" %}
-                                        <td>{{ ch.gv}}</td>
+                                        <td>{{ ch.gv }}</td>
                                         {% else %}
                                         <td>{{ ch.gv.ho }} {{ ch.gv.ten }}</td>
                                         {% endif %}
@@ -66,7 +66,9 @@
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
                                             {% if request.session.base_template == "main_CS.html" %}
-                                            <button class="btn btn-danger">
+                                            <button type="button" class="btn btn-danger btn-delete"
+                                                data-toggle="modal" data-target="#deleteModal"
+                                                data-cauhoi="{{ ch.cauhoi }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -99,7 +101,73 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Thêm Câu Hỏi Mới</h5>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" method="post" action="{% url 'add-bode' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addMonhoc">Môn học:</label>
+                        <select class="form-control" id="addMonhoc" name="addMonhoc" required>
+                            {% for key, val in mon.items %}
+                            <option value="{{key}}">{{val.tenmh}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTrinhdo">Trình độ:</label>
+                        <input type="text" class="form-control" id="addTrinhdo" name="addTrinhdo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addNoidung">Nội dung:</label>
+                        <textarea class="form-control" id="addNoidung" name="addNoidung" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="addA">Đáp án A:</label>
+                        <input type="text" class="form-control" id="addA" name="addA" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addB">Đáp án B:</label>
+                        <input type="text" class="form-control" id="addB" name="addB" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addC">Đáp án C:</label>
+                        <input type="text" class="form-control" id="addC" name="addC" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addD">Đáp án D:</label>
+                        <input type="text" class="form-control" id="addD" name="addD" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDapan">Đáp án đúng:</label>
+                        <select class="form-control" id="addDapan" name="addDapan" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addGiaovien">Giáo viên:</label>
+                        <select class="form-control" id="addGiaovien" name="addGiaovien" required>
+                            {% for key, val in gv.items %}
+                            <option value="{{key}}">{{val.ho}} {{val.ten}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -107,43 +175,43 @@
                 <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin câu hỏi</h5>
             </div>
             <div class="modal-body">
-                <form id="editForm" method="post" action="/">
+                <form id="editForm" method="post" action="{% url 'update-bode' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="cauhoi">Câu hỏi:</label>
-                        <input type="text" class="form-control" name="cauhoi" id="cauhoi" readonly>
+                        <label for="editCauhoi">Câu hỏi:</label>
+                        <input type="text" class="form-control" name="editCauhoi" id="editCauhoi" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="monhoc">Môn học:</label>
-                        <input type="text" class="form-control" id="monhoc" name="monhoc">
+                        <label for="editMonhoc">Môn học:</label>
+                        <input type="text" class="form-control" id="editMonhoc" name="editMonhoc" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="trinhdo">Trình độ:</label>
-                        <input type="text" class="form-control" id="trinhdo" name="trinhdo">
+                        <label for="editTrinhdo">Trình độ:</label>
+                        <input type="text" class="form-control" id="editTrinhdo" name="editTrinhdo">
                     </div>
                     <div class="form-group">
-                        <label for="noidung">Nội dung:</label>
-                        <textarea class="form-control" id="noidung" name="noidung"></textarea>
+                        <label for="editNoidung">Nội dung:</label>
+                        <textarea class="form-control" id="editNoidung" name="editNoidung"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="a">Đáp án A:</label>
-                        <input type="text" class="form-control" id="a" name="a">
+                        <label for="editA">Đáp án A:</label>
+                        <input type="text" class="form-control" id="editA" name="editA">
                     </div>
                     <div class="form-group">
-                        <label for="b">Đáp án B:</label>
-                        <input type="text" class="form-control" id="b" name="b">
+                        <label for="editB">Đáp án B:</label>
+                        <input type="text" class="form-control" id="editB" name="editB">
                     </div>
                     <div class="form-group">
-                        <label for="c">Đáp án C:</label>
-                        <input type="text" class="form-control" id="c" name="c">
+                        <label for="editC">Đáp án C:</label>
+                        <input type="text" class="form-control" id="editC" name="editC">
                     </div>
                     <div class="form-group">
-                        <label for="d">Đáp án D:</label>
-                        <input type="text" class="form-control" id="d" name="d">
+                        <label for="editD">Đáp án D:</label>
+                        <input type="text" class="form-control" id="editD" name="editD">
                     </div>
                     <div class="form-group">
-                        <label for="dapan">Đáp án đúng:</label>
-                        <select class="form-control" id="dapan" name="dapan">
+                        <label for="editDapan">Đáp án đúng:</label>
+                        <select class="form-control" id="editDapan" name="editDapan">
                             <option value="A">A</option>
                             <option value="B">B</option>
                             <option value="C">C</option>
@@ -152,10 +220,10 @@
                     </div>
                     <div class="form-group">
                         {% if request.session.base_template == "main_GV.html" %}
-                        <input type="hidden" class="form-control" id="giaovien" name="giaovien">
+                        <input type="hidden" class="form-control" id="editGiaovien" name="editGiaovien">
                         {% else %}
-                        <label for="giaovien">Giáo viên:</label>
-                        <input type="text" class="form-control" id="giaovien" name="giaovien">
+                        <label for="editGiaovien">Giáo viên:</label>
+                        <input type="text" class="form-control" id="editGiaovien" name="editGiaovien" readonly>
                         {% endif %}
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
@@ -165,38 +233,80 @@
     </div>
 </div>
 
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa Câu Hỏi</h5>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa câu hỏi này không?</p>
+                <form id="deleteForm" method="post" action="{% url 'delete-bode' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="deleteCauhoi" id="deleteCauhoi">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('editModal');
-                var cauhoi = button.getAttribute('data-cauhoi');
-                var monhoc = button.getAttribute('data-monhoc');
-                var trinhdo = button.getAttribute('data-trinhdo');
-                var noidung = button.getAttribute('data-noidung');
-                var a = button.getAttribute('data-a');
-                var b = button.getAttribute('data-b');
-                var c = button.getAttribute('data-c');
-                var d = button.getAttribute('data-d');
-                var dapan = button.getAttribute('data-dapan');
-                var giaovien = button.getAttribute('data-giaovien');
-
-                modal.querySelector('#cauhoi').value = cauhoi;
-                modal.querySelector('#monhoc').value = monhoc;
-                modal.querySelector('#trinhdo').value = trinhdo;
-                modal.querySelector('#noidung').value = noidung;
-                modal.querySelector('#a').value = a;
-                modal.querySelector('#b').value = b;
-                modal.querySelector('#c').value = c;
-                modal.querySelector('#d').value = d;
-                modal.querySelector('#dapan').value = dapan;
-                modal.querySelector('#giaovien').value = giaovien;
-
-                $(modal).modal('show');
-            });
+        table.on('draw', function() {
+            attachEventListeners();
         });
+
+        function attachEventListeners() {
+            document.querySelector('.btn-add').addEventListener('click', function() {
+                $('#addModal').modal('show');
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('editModal');
+                    var cauhoi = button.getAttribute('data-cauhoi');
+                    var monhoc = button.getAttribute('data-monhoc');
+                    var trinhdo = button.getAttribute('data-trinhdo');
+                    var noidung = button.getAttribute('data-noidung');
+                    var a = button.getAttribute('data-a');
+                    var b = button.getAttribute('data-b');
+                    var c = button.getAttribute('data-c');
+                    var d = button.getAttribute('data-d');
+                    var dapan = button.getAttribute('data-dapan');
+                    var giaovien = button.getAttribute('data-giaovien');
+
+                    modal.querySelector('#editCauhoi').value = cauhoi;
+                    modal.querySelector('#editMonhoc').value = monhoc;
+                    modal.querySelector('#editTrinhdo').value = trinhdo;
+                    modal.querySelector('#editNoidung').value = noidung;
+                    modal.querySelector('#editA').value = a;
+                    modal.querySelector('#editB').value = b;
+                    modal.querySelector('#editC').value = c;
+                    modal.querySelector('#editD').value = d;
+                    modal.querySelector('#editDapan').value = dapan;
+                    modal.querySelector('#editGiaovien').value = giaovien;
+
+                    $(modal).modal('show');
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var cauhoi = button.getAttribute('data-cauhoi');
+                    
+                    modal.querySelector('#deleteCauhoi').value = cauhoi;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
     });
 </script>
 
