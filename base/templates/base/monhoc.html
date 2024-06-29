@@ -10,18 +10,16 @@
         <div class="row">
             <div class="col-12">
                 <div class="feature">
+                    <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
+                        <img src="{% static 'images/add.png' %}"/> Thêm</a>
                     <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/add.png' %}"/>
-                        Thêm</a>
-                    <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/undo.png' %}"/>
-                        Undo</a>
+                        <img src="{% static 'images/undo.png' %}"/> Undo</a>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display" style="min-width: 845px">
+                            <table id="main-table" class="display" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Mã môn học</th>
@@ -41,9 +39,11 @@
                                                 data-mamh="{{ mh.mamh }}" data-tenmh="{{ mh.tenmh }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <a href="#" class="btn btn-danger">
+                                            <button type="button" class="btn btn-danger btn-delete"
+                                                data-toggle="modal" data-target="#deleteModal"
+                                                data-mamh="{{ mh.mamh }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
-                                            </a>
+                                            </button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -65,7 +65,32 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Thêm Môn Học Mới</h5>
+            </div>
+            <div class="modal-body">
+                <form id="addForm" method="post" action="{% url 'add-monhoc' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="addMamh">Mã môn học:</label>
+                        <input type="text" class="form-control" id="addMamh" name="addMamh" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTenmh">Tên môn học:</label>
+                        <input type="text" class="form-control" id="addTenmh" name="addTenmh" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -73,15 +98,15 @@
                 <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin môn học</h5>
             </div>
             <div class="modal-body">
-                <form id="editForm" method="post" action="/">
+                <form id="editForm" method="post" action="{% url 'update-monhoc' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="mamh">Mã môn học:</label>
-                        <input type="text" class="form-control" name="mamh" id="mamh" readonly>
+                        <label for="editMamh">Mã môn học:</label>
+                        <input type="text" class="form-control" name="editMamh" id="editMamh" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="tenmh">Tên môn học:</label>
-                        <input type="text" class="form-control" id="tenmh" name="tenmh">
+                        <label for="editTenmh">Tên môn học:</label>
+                        <input type="text" class="form-control" id="editTenmh" name="editTenmh">
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </form>
@@ -90,24 +115,66 @@
     </div>
 </div>
 
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa Môn Học</h5>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa môn học này không?</p>
+                <form id="deleteForm" method="post" action="{% url 'delete-monhoc' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="deleteMamh" name="deleteMamh">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var editButtons = document.querySelectorAll('.btn-edit');
+        var table = $('#main-table').DataTable();
 
-        editButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var modal = document.getElementById('editModal');
-                var mamh = button.getAttribute('data-mamh');
-                var tenmh = button.getAttribute('data-tenmh');
-
-                modal.querySelector('#mamh').value = mamh;
-                modal.querySelector('#tenmh').value = tenmh;
-
-                $(modal).modal('show');
-            });
+        table.on('draw', function() {
+            attachEventListeners();
         });
+
+        function attachEventListeners() {
+            document.querySelector('.btn-add').addEventListener('click', function() {
+                $('#addModal').modal('show');
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('editModal');
+                    var mamh = button.getAttribute('data-mamh');
+                    var tenmh = button.getAttribute('data-tenmh');
+
+                    modal.querySelector('#editMamh').value = mamh;
+                    modal.querySelector('#editTenmh').value = tenmh;
+
+                    $(modal).modal('show');
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var modal = document.getElementById('deleteModal');
+                    var mamh = button.getAttribute('data-mamh');
+                    
+                    modal.querySelector('#deleteMamh').value = mamh;
+
+                    $(modal).modal('show');
+                });
+            });
+        }
+
+        attachEventListeners();
+
     });
 </script>
-
 
 {% endblock content %}

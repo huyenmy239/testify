@@ -582,6 +582,142 @@ def delete_Sinhvien(request):
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect('sinhvien')
 
+
+@csrf_exempt
+def add_Monhoc(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        mamh = request.POST.get('addMamh').strip().upper()
+        tenmh = request.POST.get('addTenmh').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_INSERT_MONHOC '{mamh}', N'{tenmh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thêm Môn học thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('monhoc')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('monhoc')
+
+
+@csrf_exempt
+def update_Monhoc(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        mamh = request.POST.get('editMamh').strip().upper()
+        tenmh = request.POST.get('editTenmh').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_UPDATE_MONHOC '{mamh}', N'{tenmh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Thay đổi thông tin Môn học thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('monhoc')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('monhoc')
+
+
+@csrf_exempt
+def delete_Monhoc(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        mamh = request.POST.get('deleteMamh').strip().upper()
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_DELETE_MONHOC '{mamh}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Xóa Môn học thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('monhoc')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('monhoc')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def get_list_questions(request):
     if request.method == 'POST':
         coso = request.POST.get('sv_coso')

@@ -11,6 +11,7 @@ urlpatterns = [
     path('list-question', features.get_list_questions, name='list-question'),
     path('answer-question', features.update_answer, name='answer-question'),
     path('update-time', features.update_time, name='update-time'),
+    path('coso/', views.coso_table, name='coso'),
     path('khoa/', views.khoa_table, name='khoa'),
     path('lop/', views.lop_table, name='lop'),
     path('giangvien/', views.gv_table, name='giangvien'),
@@ -38,4 +39,8 @@ urlpatterns = [
     path('add_sinhvien/', features.add_Sinhvien, name='add-sinhvien'),
     path('update_sinhvien/', features.update_Sinhvien, name='update-sinhvien'),
     path('delete_sinhvien/', features.delete_Sinhvien, name='delete-sinhvien'),
+
+    path('add_monhoc/', features.add_Monhoc, name='add-monhoc'),
+    path('update_monhoc/', features.update_Monhoc, name='update-monhoc'),
+    path('delete_monhoc/', features.delete_Monhoc, name='delete-monhoc'),
 ]
