@@ -7,10 +7,13 @@ urlpatterns = [
     path('', views.login_register, name='login-register'),
     path('login/lsv', features.login_sv, name='login-sv'),
     path('login/lgv', features.login_gv, name='login-gv'),
-    path('login/rgv', features.register_sv, name='register-sv'),
+    path('register-sv', features.register_sv, name='register-sv'),
+    path('register-truong', features.register_truong, name='register-truong'),
+
     path('list-question', features.get_list_questions, name='list-question'),
     path('answer-question', features.update_answer, name='answer-question'),
     path('update-time', features.update_time, name='update-time'),
+
     path('coso/', views.coso_table, name='coso'),
     path('khoa/', views.khoa_table, name='khoa'),
     path('lop/', views.lop_table, name='lop'),

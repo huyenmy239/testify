@@ -28,11 +28,11 @@
                                         <th>Giáo viên</th>
                                         <th>Môn học</th>
                                         <th>Lớp</th>
-                                        <th>Trình độ</th>
+                                        <th class="text-center">Trình độ</th>
                                         <th>Ngày thi</th>
-                                        <th>Lần</th>
-                                        <th>Số câu thi</th>
-                                        <th>Thời gian (p)</th>
+                                        <th class="text-center">Lần</th>
+                                        <th class="text-center">Số câu thi</th>
+                                        <th class="text-center">Thời gian (phút)</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -42,11 +42,11 @@
                                         <td>{{dk.gv.ho}} {{dk.gv.ten}}</td>
                                         <td>{{dk.monhoc.tenmh}}</td>
                                         <td>{{dk.lop.tenlop}}</td>
-                                        <td>{{dk.trinhdo}}</td>
+                                        <td class="text-center">{{dk.trinhdo}}</td>
                                         <td>{{dk.ngaythi}}</td>
-                                        <td>{{dk.lan}}</td>
-                                        <td>{{dk.socauthi}}</td>
-                                        <td>{{dk.thoigian}}</td>
+                                        <td class="text-center">{{dk.lan}}</td>
+                                        <td class="text-center">{{dk.socauthi}}</td>
+                                        <td class="text-center">{{dk.thoigian}}</td>
                                         <td>
                                             {% if request.session.base_template == "main_CS.html" %}
                                             <a href="#" class="btn btn-danger btn-delete"
@@ -69,11 +69,11 @@
                                         <th>Giáo viên</th>
                                         <th>Môn học</th>
                                         <th>Lớp</th>
-                                        <th>Trình độ</th>
+                                        <th class="text-center">Trình độ</th>
                                         <th>Ngày thi</th>
-                                        <th>Lần</th>
-                                        <th>Số câu thi</th>
-                                        <th>Thời gian (p)</th>
+                                        <th class="text-center">Lần</th>
+                                        <th class="text-center">Số câu thi</th>
+                                        <th class="text-center">Thời gian (phút)</th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -97,7 +97,7 @@
                 <form id="addForm" method="post" action="{% url 'add-dangkythi' %}">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="addMonhoc">Giảng viên:</label>
+                        <label for="addGiangvien">Giảng viên:</label>
                         <select class="form-control" id="addGiangvien" name="addGiangvien" required>
                             {% for key, val in gv.items %}
                             <option value="{{key}}">{{val.ho}} {{val.ten}}</option>

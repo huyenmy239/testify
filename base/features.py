@@ -99,19 +99,24 @@ def login_gv(request):
         coso = request.POST.get('gv_coso')
         if "1" in coso:
             db_alias = DB_CONNECTION["servers"][1]
+            cur_sv = DB_CONNECTION["servers"][1]
+            next_sv = DB_CONNECTION["servers"][2]
         else:
             db_alias = DB_CONNECTION["servers"][2]
+            cur_sv = DB_CONNECTION["servers"][2]
+            next_sv = DB_CONNECTION["servers"][1]
 
         request.session['current_server'] = db_alias
-        print(f"Current: {request.session.get('current_server')}")
         
         username = request.POST.get('giangvienUsername')
         password = request.POST.get('giangvienPassword')
 
         con, cur = None, None
 
+        result = ""
+
         try:
-            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login=username, pw=password)
+            db = DatabaseModel(server=cur_sv, database=DATABASE, login=username, pw=password)
             con = db.connect_to_database()
             if not con:
                 messages.error(request, "Sai thông tin đăng nhập hoặc mật khẩu.")
@@ -120,22 +125,12 @@ def login_gv(request):
             cur = con.cursor()
             cur.execute(f"EXEC SP_LayThongTinGiangVien '{username}'")
             result = cur.fetchall()[0]
-            print(f"Result: {result}")
 
-            request.session['current_info'] = [result[0], result[1], result[2]]
-            request.session['current_user'] = {"username": username, "password": password, "role": ""}
-
-            if result[2] == "Truong":
-                request.session["base_template"] = "main_Truong.html"
-                request.session['current_user']['role'] = "truong"
-            elif result[2] == "Coso":
-                request.session["base_template"] = "main_CS.html"
-                request.session['current_user']['role'] = "coso"
-            else:
-                request.session["base_template"] = "main_GV.html"
-                request.session['current_user']['role'] = "giangvien"
-                return redirect("cauhoi")
-
+            cur.execute(f"SELECT * FROM V_DanhSachGVChuaCoUsername")
+            gv_rows = cur.fetchall()
+            gv_list_cur = {}
+            for row in gv_rows:
+                gv_list_cur[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
 
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")
@@ -146,10 +141,107 @@ def login_gv(request):
             if con is not None:
                 con.close()
 
+        if result[2] == "Truong":
+
+            try:
+                db = DatabaseModel(server=next_sv, database=DATABASE, login=username, pw=password)
+                con = db.connect_to_database()
+                cur = con.cursor()
+
+                cur.execute(f"SELECT * FROM V_DanhSachGVChuaCoUsername")
+                gv_rows = cur.fetchall()
+                gv_list_next = {}
+                for row in gv_rows:
+                    gv_list_next[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
+
+            except pyodbc.Error as e:
+                print(f"Error connecting to database: {e}")
+                return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            finally:
+                if cur is not None:
+                    cur.close()
+                if con is not None:
+                    con.close()
+
+            gv_list = {k: gv_list_cur[k] for k in gv_list_cur if k in gv_list_next and gv_list_cur[k] == gv_list_next[k]}
+        else:
+            gv_list = gv_list_cur
+        request.session['current_info'] = [result[0], result[1], result[2]]
+        request.session['current_user'] = {"username": username, "password": password, "role": ""}
+
+        if result[2] == "Truong":
+            request.session["base_template"] = "main_Truong.html"
+            request.session['current_user']['role'] = "truong"
+        elif result[2] == "Coso":
+            request.session["base_template"] = "main_CS.html"
+            request.session['current_user']['role'] = "coso"
+        else:
+            request.session["base_template"] = "main_GV.html"
+            request.session['current_user']['role'] = "giangvien"
+            return redirect("cauhoi")
+
+        request.session['gv_list'] = gv_list
         return redirect("coso")
 
     messages.error(request, "Yêu cầu không hợp lệ.")
     return redirect("login-register")
+
+
+def register_truong(request):
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        magv = request.POST.get('magv').split('|')[0].strip().upper()
+        tengv = request.POST.get('magv').split('|')[1].strip().upper()
+
+        role = request.session.get('current_user', {}).get('role').capitalize()
+
+        con, cur = None, None
+
+        # Tạo login ở server 1
+        try:
+            db = DatabaseModel(server=DB_CONNECTION["servers"][1], database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            
+            cur = con.cursor()
+            query = f"EXEC SP_TaoTaiKhoan '{username}', '{password}', '{magv}', '{role}'"
+            cur.execute(query)
+            con.commit()
+
+        except pyodbc.Error as e:
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        # Tạo login ở server 2
+        try:
+            db = DatabaseModel(server=DB_CONNECTION["servers"][2], database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            
+            cur = con.cursor()
+            query = f"EXEC SP_TaoTaiKhoan '{username}', '{password}', '{magv}', '{role}'"
+            cur.execute(query)
+            con.commit()
+
+        except pyodbc.Error as e:
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        
+        messages.success(request, f"Tạo tài khoản cho Giảng viên {tengv} thành công.")
+
+        return redirect("coso")
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect("coso")
 
 
 @csrf_exempt
