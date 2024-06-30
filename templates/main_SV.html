@@ -20,6 +20,15 @@
 </head>
 
 <body>
+    {% if messages %}
+
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="{{message.tags}}">{{message}}</li>
+        {% endfor %}
+    </ul>
+
+    {% endif %}
 
     {% include 'preloader.html' %}
 
@@ -76,6 +85,7 @@
     <!-- Scripts -->
 
     <script src="{% static 'scripts/toggle.js' %}"></script>
+    <script src="{% static 'scripts/message.js' %}"></script>
 
     <!-- Bootstrap core JavaScript -->
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>

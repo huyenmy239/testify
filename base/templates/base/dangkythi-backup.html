@@ -1,0 +1,361 @@
+{% extends request.session.base_template %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-check {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="feature">
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/add.png' %}"/>
+                        Thêm</a>
+                    <a href="#" class="btn btn-primary">
+                        <img src="{% static 'images/undo.png' %}"/>
+                        Undo</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Giáo viên</th>
+                                        <th>Môn học</th>
+                                        <th>Lớp</th>
+                                        <th>Trình độ</th>
+                                        <th>Ngày thi</th>
+                                        <th>Lần</th>
+                                        <th>Số câu thi</th>
+                                        <th>Thời gian (p)</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dk in dangky %}
+                                    <tr>
+                                        <td>{{dk.gv.ho}} {{dk.gv.ten}}</td>
+                                        <td>{{dk.monhoc.tenmh}}</td>
+                                        <td>{{dk.lop.tenlop}}</td>
+                                        <td>{{dk.trinhdo}}</td>
+                                        <td>{{dk.ngaythi}}</td>
+                                        <td>{{dk.lan}}</td>
+                                        <td>{{dk.socauthi}}</td>
+                                        <td>{{dk.thoigian}}</td>
+                                        <td>
+                                            {% if request.session.base_template == "main_CS.html" or request.session.base_template == "main_GV.html" %}
+                                            <button type="button" class="btn btn-warning btn-edit"
+                                                data-toggle="modal" data-target="#editModal"
+                                                data-id="{{ dk.id }}" data-monhoc="{{ dk.monhoc.tenmh }}"
+                                                data-lop="{{ dk.lop.tenlop }}" data-trinhdo="{{ dk.trinhdo }}"
+                                                data-ngaythi="{{ dk.ngaythi }}" data-lan="{{ dk.lan }}"
+                                                data-socauthi="{{ dk.socauthi }}" data-thoigian="{{ dk.thoigian }}">
+                                                <img src="{% static 'images/save.png' %}"/> Sửa
+                                            </button>
+                                            {% if request.session.base_template == "main_CS.html" %}
+                                            <a href="#" class="btn btn-danger">
+                                                <img src="{% static 'images/bin.png' %}"/> Xóa
+                                            </a>
+                                            {% endif %}
+                                            {% elif request.session.base_template == "main_SV.html" %}
+                                            <button type="button" class="btn btn-success btn-thi" 
+                                                data-toggle="modal" data-target="#thiModal" 
+                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.id }}"
+                                                data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Giáo viên</th>
+                                        <th>Môn học</th>
+                                        <th>Lớp</th>
+                                        <th>Trình độ</th>
+                                        <th>Ngày thi</th>
+                                        <th>Lần</th>
+                                        <th>Số câu thi</th>
+                                        <th>Thời gian (p)</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin đăng ký</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="post" action="#">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="monhoc">Môn học:</label>
+                        <input type="text" class="form-control" id="monhoc" name="monhoc" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="lop">Lớp:</label>
+                        <input type="text" class="form-control" id="lop" name="lop" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="trinhdo">Trình độ:</label>
+                        <input type="text" class="form-control" id="trinhdo" name="trinhdo">
+                    </div>
+                    <div class="form-group">
+                        <label for="ngaythi">Ngày thi:</label>
+                        <input type="datetime-local" class="form-control" id="ngaythi" name="ngaythi">
+                    </div>
+                    <div class="form-group">
+                        <label for="lan">Lần:</label>
+                        <input type="number" class="form-control" id="lan" name="lan">
+                    </div>
+                    <div class="form-group">
+                        <label for="socauthi">Số câu thi:</label>
+                        <input type="number" class="form-control" id="socauthi" name="socauthi">
+                    </div>
+                    <div class="form-group">
+                        <label for="thoigian">Thời gian (p):</label>
+                        <input type="number" class="form-control" id="thoigian" name="thoigian">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thi -->
+<div class="modal fade" id="thiModal" tabindex="-1" role="dialog" aria-labelledby="thiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header sticky-top">
+                <div class="container-fluid">
+                    <div class="row">
+                        <h5 class="modal-title col-md-6" id="thiModalLabel">Trả lời câu hỏi</h5>
+                        <div class="col-md-6 text-right">
+                            <label class="text-right" for="timer">Thời gian còn lại: <span id="timer"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form id="thiForm" method="post" action="submit">
+                    {% for question in questions %}
+                    <div class="form-group">
+                        <label>Câu {{ question.id }}: </label>
+                        <lable>{{ question.question_text }}</label>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionA" value="A" {% if question.answer == 'A' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionA" id="labelA">{{ question.A }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionB" value="B" {% if question.answer == 'B' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionB" id="labelB">{{ question.B }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionC" value="C" {% if question.answer == 'C' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionC" id="labelC">{{ question.C }}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionD" value="D" {% if question.answer == 'D' %} checked="checked" {% endif %}>
+                            <label class="form-check-label" for="optionD" id="labelD">{{ question.D }}</label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var editButtons = document.querySelectorAll('.btn-edit');
+
+        editButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('editModal');
+                var id = button.getAttribute('data-id');
+                var monhoc = button.getAttribute('data-monhoc');
+                var lop = button.getAttribute('data-lop');
+                var trinhdo = button.getAttribute('data-trinhdo');
+                var ngaythi = button.getAttribute('data-ngaythi');
+                var date = new Date(ngaythi);
+                var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                var ngaythiFormatted = date.toLocaleDateString('en-US', options);
+                var lan = button.getAttribute('data-lan');
+                var socauthi = button.getAttribute('data-socauthi');
+                var thoigian = button.getAttribute('data-thoigian');
+
+                modal.querySelector('#monhoc').value = monhoc;
+                modal.querySelector('#lop').value = lop;
+                modal.querySelector('#trinhdo').value = trinhdo;
+                modal.querySelector('#ngaythi').value = ngaythiFormatted;
+                modal.querySelector('#lan').value = lan;
+                modal.querySelector('#socauthi').value = socauthi;
+                modal.querySelector('#thoigian').value = thoigian;
+
+                $(modal).modal('show');
+            });
+        });
+    });
+
+    //Update the answer
+    $(document).ready(function() {
+        $('input[name^="Answer-"]').change(function() {
+            // Execute the AJAX request when a radio button is selected
+            $.ajax({
+                url: 'answer-question',  // Adjust the URL
+                type: 'POST',  // Adjust the method if needed
+                data: {
+                    maBT: '',
+                    cauhoi: $(this).attr('name').split('-')[1],  // Include the question ID as a hidden fielde
+                    selectedOption: $(this).val(),  // Include the selected option
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+
+// This function is used to call POST methods to get list questions from the server
+    document.addEventListener("DOMContentLoaded", function() {
+        var thiButtons = document.querySelectorAll('.btn-thi');
+
+        thiButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('thiModal');
+                var monhoc = button.getAttribute('data-monhoc');
+                var lan = button.getAttribute('data-lan');
+                var trinhdo = button.getAttribute('data-trinhdo');
+                var socauthi = button.getAttribute('data-socauthi');
+                // $.ajax({
+                //     url: '/list-question',  // Adjust the URL
+                //     type: 'POST',  // Adjust the method if needed
+                //     data: {
+                //         MaSV: {{ thongtin.0 }},
+                //         mamh: monhoc,
+                //         lan: lan,
+                //         trinhdo: trinhdo,
+                //         socau: socauthi,
+                //     },
+                //     success: function(response) {
+                //         console.log(response);
+                //         console.log("Get data successfully!");
+                //     },
+                //     error: function(xhr, status, error) {
+                //     console.error('Error:', error);
+                //     }
+                // });
+
+                $(modal).modal('show');
+            });
+        });
+        
+    });
+
+    // Countdown time for doing exam and update time into database
+    /*
+    document.addEventListener("DOMContentLoaded", function() {
+        var thiButtons = document.querySelectorAll('.btn-thi');
+        var timerInterval;
+
+        thiButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('thiModal');
+                var timeLimit = {{ time }}; 
+
+                function startTimer(duration, display) {
+                    var timer = duration, minutes, seconds;
+                    timerInterval = setInterval(function () {
+                        $.ajax({
+                            url: 'update-time',  // Adjust the URL
+                            type: 'POST',  // Adjust the method if needed
+                            data: {
+                                maBT: '', // Mã bài thi
+                                time: timer,
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                console.log("Updated count down");
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+
+                        minutes = Math.floor(countDownDate / 60);
+                        seconds = Math.floor(countDownDate % 60);
+                        // Time calculations for days, hours, minutes and seconds
+                        minutes = minutes < 10 ? "0" + minutes : minutes;
+                        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                        display.textContent = minutes + ":" + seconds;
+
+                        if (--timer < 0) {
+                            clearInterval(timerInterval);
+                            // Tự động nộp bài khi hết giờ
+                            aler("Đã hết thời gian làm bài");
+                            document.getElementById('thiForm').submit();
+                        }
+                    }, 1000);
+                }
+
+                // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+                $(modal).on('shown.bs.modal', function () {
+                    var display = modal.querySelector('#timer');
+                    startTimer(timeLimit, display);
+                });
+
+                // Hủy đếm ngược khi modal bị ẩn
+                $(modal).on('hidden.bs.modal', function () {
+                    clearInterval(timerInterval);
+                });
+
+                $(modal).modal('show');
+            });
+        });
+    });
+    */
+
+</script>
+
+
+
+
+{% endblock content %}

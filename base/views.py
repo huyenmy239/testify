@@ -370,7 +370,7 @@ def bode_table_gv(request):
 
     info = request.session.get('current_info')
 
-    context = {"bode": bode, "thongtin": info}
+    context = {"bode": bode, "thongtin": info, "mon": mon, "gv": gv}
     return render(request, 'base/bode.html', context)
 
 
@@ -378,26 +378,26 @@ def dangky_table(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
-    try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
-        con = db.connect_to_database()
-        cur = con.cursor()
+    # try:
+    #     db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
+    #     con = db.connect_to_database()
+    #     cur = con.cursor()
 
-        cur.execute("SELECT * FROM LOP")
-        lop_rows = cur.fetchall()
+    #     cur.execute("SELECT * FROM LOP")
+    #     lop_rows = cur.fetchall()
 
-        lop = {}
-        for row in lop_rows:
-            lop[row[0]] = {"malop": row[0] ,"tenlop": row[1], "makh": row[2]}
+    #     lop = {}
+    #     for row in lop_rows:
+    #         lop[row[0]] = {"malop": row[0] ,"tenlop": row[1], "makh": row[2]}
 
-    except pyodbc.Error as e:
-        print(f"Error connecting to database: {e}")
-        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-    finally:
-        if 'cur' in locals():
-            cur.close()
-        if 'con' in locals():
-            con.close()
+    # except pyodbc.Error as e:
+    #     print(f"Error connecting to database: {e}")
+    #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    # finally:
+    #     if 'cur' in locals():
+    #         cur.close()
+    #     if 'con' in locals():
+    #         con.close()
     
     try:
         db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
@@ -410,6 +410,13 @@ def dangky_table(request):
         gv = {}
         for row in gv_rows:
             gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+
+        cur.execute("SELECT * FROM LOP")
+        lop_rows = cur.fetchall()
+
+        lop = {}
+        for row in lop_rows:
+            lop[row[0]] = {"malop": row[0] ,"tenlop": row[1], "makh": row[2]}
 
         cur.execute("SELECT * FROM MONHOC")
         mon_rows = cur.fetchall()
@@ -439,7 +446,7 @@ def dangky_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"dangky": dangky, "thongtin": info}
+    context = {"dangky": dangky, "thongtin": info, "mon": mon, "gv": gv, "lop": lop}
     return render(request, 'base/dangkythi.html', context)
 
 
@@ -447,25 +454,25 @@ def dangky_table_gv(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
-    try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
-        con = db.connect_to_database()
-        cur = con.cursor()
-        cur.execute("SELECT * FROM LOP")
-        lop_rows = cur.fetchall()
+    # try:
+    #     db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
+    #     con = db.connect_to_database()
+    #     cur = con.cursor()
+    #     cur.execute("SELECT * FROM LOP")
+    #     lop_rows = cur.fetchall()
 
-        lop = {}
-        for row in lop_rows:
-            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+    #     lop = {}
+    #     for row in lop_rows:
+    #         lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
-    except pyodbc.Error as e:
-        print(f"Error connecting to database: {e}")
-        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-    finally:
-        if 'cur' in locals():
-            cur.close()
-        if 'con' in locals():
-            con.close()
+    # except pyodbc.Error as e:
+    #     print(f"Error connecting to database: {e}")
+    #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    # finally:
+    #     if 'cur' in locals():
+    #         cur.close()
+    #     if 'con' in locals():
+    #         con.close()
     
     try:
         db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
@@ -477,6 +484,13 @@ def dangky_table_gv(request):
         mon = {}
         for row in mon_rows:
             mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
+
+        cur.execute("SELECT * FROM LOP")
+        lop_rows = cur.fetchall()
+
+        lop = {}
+        for row in lop_rows:
+            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
         magv = request.session.get("current_info")[0]
         tengv = request.session.get("current_info")[1]
@@ -510,36 +524,79 @@ def dangky_table_sv(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
-    try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
-        con = db.connect_to_database()
-        cur = con.cursor()
-        cur.execute("SELECT * FROM LOP")
-        lop_rows = cur.fetchall()
+    # try:
+    #     db = DatabaseModel(server=DB_CONNECTION["servers"][3], database=DATABASE, login="sa", pw="239003")
+    #     con = db.connect_to_database()
+    #     cur = con.cursor()
+    #     cur.execute("SELECT * FROM LOP")
+    #     lop_rows = cur.fetchall()
 
-        lop = {}
-        for row in lop_rows:
-            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+    #     lop = {}
+    #     for row in lop_rows:
+    #         lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
-    except pyodbc.Error as e:
-        print(f"Error connecting to database: {e}")
-        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-    finally:
-        if 'cur' in locals():
-            cur.close()
-        if 'con' in locals():
-            con.close()
+    # except pyodbc.Error as e:
+    #     print(f"Error connecting to database: {e}")
+    #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    # finally:
+    #     if 'cur' in locals():
+    #         cur.close()
+    #     if 'con' in locals():
+    #         con.close()
 
+    # try:
+    #     db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+    #     con = db.connect_to_database()
+    #     cur = con.cursor()
+    #     cur.execute("SELECT * FROM MONHOC")
+    #     mon_rows = cur.fetchall()
+
+    #     mon = {}
+    #     for row in mon_rows:
+    #         mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
+
+    #     cur.execute("SELECT * FROM LOP")
+    #     lop_rows = cur.fetchall()
+
+    #     lop = {}
+    #     for row in lop_rows:
+    #         lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+
+    #     cur.execute("SELECT * FROM GIAOVIEN")
+    #     gv_rows = cur.fetchall()
+    #     masv = request.session.get("current_info")[0]
+
+    #     gv = {}
+    #     for row in gv_rows:
+    #         gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+
+    # except pyodbc.Error as e:
+    #     print(f"Error connecting to database: {e}")
+    #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+    # finally:
+    #     if 'cur' in locals():
+    #         cur.close()
+    #     if 'con' in locals():
+    #         con.close()
+    
     try:
         db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         con = db.connect_to_database()
         cur = con.cursor()
+
         cur.execute("SELECT * FROM MONHOC")
         mon_rows = cur.fetchall()
 
         mon = {}
         for row in mon_rows:
             mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
+
+        cur.execute("SELECT * FROM LOP")
+        lop_rows = cur.fetchall()
+
+        lop = {}
+        for row in lop_rows:
+            lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
         cur.execute("SELECT * FROM GIAOVIEN")
         gv_rows = cur.fetchall()
@@ -548,20 +605,6 @@ def dangky_table_sv(request):
         gv = {}
         for row in gv_rows:
             gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
-
-    except pyodbc.Error as e:
-        print(f"Error connecting to database: {e}")
-        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-    finally:
-        if 'cur' in locals():
-            cur.close()
-        if 'con' in locals():
-            con.close()
-    
-    try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login="lvt", pw="239003")
-        con = db.connect_to_database()
-        cur = con.cursor()
 
         cur.execute(f"EXEC SP_LayDangKyTheoMASV '{masv}'")
 

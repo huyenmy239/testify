@@ -35,7 +35,7 @@ def login_sv(request):
                 messages.error(request, "Sai thông tin đăng nhập hoặc mật khẩu.")
                 return redirect("login-register")  
             request.session['current_info'] = [result[0], result[1], result[2]]
-            request.session['current_user'] = {"username": "lvt", "password": "239003"}
+            request.session['current_user'] = {"username": "lvt", "password": "239003", "role": "sinhvien"}
 
         except pyodbc.Error as e:
             return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -44,7 +44,6 @@ def login_sv(request):
                 cur.close()
             if con is not None:
                 con.close()
-
 
         request.session["base_template"] = "main_SV.html"
         return redirect("danhsachthi")
@@ -124,14 +123,17 @@ def login_gv(request):
             print(f"Result: {result}")
 
             request.session['current_info'] = [result[0], result[1], result[2]]
-            request.session['current_user'] = {"username": username, "password": password}
+            request.session['current_user'] = {"username": username, "password": password, "role": ""}
 
             if result[2] == "Truong":
                 request.session["base_template"] = "main_Truong.html"
+                request.session['current_user']['role'] = "truong"
             elif result[2] == "Coso":
                 request.session["base_template"] = "main_CS.html"
+                request.session['current_user']['role'] = "coso"
             else:
                 request.session["base_template"] = "main_GV.html"
+                request.session['current_user']['role'] = "giangvien"
                 return redirect("cauhoi")
 
 
@@ -691,19 +693,23 @@ def delete_Monhoc(request):
 def add_Bode(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
+    role = request.session.get('current_user', {}).get('role')
 
     if request.method == 'POST':
         cauhoi = ""
         mamh = request.POST.get('addMonhoc').strip().upper()
-        print(f"Mã môn học: {mamh}")
         trinhdo = request.POST.get('addTrinhdo').strip().upper()
         noidung = request.POST.get('addNoidung').strip().capitalize()
-        a = request.POST.get('addA').strip().capitalize()
-        b = request.POST.get('addB').strip().capitalize()
-        c = request.POST.get('addC').strip().capitalize()
-        d = request.POST.get('addD').strip().capitalize()
+        a = request.POST.get('addA').strip().lower()
+        b = request.POST.get('addB').strip().lower()
+        c = request.POST.get('addC').strip().lower()
+        d = request.POST.get('addD').strip().lower()
         dapan = request.POST.get('addDapan').strip().upper()
-        magv = request.POST.get('addGiaovien').strip().upper()
+
+        if role == "coso":
+            magv = request.POST.get('addGiaovien').strip().upper()
+        else:
+            magv = request.session.get('current_info')[0]
 
         con, cur = None, None
 
@@ -728,27 +734,30 @@ def add_Bode(request):
                 cur.close()
             if con is not None:
                 con.close()
-
-        return redirect('bode')
-
-    messages.error(request, "Yêu cầu không hợp lệ.")
-    return redirect('bode')
+        
+        if role == "coso":
+            return redirect('bode')
+        else:
+            return redirect('cauhoi')
+    
+    return HttpResponse("Yêu cầu không hợp lệ")
 
 
 @csrf_exempt
 def update_Bode(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
+    role = request.session.get('current_user', {}).get('role')
 
     if request.method == 'POST':
         cauhoi = request.POST.get('editCauhoi').strip().upper()
-        trinhdo = request.POST.get('addTrinhdo').strip().upper()
-        noidung = request.POST.get('addNoidung').strip().capitalize()
-        a = request.POST.get('addA').strip().capitalize()
-        b = request.POST.get('addB').strip().capitalize()
-        c = request.POST.get('addC').strip().capitalize()
-        d = request.POST.get('addD').strip().capitalize()
-        dapan = request.POST.get('addDapan').strip().upper()
+        trinhdo = request.POST.get('editTrinhdo').strip().upper()
+        noidung = request.POST.get('editNoidung').strip().capitalize()
+        a = request.POST.get('editA').strip().lower()
+        b = request.POST.get('editB').strip().lower()
+        c = request.POST.get('editC').strip().lower()
+        d = request.POST.get('editD').strip().lower()
+        dapan = request.POST.get('editDapan').strip().upper()
 
         con, cur = None, None
 
@@ -756,7 +765,7 @@ def update_Bode(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_UPDATE_BODE '{cauhoi}', '{trinhdo}', '{noidung}', '{a}', '{b}', '{c}', '{d}', '{dapan}'"
+            query = f"EXEC SP_UPDATE_BODE '{cauhoi}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}'"
             cur.execute(query)
             con.commit()
 
@@ -770,16 +779,19 @@ def update_Bode(request):
             if con is not None:
                 con.close()
 
-        return redirect('bode')
-
-    messages.error(request, "Yêu cầu không hợp lệ.")
-    return redirect('bode')
+        if role == "coso":
+            return redirect('bode')
+        else:
+            return redirect('cauhoi')
+    
+    return HttpResponse("Yêu cầu không hợp lệ")
 
 
 @csrf_exempt
 def delete_Bode(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
+    role = request.session.get('current_user', {}).get('role')
 
     if request.method == 'POST':
         cauhoi = request.POST.get('deleteCauhoi').strip().upper()
@@ -804,10 +816,91 @@ def delete_Bode(request):
             if con is not None:
                 con.close()
 
-        return redirect('bode')
+        if role == "coso":
+            return redirect('bode')
+        else:
+            return redirect('cauhoi')
+    
+    return HttpResponse("Yêu cầu không hợp lệ")
+
+
+@csrf_exempt
+def add_Dangky(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        magv = request.POST.get('addGiangvien').strip().upper()
+        mamh = request.POST.get('addMonhoc').strip().upper()
+        malop = request.POST.get('addLop').strip().upper()
+        trinhdo = request.POST.get('addTrinhdo').strip().upper()
+        ngaythi_str = request.POST.get('addNgaythi').strip().upper()
+        ngaythi = datetime.strptime(ngaythi_str, '%Y-%m-%dT%H:%M')
+        socauthi = int(request.POST.get('addSocauthi').strip())
+        thoigian = int(request.POST.get('addThoigian').strip())
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+
+            query = f"EXEC SP_INSERT_DANGKYTHI '{magv}', '{mamh}', '{malop}', N'{trinhdo}', '{ngaythi}', '{socauthi}', '{thoigian}'"
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Đăng ký thi thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('dangkythi')
 
     messages.error(request, "Yêu cầu không hợp lệ.")
-    return redirect('bode')
+    return redirect('dangkythi')
+
+
+@csrf_exempt
+def delete_Dangky(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    if request.method == 'POST':
+        malop = request.POST.get('deleteLop').strip().upper()
+        mamh = request.POST.get('deleteMon').strip().upper()
+        lan = int(request.POST.get('deleteLan').strip().upper())
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_DELETE_DANGKYTHI '{malop}', '{mamh}', {lan}"
+            print(f"Query: {query}")
+            cur.execute(query)
+            con.commit()
+
+            messages.success(request, "Xóa Đăng ký thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+
+        return redirect('dangkythi')
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect('dangkythi')
 
 
 

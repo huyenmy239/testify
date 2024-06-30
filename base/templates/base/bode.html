@@ -65,13 +65,11 @@
                                                 data-giaovien="{{ ch.gv.ho }} {{ ch.gv.ten }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            {% if request.session.base_template == "main_CS.html" %}
                                             <button type="button" class="btn btn-danger btn-delete"
                                                 data-toggle="modal" data-target="#deleteModal"
                                                 data-cauhoi="{{ ch.cauhoi }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
-                                            {% endif %}
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -121,7 +119,11 @@
                     </div>
                     <div class="form-group">
                         <label for="addTrinhdo">Trình độ:</label>
-                        <input type="text" class="form-control" id="addTrinhdo" name="addTrinhdo" required>
+                        <select class="form-control" id="addTrinhdo" name="addTrinhdo" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="addNoidung">Nội dung:</label>
@@ -153,12 +155,16 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        {% if request.session.base_template == "main_CS.html"%}
                         <label for="addGiaovien">Giáo viên:</label>
                         <select class="form-control" id="addGiaovien" name="addGiaovien" required>
                             {% for key, val in gv.items %}
                             <option value="{{key}}">{{val.ho}} {{val.ten}}</option>
                             {% endfor %}
                         </select>
+                        {% else %}
+                        <input type="hidden" class="form-control" id="addGiaovien" name="addGiaovien" required>
+                        {% endif %}
                     </div>
                     <button type="submit" class="btn btn-primary">Thêm</button>
                 </form>
@@ -187,7 +193,11 @@
                     </div>
                     <div class="form-group">
                         <label for="editTrinhdo">Trình độ:</label>
-                        <input type="text" class="form-control" id="editTrinhdo" name="editTrinhdo">
+                        <select class="form-control" id="editTrinhdo" name="editTrinhdo" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="editNoidung">Nội dung:</label>
