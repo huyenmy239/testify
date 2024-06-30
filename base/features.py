@@ -38,7 +38,8 @@ def login_sv(request):
             request.session['current_user'] = {"username": "lvt", "password": "239003", "role": "sinhvien"}
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("login-register")
         finally:
             if cur is not None:
                 cur.close()
@@ -80,7 +81,8 @@ def register_sv(request):
             con.commit()          
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("login-register")
         finally:
             if cur is not None:
                 cur.close()
@@ -135,8 +137,8 @@ def login_gv(request):
                     gv_list_cur[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
 
         except pyodbc.Error as e:
-            print(f"Error connecting to database: {e}")
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("login-register")
         finally:
             if cur is not None:
                 cur.close()
@@ -157,8 +159,8 @@ def login_gv(request):
                     gv_list_next[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
 
             except pyodbc.Error as e:
-                print(f"Error connecting to database: {e}")
-                return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+                messages.error(request, e.__str__().split("]")[4].split("(")[0])
+                return redirect("login-register")
             finally:
                 if cur is not None:
                     cur.close()
@@ -213,7 +215,8 @@ def register_truong(request):
             con.commit()
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("coso")
         finally:
             if cur is not None:
                 cur.close()
@@ -231,7 +234,8 @@ def register_truong(request):
             con.commit()
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("coso")
         finally:
             if cur is not None:
                 cur.close()
@@ -280,7 +284,8 @@ def register_coso(request):
             con.commit()
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("coso")
         finally:
             if cur is not None:
                 cur.close()
@@ -328,7 +333,8 @@ def register_giangvien(request):
             con.commit()
 
         except pyodbc.Error as e:
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            return redirect("coso")
         finally:
             if cur is not None:
                 cur.close()
