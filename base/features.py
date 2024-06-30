@@ -114,6 +114,7 @@ def login_gv(request):
         con, cur = None, None
 
         result = ""
+        gv_list = {}
 
         try:
             db = DatabaseModel(server=cur_sv, database=DATABASE, login=username, pw=password)
@@ -126,11 +127,12 @@ def login_gv(request):
             cur.execute(f"EXEC SP_LayThongTinGiangVien '{username}'")
             result = cur.fetchall()[0]
 
-            cur.execute(f"SELECT * FROM V_DanhSachGVChuaCoUsername")
-            gv_rows = cur.fetchall()
-            gv_list_cur = {}
-            for row in gv_rows:
-                gv_list_cur[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
+            if result[2] == "Truong" or result[2] == "Coso":
+                cur.execute(f"SELECT * FROM V_DanhSachGVChuaCoUsername")
+                gv_rows = cur.fetchall()
+                gv_list_cur = {}
+                for row in gv_rows:
+                    gv_list_cur[row[0]] = {"magv": row[0], "tengv": f"{row[1]} {row[2]}"}
 
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")
@@ -164,7 +166,7 @@ def login_gv(request):
                     con.close()
 
             gv_list = {k: gv_list_cur[k] for k in gv_list_cur if k in gv_list_next and gv_list_cur[k] == gv_list_next[k]}
-        else:
+        elif result[2] == "Coso":
             gv_list = gv_list_cur
         request.session['current_info'] = [result[0], result[1], result[2]]
         request.session['current_user'] = {"username": username, "password": password, "role": ""}
@@ -193,10 +195,10 @@ def register_truong(request):
         
         username = request.POST.get('username')
         password = request.POST.get('password')
-        magv = request.POST.get('magv').split('|')[0].strip().upper()
-        tengv = request.POST.get('magv').split('|')[1].strip().upper()
+        magv = request.POST.get('magv').split('-')[0].strip().upper()
+        tengv = request.POST.get('magv').split('-')[1].strip().upper()
 
-        role = request.session.get('current_user', {}).get('role').capitalize()
+        role = "Truong"
 
         con, cur = None, None
 
@@ -236,7 +238,113 @@ def register_truong(request):
             if con is not None:
                 con.close()
         
-        messages.success(request, f"Tạo tài khoản cho Giảng viên {tengv} thành công.")
+        messages.success(request, f"Tạo tài khoản cho Giảng viên {tengv} với vai trò 'Trường' thành công.")
+        
+        # Xóa item trong Ds Giảng viên chưa có login
+        del_key = {}
+        for key, val in request.session['gv_list'].items():
+            if magv in key:
+                print(f"{key}: {val}")
+                del_key = key
+                break
+        request.session['gv_list'].pop(del_key)
+        request.session.modified = True
+
+        return redirect("coso")
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect("coso")
+
+
+def register_coso(request):
+    login = request.session.get('current_user')
+    db_alias = request.session.get('current_server')
+    if request.method == 'POST':
+        
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        magv = request.POST.get('magv').split('-')[0].strip().upper()
+        tengv = request.POST.get('magv').split('-')[1].strip().upper()
+
+        role = "Coso"
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            
+            cur = con.cursor()
+            query = f"EXEC SP_TaoTaiKhoan '{username}', '{password}', '{magv}', '{role}'"
+            cur.execute(query)
+            con.commit()
+
+        except pyodbc.Error as e:
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        
+        messages.success(request, f"Tạo tài khoản cho Giảng viên {tengv} với vai trò 'Cơ sở' thành công.")
+
+        del_key = {}
+        for key, val in request.session['gv_list'].items():
+            if magv in key:
+                print(f"{key}: {val}")
+                del_key = key
+                break
+        request.session['gv_list'].pop(del_key)
+        request.session.modified = True
+
+        return redirect("coso")
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return redirect("coso")
+
+
+def register_giangvien(request):
+    login = request.session.get('current_user')
+    db_alias = request.session.get('current_server')
+    if request.method == 'POST':
+        
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        magv = request.POST.get('magv').split('-')[0].strip().upper()
+        tengv = request.POST.get('magv').split('-')[1].strip().upper()
+
+        role = "Giangvien"
+
+        con, cur = None, None
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            
+            cur = con.cursor()
+            query = f"EXEC SP_TaoTaiKhoan '{username}', '{password}', '{magv}', '{role}'"
+            cur.execute(query)
+            con.commit()
+
+        except pyodbc.Error as e:
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        
+        messages.success(request, f"Tạo tài khoản cho Giảng viên {tengv} với vai trò 'Giảng viên' thành công.")
+
+        del_key = {}
+        for key, val in request.session['gv_list'].items():
+            if magv in key:
+                print(f"{key}: {val}")
+                del_key = key
+                break
+        request.session['gv_list'].pop(del_key)
+        request.session.modified = True
 
         return redirect("coso")
 

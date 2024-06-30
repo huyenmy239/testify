@@ -9,6 +9,8 @@ urlpatterns = [
     path('login/lgv', features.login_gv, name='login-gv'),
     path('register-sv', features.register_sv, name='register-sv'),
     path('register-truong', features.register_truong, name='register-truong'),
+    path('register-coso', features.register_coso, name='register-coso'),
+    path('register-giangvien', features.register_giangvien, name='register-giangvien'),
 
     path('list-question', features.get_list_questions, name='list-question'),
     path('answer-question', features.update_answer, name='answer-question'),

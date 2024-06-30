@@ -7,27 +7,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>Testify - Cơ sở</title>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Datatable -->
     <link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{% static 'styles/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link rel="stylesheet" href="{% static 'styles/message.css' %}">
 </head>
 
 <body>
     {% if messages %}
-
     <ul class="messages">
         {% for message in messages %}
         <li class="{{message.tags}}">{{message}}</li>
         {% endfor %}
     </ul>
-
     {% endif %}
 
     {% include 'preloader.html' %}
@@ -37,10 +34,8 @@
         <div class="sidebar-logo" onclick="toggleSidebar()">
             <div class="logo">Tính năng</div>
         </div>
-        <a class="link" href="#"><i class="fas fa-info-circle"></i><span class="menu-a">Tạo Login (Cơ sở)</span></a>
-        <a class="link" href="#"><i class="fas fa-concierge-bell"></i><span class="menu-a">Tạo Tài khoản (Giảng viên)</span></a>
-        <!-- <a class="link" href="#"><i class="fas fa-users"></i><span class="menu-a">Clients</span></a>
-        <a class="link" href="#"><i class="fas fa-envelope"></i><span class="menu-a">Contact</span></a> -->
+        <a class="link" href="#"><i class="fas fa-info-circle"></i><span class="menu-a btn-login-coso">Tạo Tài khoản (Cơ sở)</span></a>
+        <a class="link" href="#"><i class="fas fa-concierge-bell"></i><span class="menu-a btn-login-giangvien">Tạo Tài khoản (Giảng viên)</span></a>
     </div>
     <!-- ***** Sidebar End ***** -->
 
@@ -65,8 +60,7 @@
                 </div>
                 <div class="header-right">
                     <div class="user-menu">
-                        <img src="./assets/images/testimonial-author.jpg" alt="User Icon" class="user-icon"
-                            onclick="toggleUserMenu()">
+                        <img src="./assets/images/testimonial-author.jpg" alt="User Icon" class="user-icon" onclick="toggleUserMenu()">
                         <div id="userMenu" class="user-menu-dropdown">
                             <a href="#">
                                 Mã: {{thongtin.0}} | 
@@ -82,10 +76,75 @@
         <!-- ***** Header Area End ***** -->
 
         {% block content %}
-
         {% endblock content %}
 
         {% include 'footer.html' %}
+    </div>
+
+    <!-- Modal for Coso -->
+    <div class="modal fade" id="addLoginCosoModal" tabindex="-1" role="dialog" aria-labelledby="addLoginCosoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLoginCosoModalLabel">Tạo Login (Cơ sở)</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="addLoginCosoForm" method="POST" action="{% url 'register-coso' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="magv">Giảng viên:</label>
+                            <select class="form-control" id="magv" name="magv" required>
+                                {% for key, val in request.session.gv_list.items %}
+                                <option value="{{key}}-{{val.tengv}}">{{key}} | {{val.tengv}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="coso_username">Username</label>
+                            <input type="text" class="form-control" id="coso_username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coso_password">Password</label>
+                            <input type="password" class="form-control" id="coso_password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tạo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Giangvien -->
+    <div class="modal fade" id="addLoginGiangvienModal" tabindex="-1" role="dialog" aria-labelledby="addLoginGiangvienModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLoginGiangvienModalLabel">Tạo Login (Giảng viên)</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="addLoginGiangvienForm" method="POST" action="{% url 'register-giangvien' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="magv">Giảng viên:</label>
+                            <select class="form-control" id="magv" name="magv" required>
+                                {% for key, val in request.session.gv_list.items %}
+                                <option value="{{key}}-{{val.tengv}}">{{key}} | {{val.tengv}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="giangvien_username">Username</label>
+                            <input type="text" class="form-control" id="giangvien_username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="giangvien_password">Password</label>
+                            <input type="password" class="form-control" id="giangvien_password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tạo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -104,6 +163,18 @@
     <!-- Datatable -->
     <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector('.btn-login-coso').addEventListener('click', function() {
+                $('#addLoginCosoModal').modal('show');
+            });
+            document.querySelector('.btn-login-giangvien').addEventListener('click', function() {
+                $('#addLoginGiangvienModal').modal('show');
+            });
+        });
+    </script>
+
 </body>
 
 </html>
