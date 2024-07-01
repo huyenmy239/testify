@@ -10,13 +10,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <title>Testify - Giảng viên</title>
+    <!-- Icon -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Datatable -->
     <link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{% static 'styles/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link rel="stylesheet" href="{% static 'styles/message.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/mainpp.css' %}">
+    
 </head>
 
 <body>
@@ -35,31 +39,29 @@
     <!-- ***** Sidebar Start ***** -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-logo" onclick="toggleSidebar()">
-            <div class="logo">Tính năng</div>
+            <img class="logo" style="width:40px" src="{% static 'images/graduation.png' %}" alt="logo">
+            <!-- <div class="logo-text" style="margin-left: 10px; color: #f5ffda; font-family: 'Approach Mono TRIAL Bold', sans-serif; font-size:30px">  testify  </div> -->
         </div>
-        <!-- <a class="link" href="#"><i class="fas fa-info-circle"></i><span class="menu-a">Th</span></a>
-        <a class="link" href="#"><i class="fas fa-concierge-bell"></i><span class="menu-a">Tạo Login (Trường)</span></a>
-        <a class="link" href="#"><i class="fas fa-users"></i><span class="menu-a">Clients</span></a>
-        <a class="link" href="#"><i class="fas fa-envelope"></i><span class="menu-a">Contact</span></a> -->
+        <a class="link" href=""><i class="fas fa-info-circle"></i><span class="menu-a"></span></a>
+        <a class="link" href=""><i class="fas fa-concierge-bell"></i><span class="menu-a"></span></a>
     </div>
     <!-- ***** Sidebar End ***** -->
 
     <div id="main">
-
         <!-- ***** Header Area Start ***** -->
         <header>
             <div class="header-container">
                 <div class="header-left">
                     <nav>
                         <ul class="nav-links">
-                            <li><a href="{% url 'cauhoi' %}">Bộ đề</a></li>
-                            <li><a href="{% url 'dangkythi-gv' %}">Lịch thi</a></li>
+                            <li><a href="{% url 'cauhoi' %}" class="{% if request.resolver_match.view_name == 'cauhoi' %}active{% endif %}">Bộ đề</a></li>
+                            <li><a href="{% url 'dangkythi-gv' %}" class="{% if request.resolver_match.view_name == 'dangkythi-gv' %}active{% endif %}">Lịch thi</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="header-right">
                     <div class="user-menu">
-                        <img src="./assets/images/testimonial-author.jpg" alt="User Icon" class="user-icon"
+                        <img src="{% static 'images/teacher-user.png' %}" alt="User Icon" class="user-icon"
                             onclick="toggleUserMenu()">
                         <div id="userMenu" class="user-menu-dropdown">
                             <a href="#">

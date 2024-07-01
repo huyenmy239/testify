@@ -10,13 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <title>Testify - Trường</title>
+    <!-- Icon -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <!-- Datatable -->
     <link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{% static 'styles/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link rel="stylesheet" href="{% static 'styles/message.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/mainpp.css' %}">
 </head>
 
 <body>
@@ -35,12 +38,11 @@
     <!-- ***** Sidebar Start ***** -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-logo" onclick="toggleSidebar()">
-            <div class="logo">Tính năng</div>
+            <img class="logo" style="width:40px" src="{% static 'images/graduation.png' %}" alt="logo">
+            <!-- <div class="logo-text" style="margin-left: 10px; color: #f5ffda; font-family: 'Approach Mono TRIAL Bold', sans-serif; font-size:30px">  testify  </div> -->
         </div>
-        <a class="link" href="#"><i class="fas fa-info-circle"></i><span class="menu-a">Xem Report</span></a>
-        <a class="link" href="#" data-toggle="modal" data-target="#addLoginModal">
-          <i class="fas fa-concierge-bell"></i><span class="menu-a btn-login">Tạo Login (Trường)</span>
-        </a>
+        <a class="link" href="#"><i class='bx bxs-report' ></i><span class="menu-a">Xem Report</span></a>
+        <a class="link" href="#" data-toggle="modal" data-target="#addLoginModal"><i class='bx bxs-user-rectangle'></i><span class="menu-a btn-login">Tạo tài khoản (Trường)</span></a>
     </div>
     <!-- ***** Sidebar End ***** -->
 
@@ -52,20 +54,20 @@
                 <div class="header-left">
                     <nav>
                         <ul class="nav-links">
-                            <li><a href="{% url 'coso' %}">Cơ sở</a></li>
-                            <li><a href="{% url 'khoa' %}">Khoa</a></li>
-                            <li><a href="{% url 'lop' %}">Lớp</a></li>
-                            <li><a href="{% url 'giangvien' %}">Giảng viên</a></li>
-                            <li><a href="{% url 'sinhvien' %}">Sinh viên</a></li>
-                            <li><a href="{% url 'monhoc' %}">Môn học</a></li>
-                            <li><a href="{% url 'bode' %}">Bộ đề</a></li>
-                            <li><a href="{% url 'dangkythi' %}">Đăng ký thi</a></li>
+                            <li><a href="{% url 'coso' %}" class="{% if request.resolver_match.view_name == 'coso' %}active{% endif %}">Cơ sở</a></li>
+                            <li><a href="{% url 'khoa' %}" class="{% if request.resolver_match.view_name == 'khoa' %}active{% endif %}">Khoa</a></li>
+                            <li><a href="{% url 'lop' %}" class="{% if request.resolver_match.view_name == 'lop' %}active{% endif %}">Lớp</a></li>
+                            <li><a href="{% url 'giangvien' %}" class="{% if request.resolver_match.view_name == 'giangvien' %}active{% endif %}">Giảng viên</a></li>
+                            <li><a href="{% url 'sinhvien' %}" class="{% if request.resolver_match.view_name == 'sinhvien' %}active{% endif %}">Sinh viên</a></li>
+                            <li><a href="{% url 'monhoc' %}" class="{% if request.resolver_match.view_name == 'monhoc' %}active{% endif %}">Môn học</a></li>
+                            <li><a href="{% url 'bode' %}" class="{% if request.resolver_match.view_name == 'bode' %}active{% endif %}">Bộ đề</a></li>
+                            <li><a href="{% url 'dangkythi' %}" class="{% if request.resolver_match.view_name == 'dangkythi' %}active{% endif %}">Đăng ký thi</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="header-right">
                     <div class="user-menu">
-                        <img src="./assets/images/testimonial-author.jpg" alt="User Icon" class="user-icon"
+                        <img src="{% static 'images/teacher-user.png' %}" alt="User Icon" class="user-icon"
                             onclick="toggleUserMenu()">
                         <div id="userMenu" class="user-menu-dropdown">
                             <a href="#">
