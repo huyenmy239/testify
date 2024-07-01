@@ -2,21 +2,22 @@ function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const main = document.getElementById("main");
   const logo = document.querySelector(".sidebar-logo .logo");
-  const logo_text = document.querySelector(".sidebar-logo .logo-text");
+  const logoText = document.querySelector(".sidebar-logo .logo-text");
   const links = document.querySelectorAll(".sidebar .menu-a");
 
   if (sidebar.style.width === "80px") {
     sidebar.style.width = "200px";
     main.style.marginLeft = "200px";
-    logo_text.style.display = "block";
-    links.forEach((link) => (link.style.display = "block"));
+    logoText.style.display = "block";
+    links.forEach((link) => (link.style.display = "inline"));
   } else {
     sidebar.style.width = "80px";
     main.style.marginLeft = "80px";
-    logo_text.style.display = "none";
+    logoText.style.display = "none";
     links.forEach((link) => (link.style.display = "none"));
   }
 }
+
 
 function toggleUserMenu() {
   const userMenu = document.getElementById("userMenu");
