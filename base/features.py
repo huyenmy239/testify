@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.db import connection, connections
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
@@ -902,7 +903,6 @@ def add_Bode(request):
     role = request.session.get('current_user', {}).get('role')
 
     if request.method == 'POST':
-        cauhoi = ""
         mamh = request.POST.get('addMonhoc').strip().upper()
         trinhdo = request.POST.get('addTrinhdo').strip().upper()
         noidung = request.POST.get('addNoidung').strip().capitalize()
@@ -924,10 +924,7 @@ def add_Bode(request):
             con = db.connect_to_database()
             cur = con.cursor()
 
-            cur.execute("EXEC SP_TaoMaCauHoi")
-            cauhoi = int(cur.fetchone()[0])
-
-            query = f"EXEC SP_INSERT_BODE '{cauhoi}', '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'"
+            query = f"EXEC SP_INSERT_BODE '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'"
             cur.execute(query)
             con.commit()
 
@@ -1139,15 +1136,10 @@ def delete_Dangky(request):
 
 
 def get_list_questions(request):
-    if request.method == 'POST':
-        coso = request.POST.get('sv_coso')
-        if "1" in coso:
-            db_alias = DB_CONNECTION["servers"][1]
-        else:
-            db_alias = DB_CONNECTION["servers"][2]
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
-        request.session['current_server'] = db_alias
-        print(f"Current: {request.session.get('current_server')}")
+    if request.method == 'POST':
         
         ma_sv = request.POST.get('MaSV')
         ma_mh = request.POST.get('mamh')
@@ -1155,9 +1147,9 @@ def get_list_questions(request):
         trinh_do = request.POST.get('trinhdo')
         so_cau = request.POST.get('socau')
         cur, con = None, None
+
         try:
-            print("do something here")
-            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
             cur.execute(f"EXEC SP_THONG_TIN_BAI_THI '{ma_sv}', '{ma_mh}', '{lan}'")
@@ -1241,3 +1233,62 @@ def update_answer(request):
             if con is not None:
                 con.close()
         HttpResponse("Update the answer successfully!")
+
+
+def exam_scores_list(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        malop = request.POST.get("className")
+        mamh = request.POST.get("subjectName")
+        lan = request.POST.get("examAttempt")
+
+        ds = []
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_REPORT_InBangDiemMonHoc '{malop}', '{mamh}', {lan}"
+            print(f"Query: {query}")
+            cur.execute(query)
+
+            ds_rows = cur.fetchall()
+            for row in ds_rows:
+                ds.append({"masv": row[0], "hoten": row[1], "diem": row[2], "diemchu": row[3]})
+            print(f"Danh sách: {ds}")
+
+        except pyodbc.Error as e:
+            # messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            messages.error(request, e)
+            return redirect("cauhoi")
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        return JsonResponse({'ds': ds})
+
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return HttpResponse(status=405)
+
+
+# def export_pdf(request):
+#     # Retrieve data to be included in the PDF (if needed)
+#     class_name = request.POST.get('className')
+#     subject_name = request.POST.get('subjectName')
+#     exam_attempt = request.POST.get('examAttempt')
+
+#     # Assuming you have the HTML content ready to be converted to PDF
+#     html_string = render_to_string('your_template.html', {
+#         'data': your_data,  # Replace with the actual data to be displayed in the PDF
+#     })
+
+#     # Generate PDF from HTML string
+#     pdf_file = HTML(string=html_string).write_pdf()
+
+#     # Prepare response as a PDF file download
+#     response = HttpResponse(pdf_file, content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+#     return response

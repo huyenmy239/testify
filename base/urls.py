@@ -16,6 +16,8 @@ urlpatterns = [
     path('answer-question', features.update_answer, name='answer-question'),
     path('update-time', features.update_time, name='update-time'),
 
+    path('report-score', features.exam_scores_list, name='report-score'),
+
     path('coso/', views.coso_table, name='coso'),
     path('khoa/', views.khoa_table, name='khoa'),
     path('lop/', views.lop_table, name='lop'),
