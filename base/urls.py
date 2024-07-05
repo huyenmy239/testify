@@ -17,6 +17,7 @@ urlpatterns = [
     path('update-time', features.update_time, name='update-time'),
 
     path('report-score', features.exam_scores_list, name='report-score'),
+    path('report-registration', features.exam_registration_list, name='report-registration'),
 
     path('coso/', views.coso_table, name='coso'),
     path('khoa/', views.khoa_table, name='khoa'),

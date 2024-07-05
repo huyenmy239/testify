@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .views import DATABASE, DB_CONNECTION
 from datetime import datetime
+from django.utils.dateparse import parse_date
 
 db_alias = "default"
 
@@ -1141,27 +1142,34 @@ def get_list_questions(request):
 
     if request.method == 'POST':
         
-        ma_sv = request.POST.get('MaSV')
-        ma_mh = request.POST.get('mamh')
-        lan = request.POST.get('lan')
-        trinh_do = request.POST.get('trinhdo')
-        so_cau = request.POST.get('socau')
+        masv = request.POST.get('MaSV').strip()
+        mamh = request.POST.get('mamh').strip()
+        lan = int(request.POST.get('lan'))
+        trinhdo = request.POST.get('trinhdo')
+        socau = int(request.POST.get('socau'))
         cur, con = None, None
+        print(f"Masv: {masv}, mamh: {mamh}, lan: {lan}, trinhdo: {trinhdo}, socau: {socau}")
 
         try:
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            cur.execute(f"EXEC SP_THONG_TIN_BAI_THI '{ma_sv}', '{ma_mh}', '{lan}'")
-            result = cur.fetchone()
-            if result is None:
-                now = datetime.now()
-                current_date_time = now.strftime('%Y-%m-%d')
-                mabt = 'test'
-                cur.execute(f"EXEC SP_TAO_BAI_THI '{mabt}', '{ma_sv}', '{ma_mh}', '{lan}', \"{current_date_time}\", '{trinh_do}', {so_cau}")
+            print("Connect database thành công!")
+            cur.execute(f"EXEC SP_ThongTinBaiThi N'{masv}', N'{mamh}', {lan}, N'{trinhdo}', {socau}")
+            res = cur.fetchall()[0]
+            print(f"Result sau SP_ThongTin: {res}")
+
+            tt_baithi = {"malop": res[0], "lop": res[1], "hoten": res[2], "tenmh": res[3],
+                         "ngaythi": res[4], "lan": res[5], "tgcl": res[6], "mabt": res[7]}
             
-            cur.execute(f"EXEC SP_LAY_CAU_HOI '{mabt}'")
-            result = cur.fetchall()
+            cur.execute(f"EXEC SP_LayCauHoi '{tt_baithi['mabt']}'")
+            res = cur.fetchall()
+            
+            questions = []
+            for row in res:
+                questions.append({"stt": row[0], "noidung": row[1], "a": row[2], "b": row[3],
+                                  "c": row[4], "d": row[5], "traloi": row[6]})
+                
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")
             return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -1170,38 +1178,40 @@ def get_list_questions(request):
                 cur.close()
             if con is not None:
                 con.close()
-        context = {"questions": result, "time": time} #Lay them time tu sp
-        return render(request, 'base/dangkythi.html', context)
+        print(f"Danh sách câu hỏi: {questions}")
+        # context = {"questions": questions, "time": tt_baithi['tgcl']}
+        return JsonResponse({"questions": questions, "time": tt_baithi['tgcl']})
 
 def update_time(request):
     if request.method == 'POST':
-        coso = request.POST.get('sv_coso')
-        if "1" in coso:
-            db_alias = DB_CONNECTION["servers"][1]
-        else:
-            db_alias = DB_CONNECTION["servers"][2]
+        # coso = request.POST.get('sv_coso')
+        # if "1" in coso:
+        #     db_alias = DB_CONNECTION["servers"][1]
+        # else:
+        #     db_alias = DB_CONNECTION["servers"][2]
             
-        request.session['current_server'] = db_alias
-        print(f"Current: {request.session.get('current_server')}")
+        # request.session['current_server'] = db_alias
+        # print(f"Current: {request.session.get('current_server')}")
 
-        maBT = request.POST.get('maBT')
-        timer = request.POST.get('time')
+        # maBT = request.POST.get('maBT')
+        # timer = request.POST.get('time')
         
-        cur, con = None, None
-        try:
-            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
-            con = db.connect_to_database()
-            cur = con.cursor()
-            cur.execute(f"EXEC SP_UPDATE_TIME '{maBT}', \"{timer}\"")
-        except pyodbc.Error as e:
-            print(f"Error connecting to database: {e}")
-            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-        finally:
-            if cur is not None:
-                cur.close()
-            if con is not None:
-                con.close()
-        HttpResponse("Update left time successfully!")
+        # cur, con = None, None
+        # try:
+        #     db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+        #     con = db.connect_to_database()
+        #     cur = con.cursor()
+        #     cur.execute(f"EXEC SP_UPDATE_TIME '{maBT}', \"{timer}\"")
+        # except pyodbc.Error as e:
+        #     print(f"Error connecting to database: {e}")
+        #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        # finally:
+        #     if cur is not None:
+        #         cur.close()
+        #     if con is not None:
+        #         con.close()
+        # HttpResponse("Update left time successfully!")
+        return JsonResponse({'test' :' test'})
                 
 def update_answer(request):
     if request.method == 'POST':
@@ -1273,22 +1283,56 @@ def exam_scores_list(request):
     return HttpResponse(status=405)
 
 
-# def export_pdf(request):
-#     # Retrieve data to be included in the PDF (if needed)
-#     class_name = request.POST.get('className')
-#     subject_name = request.POST.get('subjectName')
-#     exam_attempt = request.POST.get('examAttempt')
+def exam_registration_list(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        # ngaythi_str = request.POST.get('addNgaythi').strip().upper()
+        # ngaythi = datetime.strptime(ngaythi_str, '%Y-%m-%dT%H:%M')
+        
+        fDateStr = request.POST.get('fromDate').strip()
+        tDateStr = request.POST.get('toDate').strip()
+        
+        # Chuyển đổi chuỗi ngày thành đối tượng datetime
+        from_date = datetime.strptime(fDateStr, '%Y-%m-%d').date()
+        to_date = datetime.strptime(tDateStr, '%Y-%m-%d').date()
+        formatted_fDate = from_date.strftime('%m/%d/%Y')
+        formatted_tDate = to_date.strftime('%m/%d/%Y')
+        
+        # Thực hiện truy vấn và lấy dữ liệu báo cáo từ cơ sở dữ liệu
+        # Dữ liệu giả định, thay thế bằng dữ liệu thực từ database của bạn
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_REPORT_DSDangKyThi '{from_date}', '{from_date}'"
+            print(f"Query: {query}")
+            cur.execute(query)
+            res = cur.fetchall()
 
-#     # Assuming you have the HTML content ready to be converted to PDF
-#     html_string = render_to_string('your_template.html', {
-#         'data': your_data,  # Replace with the actual data to be displayed in the PDF
-#     })
+            report_list = []
+            for row in res:
+                report_list.append({"malop": row[0], "tenlop": row[1], "mamh": row[2], "tenmh": row[3], "tengv": row[4],
+                                    "socauthi": row[5], "ngaythi": row[6], "lan": row[7], "dathi": row[8], "ghichu": row[9]})
 
-#     # Generate PDF from HTML string
-#     pdf_file = HTML(string=html_string).write_pdf()
+            print(f"Report: {report_list}")
 
-#     # Prepare response as a PDF file download
-#     response = HttpResponse(pdf_file, content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-
-#     return response
+        except pyodbc.Error as e:
+            # messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            messages.error(request, e)
+            return redirect("cauhoi")
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        
+        response = {
+            'from_date': formatted_fDate,
+            'to_date': formatted_tDate,
+            'report_data': report_list,
+        }
+        return JsonResponse(response)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

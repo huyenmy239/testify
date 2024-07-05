@@ -59,7 +59,7 @@
                                             {% elif request.session.base_template == "main_SV.html" or request.session.base_template == "main_GV.html" %}
                                             <button type="button" class="btn btn-success btn-thi" 
                                                 data-toggle="modal" data-target="#thiModal" 
-                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.id }}"
+                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
                                             {% endif %}
                                         </td>
@@ -269,13 +269,53 @@
                         lan: lan,
                         trinhdo: trinhdo,
                         socau: socauthi,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     success: function(response) {
                         console.log(response);
                         console.log("Get data successfully!");
+
+                        // Cập nhật thời gian thi
+                        document.getElementById('timer').innerText = response.time;
+
+                        // Lấy container của form câu hỏi
+                        const form = document.getElementById('thiForm');
+                        form.innerHTML = ''; // Clear previous content
+
+                        // Duyệt qua các câu hỏi và tạo phần tử HTML cho mỗi câu hỏi
+                        response.questions.forEach((question, index) => {
+                            const questionContainer = document.createElement('div');
+                            questionContainer.classList.add('form-group');
+
+                            questionContainer.innerHTML = `
+                                <label>Câu ${index + 1}: </label>
+                                <label>${question.noidung}</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionA-${question.stt}" value="A" ${question.traloi === 'A' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionA-${question.stt}">${question.a}</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionB-${question.stt}" value="B" ${question.traloi === 'B' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionB-${question.stt}">${question.b}</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionC-${question.stt}" value="C" ${question.traloi === 'C' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionC-${question.stt}">${question.c}</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionD-${question.stt}" value="D" ${question.traloi === 'D' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionD-${question.stt}">${question.d}</label>
+                                </div>
+                            `;
+
+                            form.appendChild(questionContainer);
+                        });
+
+                        // Hiển thị modal
+                        $('#thiModal').modal('show');
                     },
                     error: function(xhr, status, error) {
-                    console.error('Error:', error);
+                        console.error('Error:', error);
                     }
                 });
 
@@ -284,6 +324,67 @@
         });
         
     });
+
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     var thiButtons = document.querySelectorAll('.btn-thi');
+    //     var timerInterval;
+
+    //     thiButtons.forEach(function(button) {
+    //         button.addEventListener('click', function() {
+    //             var modal = document.getElementById('thiModal');
+    //             var timeLimit = new Date(); 
+
+    //             function startTimer(duration, display) {
+    //                 var timer = duration, minutes, seconds;
+    //                 timerInterval = setInterval(function () {
+    //                     $.ajax({
+    //                         url: 'update-time',  // Adjust the URL
+    //                         type: 'POST',  // Adjust the method if needed
+    //                         data: {
+    //                             maBT: '', // Mã bài thi
+    //                             time: timer,
+    //                         },
+    //                         success: function(response) {
+    //                             console.log(response);
+    //                             console.log("Updated count down");
+    //                         },
+    //                         error: function(xhr, status, error) {
+    //                             console.error('Error:', error);
+    //                         }
+    //                     });
+
+    //                     minutes = Math.floor(countDownDate / 60);
+    //                     seconds = Math.floor(countDownDate % 60);
+    //                     // Time calculations for days, hours, minutes and seconds
+    //                     minutes = minutes < 10 ? "0" + minutes : minutes;
+    //                     seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    //                     display.textContent = minutes + ":" + seconds;
+
+    //                     if (--timer < 0) {
+    //                         clearInterval(timerInterval);
+    //                         // Tự động nộp bài khi hết giờ
+    //                         aler("Đã hết thời gian làm bài");
+    //                         document.getElementById('thiForm').submit();
+    //                     }
+    //                 }, 1000);
+    //             }
+
+    //             // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+    //             $(modal).on('shown.bs.modal', function () {
+    //                 var display = modal.querySelector('#timer');
+    //                 startTimer(timeLimit, display);
+    //             });
+
+    //             // Hủy đếm ngược khi modal bị ẩn
+    //             $(modal).on('hidden.bs.modal', function () {
+    //                 clearInterval(timerInterval);
+    //             });
+
+    //             $(modal).modal('show');
+    //         });
+    //     });
+    // });
 
 </script>
 

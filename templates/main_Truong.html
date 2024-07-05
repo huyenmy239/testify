@@ -41,7 +41,7 @@
             <img class="logo" style="width:40px" src="{% static 'images/graduation.png' %}" alt="logo">
             <div class="logo-text" style="margin-left: 10px; color: #f5ffda; font-family: 'Approach Mono TRIAL Bold', sans-serif; font-size:30px">  testify  </div>
         </div>
-        <a class="link" href="#"><i class='bx bxs-report' ></i><span class="menu-a">Xem Report</span></a>
+        <a class="link" href="#" data-toggle="modal" data-target="#reportModal"><i class='bx bxs-report'></i><span class="menu-a btn-report">Xem Report</span></a>
         <a class="link" href="#" data-toggle="modal" data-target="#addLoginModal"><i class='bx bxs-user-rectangle'></i><span class="menu-a btn-login">Tạo tài khoản (Trường)</span></a>
     </div>
     <!-- ***** Sidebar End ***** -->
@@ -90,7 +90,7 @@
         {% include 'footer.html' %}
     </div>
 
-    <!-- Modal -->
+    <!-- Modal Login -->
     <div class="modal fade" id="addLoginModal" tabindex="-1" role="dialog" aria-labelledby="addLoginModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -124,8 +124,57 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Modal Report -->
+    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Chọn Thời Gian Báo Cáo</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="reportForm" method="POST" action="/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="fromDate">Từ Ngày</label>
+                            <input type="date" class="form-control" id="fromDate" name="fromDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="toDate">Đến Ngày</label>
+                            <input type="date" class="form-control" id="toDate" name="toDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Xem Báo Cáo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="reportContainer" style="display: none;">
+        <h1 class="text-center">DANH SÁCH ĐĂNG KÝ THI TRẮC NGHIỆM CƠ SỞ 1</h1>
+        <h3 class="text-center" id="reportTitle"></h3>
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Mã Lớp</th>
+                    <th>Tên Lớp</th>
+                    <th>Mã Môn Học</th>
+                    <th>Tên Môn Học</th>
+                    <th>Giảng Viên</th>
+                    <th>Số Câu Thi</th>
+                    <th>Ngày Thi</th>
+                    <th>Lần</th>
+                    <th>Đã Thi</th>
+                    <th>Ghi Chú</th>
+                </tr>
+            </thead>
+            <tbody id="reportData">
+                <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Scripts -->
     <script src="{% static 'scripts/toggle.js' %}"></script>
     <script src="{% static 'scripts/message.js' %}"></script>
 
@@ -146,7 +195,54 @@
             document.querySelector('.btn-login').addEventListener('click', function() {
                 $('#addLoginModal').modal('show');
             });
+
+            document.querySelector('.btn-report').addEventListener('click', function() {
+                $('#reportModal').modal('show');
+            });
     
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            $('#reportForm').on('submit', function(event) {
+                event.preventDefault();
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "report-registration" %}',
+                    data: {
+                        fromDate: fromDate,
+                        toDate: toDate,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#reportTitle').text('TỪ NGÀY ' + response.from_date + ' ĐẾN NGÀY ' + response.to_date);
+
+                        var reportData = '';
+                        response.report_data.forEach(function(record) {
+                            reportData += '<tr>' +
+                                '<td>' + record.malop + '</td>' +
+                                '<td>' + record.tenlop + '</td>' +
+                                '<td>' + record.mamh + '</td>' +
+                                '<td>' + record.tenmh + '</td>' +
+                                '<td>' + record.ten + '</td>' +
+                                '<td>' + record.socauthi + '</td>' +
+                                '<td>' + record.ngaythi + '</td>' +
+                                '<td>' + record.lan + '</td>' +
+                                '<td>' + record.dathi + '</td>' +
+                                '<td>' + record.ghichu + '</td>' +
+                                '</tr>';
+                        });
+                        $('#reportData').html(reportData);
+                        $('#reportContainer').show();
+                        $('#reportModal').modal('hide');
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Đã có lỗi xảy ra: ' + error);
+                    }
+                });
+            });
         });
     
     </script>
