@@ -1133,7 +1133,7 @@ def delete_Dangky(request):
 
 
 
-
+# import time
 def get_list_questions(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
@@ -1147,19 +1147,31 @@ def get_list_questions(request):
         socau = int(request.POST.get('socau'))
         cur, con = None, None
         print(f"Masv: {masv}, mamh: {mamh}, lan: {lan}, trinhdo: {trinhdo}, socau: {socau}")
-
+        tt_baithi = {}
         try:
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
             print("Connect database thành công!")
-            cur.execute(f"EXEC SP_ThongTinBaiThi N'{masv}', N'{mamh}', {lan}, N'{trinhdo}', {socau}")
+            cur.execute(f"EXEC SP_ThongTinBaiThi '{masv}', '{mamh}', {lan}, N'{trinhdo}', {socau}")
             res = cur.fetchall()[0]
             print(f"Result sau SP_ThongTin: {res}")
-
+            con.commit()
             tt_baithi = {"malop": res[0], "lop": res[1], "hoten": res[2], "tenmh": res[3],
                          "ngaythi": res[4], "lan": res[5], "tgcl": res[6], "mabt": res[7]}
-            
+
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
             cur.execute(f"EXEC SP_LayCauHoi '{tt_baithi['mabt']}'")
             res = cur.fetchall()
             

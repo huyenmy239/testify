@@ -73,19 +73,21 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Giáo viên</th>
-                                        <th>Môn học</th>
-                                        <th>Lớp</th>
-                                        <th class="text-center">Trình độ</th>
-                                        <th>Ngày thi</th>
-                                        <th class="text-center">Lần</th>
-                                        <th class="text-center">Số câu thi</th>
-                                        <th class="text-center">Thời gian (phút)</th>
+                                        <th></th>
+                                        <th><input type="text" placeholder="Môn học"></th>
+                                        <th><input type="text" placeholder="Lớp"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th><input type="text" placeholder="Lần"></th>
+                                        <th></th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -224,7 +226,18 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var table = $('#main-table').DataTable();
+        var table = $('#main-table').DataTable({
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    $('input', column.footer()).on('keyup change clear', function () {
+                        if (column.search() !== this.value) {
+                            column.search(this.value).draw();
+                        }
+                    });
+                });
+            }
+        });
 
         table.on('draw', function() {
             attachEventListeners();
@@ -266,8 +279,8 @@
                 var socauthi = button.getAttribute('data-socauthi');
                 var masv = '{{ thongtin.0 }}'
                 $.ajax({
-                    url: '{% url "list-question" %}',  // Adjust the URL
-                    type: 'POST',  // Adjust the method if needed
+                    url: '{% url "list-question" %}',
+                    type: 'POST',
                     data: {
                         MaSV: masv,
                         mamh: monhoc,
