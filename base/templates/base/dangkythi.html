@@ -56,11 +56,16 @@
                                                 data-malop="{{ dk.lop.malop }}" data-mamh="{{ dk.monhoc.mamon }}" data-lan="{{ dk.lan }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </a>
-                                            {% elif request.session.base_template == "main_SV.html" or request.session.base_template == "main_GV.html" %}
+                                            {% elif request.session.base_template == "main_SV.html" %}
                                             <button type="button" class="btn btn-success btn-thi" 
                                                 data-toggle="modal" data-target="#thiModal" 
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
+                                            {% elif request.session.base_template == "main_GV.html" %}
+                                                <button type="button" class="btn btn-success btn-thithu" 
+                                                data-toggle="modal" data-target="#thithuModal" 
+                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
+                                                data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
                                             {% endif %}
                                         </td>
                                     </tr>

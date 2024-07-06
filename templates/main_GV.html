@@ -24,6 +24,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" ></script>
 
+    <!-- Web Logo -->
+    {% include 'icon.html' %}
+
     <style>
         /* Style for modal content */
         .modal-content {
@@ -69,19 +72,9 @@
     
             $(document).on('click', '.btn-print', function(event)  {
                 event.preventDefault();
-    
-                //credit : https://ekoopmans.github.io/html2pdf.js
                 
                 var element = document.getElementById('report-container'); 
     
-                //easy
-                //html2pdf().from(element).save();
-    
-                //custom file name
-                //html2pdf().set({filename: 'code_with_mark_'+js.AutoCode()+'.pdf'}).from(element).save();
-    
-    
-                //more custom settings
                 var opt = {
                     margin:       1,
                     filename:     'report-exams-score' + '.pdf',
@@ -90,7 +83,6 @@
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
     
-                // New Promise-based usage:
                 html2pdf().set(opt).from(element).save();
     
             });
