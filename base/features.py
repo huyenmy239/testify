@@ -2,12 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.db import connection, connections
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from .views import DATABASE, DB_CONNECTION
 from datetime import datetime
-from django.utils.dateparse import parse_date
 
 db_alias = "default"
 
@@ -1287,20 +1285,15 @@ def exam_registration_list(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
     if request.method == 'POST':
-        # ngaythi_str = request.POST.get('addNgaythi').strip().upper()
-        # ngaythi = datetime.strptime(ngaythi_str, '%Y-%m-%dT%H:%M')
         
         fDateStr = request.POST.get('fromDate').strip()
         tDateStr = request.POST.get('toDate').strip()
         
-        # Chuyển đổi chuỗi ngày thành đối tượng datetime
         from_date = datetime.strptime(fDateStr, '%Y-%m-%d').date()
         to_date = datetime.strptime(tDateStr, '%Y-%m-%d').date()
         formatted_fDate = from_date.strftime('%m/%d/%Y')
         formatted_tDate = to_date.strftime('%m/%d/%Y')
         
-        # Thực hiện truy vấn và lấy dữ liệu báo cáo từ cơ sở dữ liệu
-        # Dữ liệu giả định, thay thế bằng dữ liệu thực từ database của bạn
         cur, con = None, None
         try:
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
