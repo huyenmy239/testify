@@ -12,32 +12,33 @@
     <!-- Web Logo -->
     {% include 'icon.html' %}
 </head>
-<body>
+<body style=
+        "background: url('/static/images/bg8.jpg') no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Poppins', sans-serif;">
     {% if messages %}
-
     <ul class="messages">
         {% for message in messages %}
-        <li class="{{message.tags}}">{{message}}</li>
+        <li class="{{ message.tags }}">{{ message }}</li>
         {% endfor %}
     </ul>
-
     {% endif %}
 
-    <div class="container d-flex justify-content-center align-items-center center-container">
+    <div class="container d-flex justify-content-center align-items-center vh-100">
         <div class="w-100" style="max-width: 400px;">
             <div class="text-center mb-4">
-                <button id="btnGiangVien" class="btn btn-primary">Giảng viên</button>
-                <button id="btnSinhVien" class="btn btn-secondary">Sinh viên</button>
+                <button id="btnGiangVien" class="btn btn-outline-primary">Giảng viên</button>
+                <button id="btnSinhVien" class="btn btn-outline-secondary">Sinh viên</button>
             </div>
 
-            <div id="formGiangVien">
+            <div id="formGiangVien" class="card p-4">
                 <form action="{% url 'login-gv' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="gv_coso">Chọn cơ sở:</label>
                         <select class="form-control" id="gv_coso" name="gv_coso">
                             {% for cs in danhsach_cs %}
-                            <option>{{cs}}</option>
+                            <option>{{ cs }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -49,18 +50,18 @@
                         <label for="giangvienPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="giangvienPassword" name="giangvienPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
                 </form>
             </div>
 
-            <div id="formSinhVien" class="hidden">
+            <div id="formSinhVien" class="card p-4 hidden">
                 <form id="formDangNhap" action="{% url 'login-sv' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="sv_coso">Chọn cơ sở:</label>
                         <select class="form-control" id="sv_coso" name="sv_coso">
                             {% for cs in danhsach_cs %}
-                            <option>{{cs}}</option>
+                            <option>{{ cs }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -72,8 +73,8 @@
                         <label for="sinhvienPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="sinhvienPassword" name="sinhvienPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Đăng nhập</button>
-                    <button type="button" id="toggleDangKy" class="btn btn-sm btn-secondary">Đăng ký</button>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                    <button type="button" id="toggleDangKy" class="btn btn-link btn-block">Đăng ký</button>
                 </form>
 
                 <form id="formDangKy" class="hidden" action="{% url 'register-sv' %}" method="post">
@@ -82,7 +83,7 @@
                         <label for="masinhvien">Mã sinh viên:</label>
                         <select class="form-control" id="masinhvien" name="masinhvien">
                             {% for sv in danhsach_sv %}
-                            <option>{{sv.0}} | {{sv.2}}</option>
+                            <option>{{ sv.0 }} | {{ sv.2 }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -90,8 +91,8 @@
                         <label for="dangkyPassword">Mật khẩu:</label>
                         <input type="password" class="form-control" id="dangkyPassword" name="dangkyPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Đăng ký</button>
-                    <button type="button" id="toggleDangNhap" class="btn btn-sm btn-secondary">Đăng nhập</button>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+                    <button type="button" id="toggleDangNhap" class="btn btn-link btn-block">Đăng nhập</button>
                 </form>
             </div>
         </div>
@@ -110,8 +111,8 @@
                 $('#formGiangVien').removeClass('hidden');
                 $('#formSinhVien').addClass('hidden');
                 $('#formDangKy').addClass('hidden');
-                $('#btnGiangVien').removeClass('btn-secondary').addClass('btn-primary');
-                $('#btnSinhVien').removeClass('btn-primary').addClass('btn-secondary');
+                $('#btnGiangVien').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+                $('#btnSinhVien').removeClass('btn-outline-primary').addClass('btn-outline-secondary');
             });
 
             $('#btnSinhVien').click(function() {
@@ -119,8 +120,8 @@
                 $('#formDangNhap').removeClass('hidden');
                 $('#formDangKy').addClass('hidden');
                 $('#formGiangVien').addClass('hidden');
-                $('#btnSinhVien').removeClass('btn-secondary').addClass('btn-primary');
-                $('#btnGiangVien').removeClass('btn-primary').addClass('btn-secondary');
+                $('#btnSinhVien').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+                $('#btnGiangVien').removeClass('btn-outline-primary').addClass('btn-outline-secondary');
             });
 
             $('#toggleDangKy').click(function() {

@@ -1,6 +1,42 @@
+/* styles/login.css */
+body {
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Poppins', sans-serif;
+}
+
+.center-container {
+    background-color: rgba(255, 255, 255, 0.8); /* White background with some transparency */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-outline-secondary {
+    border-color: #154b7b;
+    color: #154b7b;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #154b7b;
+    color: white;
+}
+
+
 .hidden {
     display: none;
 }
 .center-container {
     min-height: 100vh;
 }
+
