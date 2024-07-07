@@ -368,6 +368,8 @@ def dangky_table_gv(request):
     mon = {}
     lop = {}
     dangky = []
+    input_mon = []
+    input_lop = []
 
     try:
         db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
@@ -395,14 +397,20 @@ def dangky_table_gv(request):
                 for row in dangky_rows:
                     dangky_object = Dangky(gv=gv[magv], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
                                         ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
+                    input_mon.append(mon[row[1]]["tenmh"])
+                    input_lop.append(lop[row[2]]["tenlop"])
                     dangky.append(dangky_object)
 
     except pyodbc.Error as e:
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
 
+    input_mon = list(dict.fromkeys(input_mon))
+    input_lop = list(dict.fromkeys(input_lop))
+
     info = request.session.get('current_info')
 
-    context = {"dangky": dangky, "thongtin": info, "lop": lop, "mon": mon}
+    context = {"dangky": dangky, "thongtin": info, "lop": lop,
+               "mon": mon, "input_mon": input_mon, "input_lop": input_lop}
     return render(request, 'base/dangkythi.html', context)
 
 

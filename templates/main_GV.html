@@ -114,7 +114,7 @@
             <img class="logo" style="width:40px" src="{% static 'images/graduation.png' %}" alt="logo">
             <div class="logo-text" style="margin-left: 10px; color: #f5ffda; font-family: 'Approach Mono TRIAL Bold', sans-serif; font-size:30px">  testify  </div>
         </div>
-        <a class="link btn-report" href="#" data-toggle="modal" data-target="#viewScoresModal"><i class='bx bxs-report'></i><span class="menu-a">Xem điểm thi</span></a>
+        <!-- <a class="link btn-report" href="#" data-toggle="modal" data-target="#viewScoresModal"><i class='bx bxs-report'></i><span class="menu-a">Xem điểm thi</span></a> -->
     </div>
     <!-- ***** Sidebar End ***** -->
 
@@ -154,7 +154,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="viewScoresModal" tabindex="-1" role="dialog" aria-labelledby="viewScoresModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade" id="viewScoresModal" tabindex="-1" role="dialog" aria-labelledby="viewScoresModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -183,7 +183,6 @@
                             <select id="examAttempt" name="examAttempt" class="form-control">
                                 <option value="1">Lần 1</option>
                                 <option value="2">Lần 2</option>
-                                <!-- Add more options as needed -->
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Xem điểm</button>
@@ -191,10 +190,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Report Modal -->
-    <div class="modal fade custom-modal" id="reportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- <div class="modal fade custom-modal" id="reportModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -215,7 +214,7 @@
                             </tr>
                         </thead>
                         <tbody id="report-table-body">
-                            <!-- Report content will be injected here -->
+                            
                         </tbody>
                     </table>
                 </div>
@@ -224,7 +223,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     
 
     <!-- Scripts -->
@@ -246,63 +245,58 @@
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
-    <script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", function() {
+    
             document.querySelector('.btn-report').addEventListener('click', function() {
-                $('#viewScoresModal').modal('show');
+                event.preventDefault();
+                const className = button.getAttribute('data-lop');;
+                const subjectName = button.getAttribute('data-monhoc');
+                const examAttempt = button.getAttribute('data-lan');
+
+                $.ajax({
+                    url: '{% url "report-score" %}',
+                    method: 'POST',
+                    data: {
+                        className: className,
+                        subjectName: subjectName,
+                        examAttempt: examAttempt,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        const classNameSelect = document.getElementById('className');
+                        const classT = classNameSelect.options[classNameSelect.selectedIndex].text;
+                        const subjectSelect = document.getElementById('subjectName');
+                        const subject = subjectSelect.options[subjectSelect.selectedIndex].text;
+                        const attempt = document.getElementById('examAttempt').value;
+
+                        const reportContainer = document.getElementById('report-container');
+                        const classLabel = document.getElementById('classLabel');
+                        const subjectLabel = document.getElementById('subjectLabel');
+                        const attemptLabel = document.getElementById('attemptLabel');
+
+                        classLabel.textContent = classT;
+                        subjectLabel.textContent = subject;
+                        attemptLabel.textContent = attempt;
+
+                        const tableBody = document.getElementById('report-table-body');
+                        tableBody.innerHTML = '';
+                        response.ds.forEach(score => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${score.masv}</td><td>${score.hoten}</td><td>${score.diem}</td><td>${score.diemchu}</td>`;
+                            tableBody.appendChild(row);
+                        });
+
+                        $('#reportModal').modal('show');
+                    },
+                    error: function(error) {
+                        console.error('Error fetching scores:', error);
+                    }
+                });
             });
     
-        document.getElementById('viewScoresForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const className = document.getElementById('className').value;
-            const subjectName = document.getElementById('subjectName').value;
-            const examAttempt = document.getElementById('examAttempt').value;
-
-            $.ajax({
-                url: '{% url "report-score" %}',
-                method: 'POST',
-                data: {
-                    className: className,
-                    subjectName: subjectName,
-                    examAttempt: examAttempt,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    const classNameSelect = document.getElementById('className');
-                    const classT = classNameSelect.options[classNameSelect.selectedIndex].text;
-                    const subjectSelect = document.getElementById('subjectName');
-                    const subject = subjectSelect.options[subjectSelect.selectedIndex].text;
-                    const attempt = document.getElementById('examAttempt').value;
-
-                    const reportContainer = document.getElementById('report-container');
-                    const classLabel = document.getElementById('classLabel');
-                    const subjectLabel = document.getElementById('subjectLabel');
-                    const attemptLabel = document.getElementById('attemptLabel');
-
-                    classLabel.textContent = classT;
-                    subjectLabel.textContent = subject;
-                    attemptLabel.textContent = attempt;
-
-                    const tableBody = document.getElementById('report-table-body');
-                    tableBody.innerHTML = '';
-                    response.ds.forEach(score => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `<td>${score.masv}</td><td>${score.hoten}</td><td>${score.diem}</td><td>${score.diemchu}</td>`;
-                        tableBody.appendChild(row);
-                    });
-
-                    $('#reportModal').modal('show');
-                },
-                error: function(error) {
-                    console.error('Error fetching scores:', error);
-                }
-            });
-
-            $('#viewScoresModal').modal('hide');
         });
-    
-        });
-    </script>
+    </script> -->
 </body>
 
 </html>

@@ -1270,7 +1270,6 @@ def exam_scores_list(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = f"EXEC SP_REPORT_InBangDiemMonHoc '{malop}', '{mamh}', {lan}"
-            print(f"Query: {query}")
             cur.execute(query)
 
             ds_rows = cur.fetchall()

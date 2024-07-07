@@ -66,6 +66,10 @@
                                                 data-toggle="modal" data-target="#thithuModal" 
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
+                                                <button type="button" class="btn btn-secondary btn-report" 
+                                                data-toggle="modal" data-target="#reportModal" 
+                                                data-lan="{{ dk.lan }}" data-mamh="{{ dk.monhoc.mamon }}" data-tenmh="{{ dk.monhoc.tenmh }}"
+                                                data-malop="{{ dk.lop.malop }}" data-tenlop="{{ dk.lop.tenlop }}">Danh sách điểm</button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -74,11 +78,40 @@
                                 <tfoot>
                                     <tr>
                                         <th></th>
-                                        <th><input type="text" placeholder="Môn học"></th>
-                                        <th><input type="text" placeholder="Lớp"></th>
+                                        {% if request.session.base_template == "main_GV.html" %}
+                                        <th>
+                                            <select>
+                                                <option value="">Môn học</option>
+                                                {% for i in input_mon %}
+                                                <option value="{{i}}">{{i}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <select>
+                                                <option value="">Lớp</option>
+                                                {% for i in input_lop %}
+                                                <option value="{{i}}">{{i}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
+                                        {% else %}
                                         <th></th>
                                         <th></th>
-                                        <th><input type="text" placeholder="Lần"></th>
+                                        {% endif %}
+                                        <th></th>
+                                        <th></th>
+                                        {% if request.session.base_template == "main_GV.html" %}
+                                        <th>
+                                            <select>
+                                                <option value="">Lần</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                            </select>
+                                        </th>
+                                        {% else %}
+                                        <th></th>
+                                        {% endif %}
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -224,13 +257,46 @@
     </div>
 </div>
 
+<!-- Report Modal -->
+<div class="modal fade custom-modal" id="reportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Danh sách điểm thi</h5>
+            </div>
+            <div class="modal-body" id="report-container">
+                <p><strong>Lớp:</strong> <span id="classLabel"></span></p>
+                <p><strong>Môn thi:</strong> <span id="subjectLabel"></span></p>
+                <p><strong>Lần:</strong> <span id="attemptLabel"></span></p>
+                <hr>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Mã sinh viên</th>
+                            <th>Họ và tên</th>
+                            <th>Điểm</th>
+                            <th>Điểm chữ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body">
+                        <!-- Report content will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-print" id="exportPdfBtn">Xuất PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var table = $('#main-table').DataTable({
             initComplete: function () {
                 this.api().columns().every(function () {
                     var column = this;
-                    $('input', column.footer()).on('keyup change clear', function () {
+                    $('select', column.footer()).on('keyup change clear', function () {
                         if (column.search() !== this.value) {
                             column.search(this.value).draw();
                         }
@@ -340,7 +406,60 @@
                 $(modal).modal('show');
             });
         });
-        
+    });
+
+    // Report
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportButtons = document.querySelectorAll('.btn-report');
+
+        reportButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const modal = document.getElementById('reportModal');
+                const className = button.getAttribute('data-tenlop');
+                const subjectName = button.getAttribute('data-tenmh');
+                const classID = button.getAttribute('data-malop');
+                const subjectID = button.getAttribute('data-mamh');
+                const examAttempt = button.getAttribute('data-lan');
+
+                modal.querySelector('#classLabel').value = className;
+                modal.querySelector('#subjectLabel').value = subjectName;
+                modal.querySelector('#attemptLabel').value = examAttempt;
+
+                $.ajax({
+                    url: '{% url "report-score" %}',
+                    method: 'POST',
+                    data: {
+                        className: classID,
+                        subjectName: subjectID,
+                        examAttempt: examAttempt,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        const classLabel = document.getElementById('classLabel');
+                        const subjectLabel = document.getElementById('subjectLabel');
+                        const attemptLabel = document.getElementById('attemptLabel');
+
+                        classLabel.textContent = className;
+                        subjectLabel.textContent = subjectName;
+                        attemptLabel.textContent = examAttempt;
+
+                        const tableBody = document.getElementById('report-table-body');
+                        tableBody.innerHTML = '';
+                        response.ds.forEach(score => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `<td>${score.masv}</td><td>${score.hoten}</td><td>${score.diem}</td><td>${score.diemchu}</td>`;
+                            tableBody.appendChild(row);
+                        });
+
+                        $('#reportModal').modal('show');
+                    },
+                    error: function(error) {
+                        console.error('Error fetching scores:', error);
+                    }
+                });
+            });
+        });
     });
 
     // document.addEventListener("DOMContentLoaded", function() {
