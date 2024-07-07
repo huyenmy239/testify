@@ -7,8 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <title>Testify - Trường</title>
     <!-- Icon -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -20,19 +19,62 @@
     <link rel="stylesheet" href="{% static 'styles/main.css' %}">
     <link rel="stylesheet" href="{% static 'styles/message.css' %}">
     <link rel="stylesheet" href="{% static 'styles/mainpp.css' %}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" ></script>
+
     <!-- Web Logo -->
     {% include 'icon.html' %}
+
+    <style>
+        .modal-header {
+            text-align: center;
+        }
+        .table thead th {
+            white-space: nowrap;
+        }
+        .table tbody td {
+            white-space: nowrap;
+        }
+
+        .modal-content {
+            max-width: 90%; /* Thay đổi kích thước modal theo ý muốn */
+        }
+        .modal-body {
+            overflow-x: auto; /* Cho phép cuộn nếu nội dung quá rộng */
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function($) { 
+
+            $(document).on('click', '.btn-print', function(event)  {
+                event.preventDefault();
+                
+                var element = document.getElementById('report-body'); 
+
+                var opt = {
+                    margin:       1,
+                    filename:     'report-registrations' + '.pdf',
+                    image:        { type: 'jpeg', quality: 1 },
+                    html2canvas:  { scale: 1 },
+                    jsPDF:        { unit: 'in', format: 'a3', orientation: 'landscape' }
+                };
+
+                html2pdf().set(opt).from(element).save();
+
+            });
+        });
+    </script>
 </head>
 
 <body>
     {% if messages %}
-
     <ul class="messages">
         {% for message in messages %}
         <li class="{{message.tags}}">{{message}}</li>
         {% endfor %}
     </ul>
-
     {% endif %}
 
     {% include 'preloader.html' %}
@@ -69,8 +111,7 @@
                 </div>
                 <div class="header-right">
                     <div class="user-menu">
-                        <img src="{% static 'images/teacher-user.png' %}" alt="User Icon" class="user-icon"
-                            onclick="toggleUserMenu()">
+                        <img src="{% static 'images/teacher-user.png' %}" alt="User Icon" class="user-icon" onclick="toggleUserMenu()">
                         <div id="userMenu" class="user-menu-dropdown">
                             <a href="#">
                                 Mã: {{thongtin.0}} | 
@@ -86,7 +127,6 @@
         <!-- ***** Header Area End ***** -->
 
         {% block content %}
-
         {% endblock content %}
 
         {% include 'footer.html' %}
@@ -151,30 +191,41 @@
         </div>
     </div>
 
-    <div id="reportContainer" style="display: none;">
-        <h1 class="text-center">DANH SÁCH ĐĂNG KÝ THI TRẮC NGHIỆM CƠ SỞ 1</h1>
-        <h3 class="text-center" id="reportTitle"></h3>
-        <table class="table table-bordered mt-4">
-            <thead>
-                <tr>
-                    <th>Mã Lớp</th>
-                    <th>Tên Lớp</th>
-                    <th>Mã Môn Học</th>
-                    <th>Tên Môn Học</th>
-                    <th>Giảng Viên</th>
-                    <th>Số Câu Thi</th>
-                    <th>Ngày Thi</th>
-                    <th>Lần</th>
-                    <th>Đã Thi</th>
-                    <th>Ghi Chú</th>
-                </tr>
-            </thead>
-            <tbody id="reportData">
-                <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
-            </tbody>
-        </table>
+    <!-- Report Container -->
+    <div class="modal fade" id="reportContainer" tabindex="-1" role="dialog" aria-labelledby="reportContainerLabel" aria-hidden="true" style="display:none;">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="display:flex; flex-direction: column;">
+                    <h3 class="modal-title text-center">DANH SÁCH ĐĂNG KÝ THI TRẮC NGHIỆM</h3>
+                    <h4 class="modal-title text-center" id="reportTitle"></h4>
+                </div>
+                <div class="modal-body" id="report-body">
+                    <table class="table table-bordered mt-4">
+                        <thead>
+                            <tr>
+                                <th>Mã Lớp</th>
+                                <th>Tên Lớp</th>
+                                <th>Mã Môn Học</th>
+                                <th>Tên Môn Học</th>
+                                <th>Giảng Viên</th>
+                                <th>Số Câu Thi</th>
+                                <th>Ngày Thi</th>
+                                <th>Lần</th>
+                                <th>Đã Thi</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportData">
+                            <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-print" id="exportPdfBtn">Xuất PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
-
 
     <!-- Scripts -->
     <script src="{% static 'scripts/toggle.js' %}"></script>
@@ -184,13 +235,16 @@
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/isotope.min.js' %}"></script>
-    <script src="{static 'js/owl-carousel.js'}"></script>
+    <script src="{% static 'js/owl-carousel.js' %}"></script>
     <script src="{% static 'js/counter.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
 
     <!-- Datatable -->
     <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -201,10 +255,7 @@
             document.querySelector('.btn-report').addEventListener('click', function() {
                 $('#reportModal').modal('show');
             });
-    
-        });
 
-        document.addEventListener("DOMContentLoaded", function() {
             $('#reportForm').on('submit', function(event) {
                 event.preventDefault();
                 const fromDate = document.getElementById('fromDate').value;
@@ -228,7 +279,7 @@
                                 '<td>' + record.tenlop + '</td>' +
                                 '<td>' + record.mamh + '</td>' +
                                 '<td>' + record.tenmh + '</td>' +
-                                '<td>' + record.ten + '</td>' +
+                                '<td>' + record.tengv + '</td>' +
                                 '<td>' + record.socauthi + '</td>' +
                                 '<td>' + record.ngaythi + '</td>' +
                                 '<td>' + record.lan + '</td>' +
@@ -237,7 +288,7 @@
                                 '</tr>';
                         });
                         $('#reportData').html(reportData);
-                        $('#reportContainer').show();
+                        $('#reportContainer').modal('show'); // Show reportContainer as a modal
                         $('#reportModal').modal('hide');
                     },
                     error: function(xhr, status, error) {
@@ -246,9 +297,7 @@
                 });
             });
         });
-    
     </script>
-
 </body>
 
 </html>

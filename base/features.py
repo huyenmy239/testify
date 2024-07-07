@@ -1302,16 +1302,15 @@ def exam_registration_list(request):
         
         from_date = datetime.strptime(fDateStr, '%Y-%m-%d').date()
         to_date = datetime.strptime(tDateStr, '%Y-%m-%d').date()
-        formatted_fDate = from_date.strftime('%m/%d/%Y')
-        formatted_tDate = to_date.strftime('%m/%d/%Y')
+        formatted_fDate = from_date.strftime('%m-%d-%Y')
+        formatted_tDate = to_date.strftime('%m-%d-%Y')
         
         cur, con = None, None
         try:
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_REPORT_DSDangKyThi '{from_date}', '{from_date}'"
-            print(f"Query: {query}")
+            query = f"EXEC SP_DSDangKyThi '{formatted_fDate}', '{formatted_tDate}'"
             cur.execute(query)
             res = cur.fetchall()
 
@@ -1319,9 +1318,6 @@ def exam_registration_list(request):
             for row in res:
                 report_list.append({"malop": row[0], "tenlop": row[1], "mamh": row[2], "tenmh": row[3], "tengv": row[4],
                                     "socauthi": row[5], "ngaythi": row[6], "lan": row[7], "dathi": row[8], "ghichu": row[9]})
-
-            print(f"Report: {report_list}")
-
         except pyodbc.Error as e:
             # messages.error(request, e.__str__().split("]")[4].split("(")[0])
             messages.error(request, e)
