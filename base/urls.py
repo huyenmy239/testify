@@ -13,7 +13,7 @@ urlpatterns = [
     path('register-giangvien', features.register_giangvien, name='register-giangvien'),
 
     path('list-question', features.get_list_questions, name='list-question'),
-    path('answer-question', features.update_answer, name='answer-question'),
+    path('update-answer', features.update_answer, name='update-answer'),
     path('update-time', features.update_time, name='update-time'),
 
     path('report-score', features.exam_scores_list, name='report-score'),

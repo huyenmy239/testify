@@ -58,12 +58,12 @@
                                             </a>
                                             {% elif request.session.base_template == "main_SV.html" %}
                                             <button type="button" class="btn btn-success btn-thi" 
-                                                data-toggle="modal" data-target="#thiModal" 
+                                                data-toggle="modal" data-target="#thiModal" data-thoigian="{{ dk.thoigian }}"
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
                                             {% elif request.session.base_template == "main_GV.html" %}
                                                 <button type="button" class="btn btn-success btn-thithu" 
-                                                data-toggle="modal" data-target="#thithuModal" 
+                                                data-toggle="modal" data-target="#thithuModal" data-thoigian="{{ dk.thoigian }}"
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
                                                 <button type="button" class="btn btn-secondary btn-report" 
@@ -223,35 +223,23 @@
                         </div>
                     </div>
                 </div>
+                <button onclick="closeModal()" type="button" class="close" data-dismiss="modal">
+                    X
+                </button>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                 <form id="thiForm" method="post" action="submit">
-                    {% for question in questions %}
-                    <div class="form-group">
-                        <label>Câu {{ question.id }}: </label>
-                        <lable>{{ question.question_text }}</label>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionA" value="A" {% if question.answer == 'A' %} checked="checked" {% endif %}>
-                            <label class="form-check-label" for="optionA" id="labelA">{{ question.A }}</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionB" value="B" {% if question.answer == 'B' %} checked="checked" {% endif %}>
-                            <label class="form-check-label" for="optionB" id="labelB">{{ question.B }}</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionC" value="C" {% if question.answer == 'C' %} checked="checked" {% endif %}>
-                            <label class="form-check-label" for="optionC" id="labelC">{{ question.C }}</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="Answer-{{ question.id }}" id="optionD" value="D" {% if question.answer == 'D' %} checked="checked" {% endif %}>
-                            <label class="form-check-label" for="optionD" id="labelD">{{ question.D }}</label>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                    <!-- Question List -->
                 </form>
+            </div>
+            <div class="modal-footer sticky-bottom">
+                <div class="container-fluid">
+                    <div class="row justify-content-end">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary">Nộp bài</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -335,6 +323,7 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         var thiButtons = document.querySelectorAll('.btn-thi');
+        var mabt = ""
 
         thiButtons.forEach(function(button) {
             button.addEventListener('click', function() {
@@ -343,7 +332,7 @@
                 var lan = button.getAttribute('data-lan');
                 var trinhdo = button.getAttribute('data-trinhdo');
                 var socauthi = button.getAttribute('data-socauthi');
-                var masv = '{{ thongtin.0 }}'
+                var masv = '{{ thongtin.0 }}';
                 $.ajax({
                     url: '{% url "list-question" %}',
                     type: 'POST',
@@ -358,15 +347,11 @@
                     success: function(response) {
                         console.log(response);
                         console.log("Get data successfully!");
+                        mabt = response.examID;
 
-                        // Cập nhật thời gian thi
-                        document.getElementById('timer').innerText = response.time;
-
-                        // Lấy container của form câu hỏi
                         const form = document.getElementById('thiForm');
-                        form.innerHTML = ''; // Clear previous content
+                        form.innerHTML = '';
 
-                        // Duyệt qua các câu hỏi và tạo phần tử HTML cho mỗi câu hỏi
                         response.questions.forEach((question, index) => {
                             const questionContainer = document.createElement('div');
                             questionContainer.classList.add('form-group');
@@ -375,20 +360,20 @@
                                 <label>Câu ${index + 1}: </label>
                                 <label>${question.noidung}</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionA-${question.stt}" value="A" ${question.traloi === 'A' ? 'checked' : ''}>
-                                    <label class="form-check-label" for="optionA-${question.stt}">${question.a}</label>
+                                    <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionA-${question.id}" value="A" ${question.traloi === 'A' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionA-${question.id}">${question.a}</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionB-${question.stt}" value="B" ${question.traloi === 'B' ? 'checked' : ''}>
-                                    <label class="form-check-label" for="optionB-${question.stt}">${question.b}</label>
+                                    <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionB-${question.id}" value="B" ${question.traloi === 'B' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionB-${question.id}">${question.b}</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionC-${question.stt}" value="C" ${question.traloi === 'C' ? 'checked' : ''}>
-                                    <label class="form-check-label" for="optionC-${question.stt}">${question.c}</label>
+                                    <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionC-${question.id}" value="C" ${question.traloi === 'C' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionC-${question.id}">${question.c}</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="Answer-${question.stt}" id="optionD-${question.stt}" value="D" ${question.traloi === 'D' ? 'checked' : ''}>
-                                    <label class="form-check-label" for="optionD-${question.stt}">${question.d}</label>
+                                    <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionD-${question.id}" value="D" ${question.traloi === 'D' ? 'checked' : ''}>
+                                    <label class="form-check-label" for="optionD-${question.id}">${question.d}</label>
                                 </div>
                             `;
 
@@ -402,9 +387,109 @@
                         console.error('Error:', error);
                     }
                 });
-
                 $(modal).modal('show');
             });
+        });
+
+        
+
+        var thiButtons = document.querySelectorAll('.btn-thi');
+        var modal;
+        thiButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var timerInterval;
+                modal = document.getElementById('thiModal');
+                $(modal).modal('show');
+                var timeLimit = parseInt(button.getAttribute("data-thoigian")) * 60;
+                var examID = button.getAttribute("data-mabt")
+                function startTimer(duration, display) {
+                    var timer = duration, minutes, seconds;
+                    timerInterval = setInterval(function () {
+                        $.ajax({
+                            url: "{% url 'update-time' %}",
+                            type: 'POST',
+                            data: {
+                                maBT: mabt,
+                                time: timer,
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                console.log("Updated count down");
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                        minutes = Math.floor(timer / 60);
+                        seconds = Math.floor(timer % 60);
+    
+                        minutes = minutes < 10 ? "0" + minutes : minutes;
+                        seconds = seconds < 10 ? "0" + seconds : seconds;
+    
+                        display.textContent = minutes + ":" + seconds;
+    
+                        if (--timer < 0) {
+                            clearInterval(timerInterval);
+                            alert("Đã hết thời gian làm bài");
+                            // document.getElementById('thiForm').submit();
+                        }
+                    }, 1000);
+                }
+    
+                // Hủy đếm ngược khi modal bị ẩn
+                $(modal).on('hidden.bs.modal', function () {
+                    clearInterval(timerInterval);
+                });
+    
+                // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+                $(modal).on('shown.bs.modal', function () {
+                    var display = modal.querySelector('#timer');
+
+                    startTimer(timeLimit, display);
+
+                });
+    
+                
+                document.querySelectorAll('.modal#thiModal .close').forEach(function(closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to save this thing into the database?')) {
+                            $(modal).modal('hide');
+                        }
+                    });
+                });
+                // $(modal).modal('show');
+            });
+
+        });
+        
+        // Update answer
+        function sendAnswer(questionId, answer) {
+            $.ajax({
+                url: "{% url 'update-answer' %}",
+                type: 'POST',
+                data: {
+                    examId: mabt,
+                    questionId: questionId,
+                    answer: answer,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log("Answer saved successfully!");
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+    
+        const thiForm = document.getElementById('thiForm');
+        thiForm.addEventListener('change', function(event) {
+            if (event.target.classList.contains('form-check-input')) {
+                const questionId = event.target.name.split('-')[1];
+                const answer = event.target.value;
+                sendAnswer(questionId, answer);
+            }
         });
     });
 
@@ -461,67 +546,6 @@
             });
         });
     });
-
-    // document.addEventListener("DOMContentLoaded", function() {
-    //     var thiButtons = document.querySelectorAll('.btn-thi');
-    //     var timerInterval;
-
-    //     thiButtons.forEach(function(button) {
-    //         button.addEventListener('click', function() {
-    //             var modal = document.getElementById('thiModal');
-    //             var timeLimit = new Date(); 
-
-    //             function startTimer(duration, display) {
-    //                 var timer = duration, minutes, seconds;
-    //                 timerInterval = setInterval(function () {
-    //                     $.ajax({
-    //                         url: 'update-time',  // Adjust the URL
-    //                         type: 'POST',  // Adjust the method if needed
-    //                         data: {
-    //                             maBT: '', // Mã bài thi
-    //                             time: timer,
-    //                         },
-    //                         success: function(response) {
-    //                             console.log(response);
-    //                             console.log("Updated count down");
-    //                         },
-    //                         error: function(xhr, status, error) {
-    //                             console.error('Error:', error);
-    //                         }
-    //                     });
-
-    //                     minutes = Math.floor(countDownDate / 60);
-    //                     seconds = Math.floor(countDownDate % 60);
-    //                     // Time calculations for days, hours, minutes and seconds
-    //                     minutes = minutes < 10 ? "0" + minutes : minutes;
-    //                     seconds = seconds < 10 ? "0" + seconds : seconds;
-
-    //                     display.textContent = minutes + ":" + seconds;
-
-    //                     if (--timer < 0) {
-    //                         clearInterval(timerInterval);
-    //                         // Tự động nộp bài khi hết giờ
-    //                         aler("Đã hết thời gian làm bài");
-    //                         document.getElementById('thiForm').submit();
-    //                     }
-    //                 }, 1000);
-    //             }
-
-    //             // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
-    //             $(modal).on('shown.bs.modal', function () {
-    //                 var display = modal.querySelector('#timer');
-    //                 startTimer(timeLimit, display);
-    //             });
-
-    //             // Hủy đếm ngược khi modal bị ẩn
-    //             $(modal).on('hidden.bs.modal', function () {
-    //                 clearInterval(timerInterval);
-    //             });
-
-    //             $(modal).modal('show');
-    //         });
-    //     });
-    // });
 
 </script>
 

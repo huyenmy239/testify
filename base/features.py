@@ -1085,7 +1085,6 @@ def delete_Dangky(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = f"EXEC SP_DELETE_DANGKYTHI '{malop}', '{mamh}', {lan}"
-            print(f"Query: {query}")
             cur.execute(query)
             con.commit()
 
@@ -1178,7 +1177,7 @@ def get_list_questions(request):
             questions = []
             for row in res:
                 questions.append({"stt": row[0], "noidung": row[1], "a": row[2], "b": row[3],
-                                  "c": row[4], "d": row[5], "traloi": row[6]})
+                                  "c": row[4], "d": row[5], "traloi": row[6], "id": row[7]})
                 
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")
@@ -1190,60 +1189,86 @@ def get_list_questions(request):
                 con.close()
         print(f"Danh sách câu hỏi: {questions}")
         # context = {"questions": questions, "time": tt_baithi['tgcl']}
-        return JsonResponse({"questions": questions, "time": tt_baithi['tgcl']})
+        return JsonResponse({"questions": questions, "time": tt_baithi['tgcl'], "examID": tt_baithi['mabt']})
 
 def update_time(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
     if request.method == 'POST':
-        # coso = request.POST.get('sv_coso')
-        # if "1" in coso:
-        #     db_alias = DB_CONNECTION["servers"][1]
-        # else:
-        #     db_alias = DB_CONNECTION["servers"][2]
-            
-        # request.session['current_server'] = db_alias
-        # print(f"Current: {request.session.get('current_server')}")
-
-        # maBT = request.POST.get('maBT')
-        # timer = request.POST.get('time')
-        
-        # cur, con = None, None
-        # try:
-        #     db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
-        #     con = db.connect_to_database()
-        #     cur = con.cursor()
-        #     cur.execute(f"EXEC SP_UPDATE_TIME '{maBT}', \"{timer}\"")
-        # except pyodbc.Error as e:
-        #     print(f"Error connecting to database: {e}")
-        #     return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-        # finally:
-        #     if cur is not None:
-        #         cur.close()
-        #     if con is not None:
-        #         con.close()
-        # HttpResponse("Update left time successfully!")
-        return JsonResponse({'test' :' test'})
-                
-def update_answer(request):
-    if request.method == 'POST':
-        coso = request.POST.get('sv_coso')
-        if "1" in coso:
-            db_alias = DB_CONNECTION["servers"][1]
-        else:
-            db_alias = DB_CONNECTION["servers"][2]
-            
-        request.session['current_server'] = db_alias
-        print(f"Current: {request.session.get('current_server')}")
-
-        maBT = request.POST.get('maBT')
-        cau_hoi = request.POST.get('cauhoi')
-        cau_tra_loi = request.POST.get('selectedOption')
+        mabt = request.POST.get('maBT')
+        timer = request.POST.get('time')
         
         cur, con = None, None
         try:
-            db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            cur.execute(f"EXEC SP_TRA_LOI_CAU_HOI '{maBT}', '{cau_hoi}', '{cau_tra_loi}'")
+            query = f"EXEC SP_UpdateTime {int(mabt)}, {int(timer)}"
+            print(query)
+            cur.execute(query)
+            con.commit()
+
+        except pyodbc.Error as e:
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        except Exception as e:
+            error_message = f"An unexpected error occurred.\nError: {e}"
+            print(error_message)
+            return HttpResponse(error_message, status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        return JsonResponse({'test' :' test'})
+    
+    messages.error(request, "Yêu cầu không hợp lệ.")
+    return HttpResponse(status=405)
+                
+# def update_answer(request):
+#     if request.method == 'POST':
+            
+#         request.session['current_server'] = db_alias
+#         print(f"Current: {request.session.get('current_server')}")
+
+#         maBT = request.POST.get('maBT')
+#         cau_hoi = request.POST.get('cauhoi')
+#         cau_tra_loi = request.POST.get('selectedOption')
+        
+#         cur, con = None, None
+#         try:
+#             db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
+#             con = db.connect_to_database()
+#             cur = con.cursor()
+#             cur.execute(f"EXEC SP_TRA_LOI_CAU_HOI '{maBT}', '{cau_hoi}', '{cau_tra_loi}'")
+#         except pyodbc.Error as e:
+#             print(f"Error connecting to database: {e}")
+#             return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+#         finally:
+#             if cur is not None:
+#                 cur.close()
+#             if con is not None:
+#                 con.close()
+#         HttpResponse("Update the answer successfully!")
+
+
+def update_answer(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        examId = request.POST.get("examId")
+        ques = request.POST.get("questionId")
+        ans = request.POST.get("answer")
+
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_TraLoiCauHoi {int(examId)}, {int(ques)}, N'{ans}'"
+            print(query)
+            cur.execute(query)
+            con.commit()
+
         except pyodbc.Error as e:
             print(f"Error connecting to database: {e}")
             return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -1252,7 +1277,7 @@ def update_answer(request):
                 cur.close()
             if con is not None:
                 con.close()
-        HttpResponse("Update the answer successfully!")
+        return JsonResponse({'test' :' test'})
 
 
 def exam_scores_list(request):
