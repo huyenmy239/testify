@@ -325,6 +325,8 @@
         var thiButtons = document.querySelectorAll('.btn-thi');
         var mabt = ""
 
+        var timerInterval; // Khai báo biến toàn cục để giữ tham chiếu đến timer
+
         thiButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 var modal = document.getElementById('thiModal');
@@ -333,6 +335,9 @@
                 var trinhdo = button.getAttribute('data-trinhdo');
                 var socauthi = button.getAttribute('data-socauthi');
                 var masv = '{{ thongtin.0 }}';
+                var timeLimit;
+
+                // Fetch questions via AJAX
                 $.ajax({
                     url: '{% url "list-question" %}',
                     type: 'POST',
@@ -347,8 +352,8 @@
                     success: function(response) {
                         console.log(response);
                         console.log("Get data successfully!");
-                        mabt = response.examID;
-
+                        var mabt = response.examID;
+                        timeLimit = response.time;
                         const form = document.getElementById('thiForm');
                         form.innerHTML = '';
 
@@ -381,29 +386,30 @@
                         });
 
                         // Hiển thị modal
-                        $('#thiModal').modal('show');
+                        $(modal).modal('show');
+
+                        // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
+                        $(modal).off('shown.bs.modal'); // Loại bỏ sự kiện cũ trước khi thêm sự kiện mới
+                        $(modal).on('shown.bs.modal', function () {
+                            var display = modal.querySelector('#timer');
+                            startTimer(timeLimit, display, mabt);
+                        });
+
+                        // Hủy đếm ngược khi modal bị ẩn
+                        $(modal).off('hidden.bs.modal'); // Loại bỏ sự kiện cũ trước khi thêm sự kiện mới
+                        $(modal).on('hidden.bs.modal', function () {
+                            clearInterval(timerInterval);
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
                     }
                 });
-                $(modal).modal('show');
-            });
-        });
 
-        
-
-        var thiButtons = document.querySelectorAll('.btn-thi');
-        var modal;
-        thiButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var timerInterval;
-                modal = document.getElementById('thiModal');
-                $(modal).modal('show');
-                var timeLimit = parseInt(button.getAttribute("data-thoigian")) * 60;
-                var examID = button.getAttribute("data-mabt")
-                function startTimer(duration, display) {
+                // Start timer function
+                function startTimer(duration, display, mabt) {
                     var timer = duration, minutes, seconds;
+                    clearInterval(timerInterval); // Dừng bộ đếm thời gian cũ trước khi khởi tạo bộ đếm thời gian mới
                     timerInterval = setInterval(function () {
                         $.ajax({
                             url: "{% url 'update-time' %}",
@@ -423,12 +429,12 @@
                         });
                         minutes = Math.floor(timer / 60);
                         seconds = Math.floor(timer % 60);
-    
+
                         minutes = minutes < 10 ? "0" + minutes : minutes;
                         seconds = seconds < 10 ? "0" + seconds : seconds;
-    
+
                         display.textContent = minutes + ":" + seconds;
-    
+
                         if (--timer < 0) {
                             clearInterval(timerInterval);
                             alert("Đã hết thời gian làm bài");
@@ -436,32 +442,10 @@
                         }
                     }, 1000);
                 }
-    
-                // Hủy đếm ngược khi modal bị ẩn
-                $(modal).on('hidden.bs.modal', function () {
-                    clearInterval(timerInterval);
-                });
-    
-                // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
-                $(modal).on('shown.bs.modal', function () {
-                    var display = modal.querySelector('#timer');
-
-                    startTimer(timeLimit, display);
-
-                });
-    
-                
-                document.querySelectorAll('.modal#thiModal .close').forEach(function(closeButton) {
-                    closeButton.addEventListener('click', function() {
-                        if (confirm('Are you sure you want to save this thing into the database?')) {
-                            $(modal).modal('hide');
-                        }
-                    });
-                });
-                // $(modal).modal('show');
             });
-
         });
+
+
         
         // Update answer
         function sendAnswer(questionId, answer) {
