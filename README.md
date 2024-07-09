@@ -77,27 +77,59 @@
 
 1. Đầu tiên bạn cần phải đảm bảo đã tải đầy đủ các tài nguyên cần thiết [ở đây](#prerequisites).
 
-2. Tạo database và phân tán.
+2. [Cấu hình phân tán](./doc/Configure-Distribution/README.md):
 
-3. Clone repo này về.
+3. Tạo link và database.
 
-```bash
-git clone 
-cd testify
-```
+    - Tạo database mới với tên: **TTN**
 
-4. Tải các package cần thiết.
+    - Tạo LINK0 tại Server gốc -> chính nó. ([Hướng dẫn tạo link](./doc/Create-Linked-Servers/README.md))
 
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+    - Mở file sql [TTN_1](./TTN_1.sql) và chạy.
 
-5. Chạy project:
+4. Phân tán: 
 
-```bash
-python manage.py runserver
-```
+    Tạo ra 3 server:
+
+    - Server 1: [TTN_CS1](./doc/Create-new-Publication/README-TTN-CS1.md)
+
+    - Server 2: [TTN_CS2](./doc/Create-new-Publication/README-TTN-CS2.md)
+
+    - Server 3: [TTN_TC](./doc/Create-new-Publication/README-TTN-TC.md)
+
+        ![List of publications](./imgs/Publications.png)
+
+    - Sau đó ta đẩy xuống các site tương ứng: 
+
+5. [Phân quyền](./doc/Authorize/README.md)
+
+6. Clone repo này về.
+
+    ```bash
+    git clone 
+    cd testify
+    ```
+
+7. Tải các package cần thiết.
+
+    ```bash
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+
+8. Cấu hình lại project.
+
+    - Mở file [/base/views.py](./base/views.py).
+
+    - SERVER_LIST: Tên server của bạn.
+
+    - PASSWORD: Mật khẩu server của bạn.
+
+9. Chạy project:
+
+    ```bash
+    python manage.py runserver
+    ```
 
 ## [Contributors](#contributors) <a id="contributors"></a>
 
