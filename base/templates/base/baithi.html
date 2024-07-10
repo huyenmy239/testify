@@ -1,0 +1,69 @@
+{% extends request.session.base_template %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- row -->
+        <div class="row">
+            <div class="col-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="main-table" class="display" style="min-width: 845px">
+                                <thead>
+                                    <tr>
+                                        <th>Môn học</th>
+                                        <th>Trình độ</th>
+                                        <th>Lần</th>
+                                        <th>Ngày thi</th>
+                                        <th>Điểm</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dk in dangky %}
+                                    <tr>
+                                        <td>{{dk.monhoc.tenmh}}</td>
+                                        <td>{{dk.trinhdo}}</td>
+                                        <td>{{dk.lan}}</td>
+                                        <td>{{dk.ngaythi}}</td>
+                                        <td>{{dk.diem}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary">Xem lại</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var table = $('#main-table').DataTable();
+    });
+</script>
+
+{% endblock content %}

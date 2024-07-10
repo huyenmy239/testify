@@ -31,6 +31,7 @@ urlpatterns = [
     path('dangkythi/', views.dangky_table, name='dangkythi'),
     path('dangkythi_gv/', views.dangky_table_gv, name='dangkythi-gv'),
     path('danhsachthi/', views.dangky_table_sv, name='danhsachthi'),
+    path('dathi/', views.dathi_table_sv, name='dathi'),
 
     # Tính năng của Coso
     path('add_khoa/', features.add_Khoa, name='add-khoa'),

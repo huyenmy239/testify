@@ -134,6 +134,28 @@ class Dangky:
         self.socauthi = socauthi
         self.thoigian = thoigian
 
+
+class DangkySV:
+    def __init__(self, gv: Dict, monhoc: Dict, lop: Dict, trinhdo: str, ngaythi: datetime, lan: int, socauthi: int, thoigian: int, mabt: int):
+        self.gv = gv
+        self.monhoc = monhoc
+        self.lop = lop
+        self.trinhdo = trinhdo
+        self.ngaythi = ngaythi
+        self.lan = lan
+        self.socauthi = socauthi
+        self.thoigian = thoigian
+        self.mabt = mabt
+
+
+class Dotthi:
+    def __init__(self, monhoc: Dict, trinhdo: str, lan: int, ngaythi: datetime, diem: float):
+        self.monhoc = monhoc
+        self.trinhdo = trinhdo
+        self.lan = lan
+        self.ngaythi = ngaythi
+        self.diem = diem
+
 # class Baithi(models.Model):
 #     mabt = models.CharField(db_column='MABT', primary_key=True, max_length=10, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
 #     masv = models.ForeignKey('Sinhvien', models.DO_NOTHING, db_column='MASV')  # Field name made lowercase.

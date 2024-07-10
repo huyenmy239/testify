@@ -57,11 +57,18 @@
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </a>
                                             {% elif request.session.base_template == "main_SV.html" %}
+                                            {% if dk.mabt is None %}
                                             <button type="button" class="btn btn-success btn-thi" 
                                                 data-toggle="modal" data-target="#thiModal" data-thoigian="{{ dk.thoigian }}"
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi</button>
-                                            {% elif request.session.base_template == "main_GV.html" %}
+                                            {% else %}
+                                            <button type="button" class="btn btn-warning btn-thi" 
+                                                data-toggle="modal" data-target="#thiModal" data-thoigian="{{ dk.thoigian }}"
+                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
+                                                data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Tiếp tục</button>
+                                            {% endif %}
+                                                {% elif request.session.base_template == "main_GV.html" %}
                                                 <button type="button" class="btn btn-success btn-thithu" 
                                                 data-toggle="modal" data-target="#thithuModal" data-thoigian="{{ dk.thoigian }}"
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
@@ -325,43 +332,6 @@
     var mabt = "";
     var socau = "";
 
-    // function handleSubmitExam() {
-    //     $.ajax({
-    //         url: '{% url "exam-result" %}',
-    //         type: 'POST',
-    //         data: {
-    //             mabt: mabt,
-    //             socau: socau,
-    //             csrfmiddlewaretoken: '{{ csrf_token }}'
-    //         },
-    //         success: function(response) {
-    //             var diem = response.diem;
-    //             alert("Bạn đạt được " + diem + " diem.");
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error:', error);
-    //         }
-    //     });
-    // }
-
-    // var ajaxUpdate;
-
-    // function submitAlert() {
-    //     var thiModal = document.getElementById('thiModal');
-    //     if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
-    //         $(thiModal).modal('hide');
-    //         if (ajaxUpdate && typeof ajaxUpdate.abort === 'function') {
-    //             ajaxUpdate.abort();
-    //         }
-    //         handleSubmitExam();
-    //     }
-    // }
-
-    function closeModal() {
-        var thiModal = document.getElementById('thiModal');
-        submitAlert();
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         var thiModal = document.getElementById('thiModal');
 
@@ -489,11 +459,14 @@
                         display.textContent = minutes + ":" + seconds;
 
                         if (--timer < 0) {
-                            clearInterval(timerInterval);
                             alert("Đã hết thời gian làm bài");
-                            // document.getElementById('thiForm').submit();
+                            submitAlert();
                         }
                     }, 1000);
+                }
+
+                function closeModal() {
+                    submitAlert();
                 }
 
                 var submitButton = document.getElementById('submitExamButton');

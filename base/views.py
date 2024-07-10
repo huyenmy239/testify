@@ -453,8 +453,8 @@ def dangky_table_sv(request):
                 dangky_rows = cur.fetchall()
 
                 for row in dangky_rows:
-                    dangky_object = Dangky(gv=gv[row[0]], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
-                                        ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
+                    dangky_object = DangkySV(gv=gv[row[0]], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
+                                        ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7], mabt=row[8])
                     dangky.append(dangky_object)
 
     except pyodbc.Error as e:
@@ -464,3 +464,41 @@ def dangky_table_sv(request):
 
     context = {"dangky": dangky, "thongtin": info}
     return render(request, 'base/dangkythi.html', context)
+
+
+def dathi_table_sv(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    mon = {}
+    dangky = []
+
+    try:
+        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+
+        with db.connect_to_database() as con:
+            with con.cursor() as cur:
+
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
+                mon_rows = cur.fetchall()
+
+                for row in mon_rows:
+                    mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
+
+                masv = request.session.get("current_info")[0]
+
+                cur.execute(f"EXEC SP_LayDangKyDaThiTheoMaSV '{masv}'")
+                dangky_rows = cur.fetchall()
+
+                for row in dangky_rows:
+                    dangky_object = Dotthi(monhoc=mon[row[0]], trinhdo=row[1], lan=row[2],
+                                           ngaythi=row[3], diem=row[4])
+                    dangky.append(dangky_object)
+
+    except pyodbc.Error as e:
+        return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+
+    info = request.session.get('current_info')
+
+    context = {"dangky": dangky, "thongtin": info}
+    return render(request, 'base/baithi.html', context)
