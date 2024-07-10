@@ -15,6 +15,7 @@ urlpatterns = [
     path('list-question', features.get_list_questions, name='list-question'),
     path('update-answer', features.update_answer, name='update-answer'),
     path('update-time', features.update_time, name='update-time'),
+    path('exam-result', features.set_score, name='exam-result'),
 
     path('report-score', features.exam_scores_list, name='report-score'),
     path('report-registration', features.exam_registration_list, name='report-registration'),

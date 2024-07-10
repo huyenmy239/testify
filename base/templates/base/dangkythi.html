@@ -176,7 +176,7 @@
                     </div>
                     <div class="form-group">
                         <label for="addSocauthi">Số câu thi:</label>
-                        <input type="number" value="10" min="10" max="500" class="form-control" id="addSocauthi" name="addSocauthi" required>
+                        <input type="number" value="1" min="1" max="500" class="form-control" id="addSocauthi" name="addSocauthi" required>
                     </div>
                     <div class="form-group">
                         <label for="addThoigian">Thời gian (p):</label>
@@ -236,7 +236,7 @@
                 <div class="container-fluid">
                     <div class="row justify-content-end">
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary">Nộp bài</button>
+                            <button type="submit" class="btn btn-primary" id="submitExamButton">Nộp bài</button>
                         </div>
                     </div>
                 </div>
@@ -244,6 +244,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Report Modal -->
 <div class="modal fade custom-modal" id="reportModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -321,11 +322,66 @@
         attachEventListeners();
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        var thiButtons = document.querySelectorAll('.btn-thi');
-        var mabt = ""
+    var mabt = "";
+    var socau = "";
 
-        var timerInterval; // Khai báo biến toàn cục để giữ tham chiếu đến timer
+    function handleSubmitExam() {
+        $.ajax({
+            url: '{% url "exam-result" %}',
+            type: 'POST',
+            data: {
+                mabt: mabt,
+                socau: socau,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                var diem = response.diem;
+                alert("Bạn đạt được " + diem + " diem.");
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    var ajaxUpdate;
+
+    function submitAlert() {
+        var thiModal = document.getElementById('thiModal');
+        if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
+            $(thiModal).modal('hide');
+            if (ajaxUpdate && typeof ajaxUpdate.abort === 'function') {
+                ajaxUpdate.abort();
+            }
+            handleSubmitExam();
+        }
+    }
+
+    function closeModal() {
+        var thiModal = document.getElementById('thiModal');
+        submitAlert();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var thiModal = document.getElementById('thiModal');
+
+        var submitButton = document.getElementById('submitExamButton');
+
+        submitButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            submitAlert();
+        });
+
+        document.addEventListener('click', function(event) {
+            var isClickInside = thiModal.contains(event.target);
+
+            if (!isClickInside && $(thiModal).is(':visible')) {
+                alert("Bạn cần thao tác bên trong bài thi.");
+            }
+        });
+
+        var thiButtons = document.querySelectorAll('.btn-thi');
+        var timerInterval;
 
         thiButtons.forEach(function(button) {
             button.addEventListener('click', function() {
@@ -334,10 +390,10 @@
                 var lan = button.getAttribute('data-lan');
                 var trinhdo = button.getAttribute('data-trinhdo');
                 var socauthi = button.getAttribute('data-socauthi');
+                socau = socauthi;
                 var masv = '{{ thongtin.0 }}';
                 var timeLimit;
 
-                // Fetch questions via AJAX
                 $.ajax({
                     url: '{% url "list-question" %}',
                     type: 'POST',
@@ -352,7 +408,7 @@
                     success: function(response) {
                         console.log(response);
                         console.log("Get data successfully!");
-                        var mabt = response.examID;
+                        mabt = response.examID;
                         timeLimit = response.time;
                         const form = document.getElementById('thiForm');
                         form.innerHTML = '';
@@ -385,18 +441,15 @@
                             form.appendChild(questionContainer);
                         });
 
-                        // Hiển thị modal
                         $(modal).modal('show');
 
-                        // Khởi tạo và bắt đầu đếm ngược khi modal được hiển thị
-                        $(modal).off('shown.bs.modal'); // Loại bỏ sự kiện cũ trước khi thêm sự kiện mới
+                        $(modal).off('shown.bs.modal');
                         $(modal).on('shown.bs.modal', function () {
                             var display = modal.querySelector('#timer');
                             startTimer(timeLimit, display, mabt);
                         });
 
-                        // Hủy đếm ngược khi modal bị ẩn
-                        $(modal).off('hidden.bs.modal'); // Loại bỏ sự kiện cũ trước khi thêm sự kiện mới
+                        $(modal).off('hidden.bs.modal');
                         $(modal).on('hidden.bs.modal', function () {
                             clearInterval(timerInterval);
                         });
@@ -409,7 +462,7 @@
                 // Start timer function
                 function startTimer(duration, display, mabt) {
                     var timer = duration, minutes, seconds;
-                    clearInterval(timerInterval); // Dừng bộ đếm thời gian cũ trước khi khởi tạo bộ đếm thời gian mới
+                    clearInterval(timerInterval);
                     timerInterval = setInterval(function () {
                         $.ajax({
                             url: "{% url 'update-time' %}",
@@ -444,12 +497,10 @@
                 }
             });
         });
-
-
         
         // Update answer
         function sendAnswer(questionId, answer) {
-            $.ajax({
+            ajaxUpdate = $.ajax({
                 url: "{% url 'update-answer' %}",
                 type: 'POST',
                 data: {

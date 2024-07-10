@@ -1223,32 +1223,6 @@ def update_time(request):
     
     messages.error(request, "Yêu cầu không hợp lệ.")
     return HttpResponse(status=405)
-                
-# def update_answer(request):
-#     if request.method == 'POST':
-            
-#         request.session['current_server'] = db_alias
-#         print(f"Current: {request.session.get('current_server')}")
-
-#         maBT = request.POST.get('maBT')
-#         cau_hoi = request.POST.get('cauhoi')
-#         cau_tra_loi = request.POST.get('selectedOption')
-        
-#         cur, con = None, None
-#         try:
-#             db = DatabaseModel(server=request.session['current_server'], database=DATABASE, login="sa", pw="239003")
-#             con = db.connect_to_database()
-#             cur = con.cursor()
-#             cur.execute(f"EXEC SP_TRA_LOI_CAU_HOI '{maBT}', '{cau_hoi}', '{cau_tra_loi}'")
-#         except pyodbc.Error as e:
-#             print(f"Error connecting to database: {e}")
-#             return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
-#         finally:
-#             if cur is not None:
-#                 cur.close()
-#             if con is not None:
-#                 con.close()
-#         HttpResponse("Update the answer successfully!")
 
 
 def update_answer(request):
@@ -1265,7 +1239,6 @@ def update_answer(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = f"EXEC SP_TraLoiCauHoi {int(examId)}, {int(ques)}, N'{ans}'"
-            print(query)
             cur.execute(query)
             con.commit()
 
@@ -1278,6 +1251,38 @@ def update_answer(request):
             if con is not None:
                 con.close()
         return JsonResponse({'test' :' test'})
+    
+
+def set_score(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        mabt = request.POST.get("mabt")
+        socau = request.POST.get("socau")
+        diemthi: str
+
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_TinhDiem {int(mabt)}, {int(socau)}"
+            print(f"Query: {query}")
+            cur.execute(query)
+            con.commit()
+
+            diemthi = "Thành công"
+                
+
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        return JsonResponse({'diem' :diemthi})
 
 
 def exam_scores_list(request):
