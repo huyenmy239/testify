@@ -115,6 +115,8 @@ GRANT EXEC ON [dbo].[SP_TaoCauHoi] TO Giangvien
 GO
 GRANT EXEC ON [dbo].[SP_UPDATE_BODE] TO Giangvien
 GO
+GRANT EXEC ON [dbo].[SP_DSDangKyThi] TO Giangvien
+GO
 
 CREATE USER TH234 FOR LOGIN dvt
 GO
@@ -158,6 +160,14 @@ GO
 GRANT EXEC ON [dbo].[SP_TaoCauHoi] TO Sinhvien
 GO
 GRANT EXEC ON [dbo].[SP_ThongTinBaiThi] TO Sinhvien
+GO
+GRANT EXEC ON [dbo].[SP_LayDangKyDaThiTheoMaSV] TO Sinhvien
+GO
+GRANT EXEC ON [dbo].[SP_TinhDiem] TO Sinhvien
+GO
+GRANT EXEC ON [dbo].[SP_TraLoiCauHoi] TO Sinhvien
+GO
+GRANT EXEC ON [dbo].[SP_UpdateTime] TO Sinhvien
 GO
 
 CREATE USER student FOR LOGIN lvt
