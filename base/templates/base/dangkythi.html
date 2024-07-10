@@ -325,37 +325,37 @@
     var mabt = "";
     var socau = "";
 
-    function handleSubmitExam() {
-        $.ajax({
-            url: '{% url "exam-result" %}',
-            type: 'POST',
-            data: {
-                mabt: mabt,
-                socau: socau,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function(response) {
-                var diem = response.diem;
-                alert("Bạn đạt được " + diem + " diem.");
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-            }
-        });
-    }
+    // function handleSubmitExam() {
+    //     $.ajax({
+    //         url: '{% url "exam-result" %}',
+    //         type: 'POST',
+    //         data: {
+    //             mabt: mabt,
+    //             socau: socau,
+    //             csrfmiddlewaretoken: '{{ csrf_token }}'
+    //         },
+    //         success: function(response) {
+    //             var diem = response.diem;
+    //             alert("Bạn đạt được " + diem + " diem.");
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error:', error);
+    //         }
+    //     });
+    // }
 
-    var ajaxUpdate;
+    // var ajaxUpdate;
 
-    function submitAlert() {
-        var thiModal = document.getElementById('thiModal');
-        if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
-            $(thiModal).modal('hide');
-            if (ajaxUpdate && typeof ajaxUpdate.abort === 'function') {
-                ajaxUpdate.abort();
-            }
-            handleSubmitExam();
-        }
-    }
+    // function submitAlert() {
+    //     var thiModal = document.getElementById('thiModal');
+    //     if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
+    //         $(thiModal).modal('hide');
+    //         if (ajaxUpdate && typeof ajaxUpdate.abort === 'function') {
+    //             ajaxUpdate.abort();
+    //         }
+    //         handleSubmitExam();
+    //     }
+    // }
 
     function closeModal() {
         var thiModal = document.getElementById('thiModal');
@@ -494,6 +494,51 @@
                             // document.getElementById('thiForm').submit();
                         }
                     }, 1000);
+                }
+
+                var submitButton = document.getElementById('submitExamButton');
+                submitButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // $(modal).off('hidden.bs.modal');
+                    // $(modal).on('hidden.bs.modal', function () {
+                    //     clearInterval(timerInterval);
+                    // });
+                    submitAlert()
+                });
+    
+                function handleSubmitExam() {
+                    clearInterval(timerInterval);
+                    $.ajax({
+                        url: '{% url "exam-result" %}',
+                        type: 'POST',
+                        data: {
+                            mabt: mabt,
+                            socau: socauthi,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            var diem = response.diem;
+                            alert("Bạn đạt được " + diem + " diem.");
+                            
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+        
+                function submitAlert() {
+                    var thiModal = document.getElementById('thiModal');
+                    if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
+                        //event.preventDefault();
+                        // clearInterval(timerInterval);
+                        $(thiModal).modal('hide');
+                        $(modal).off('hidden.bs.modal');
+                        $(modal).on('hidden.bs.modal', function () {
+                            clearInterval(timerInterval);
+                        });
+                        handleSubmitExam();
+                    }
                 }
             });
         });

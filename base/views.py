@@ -78,10 +78,10 @@ def khoa_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM COSO")
+                cur.execute("SELECT * FROM V_COSOTABLE")
                 coso_rows = cur.fetchall()
 
-                cur.execute("SELECT * FROM KHOA")
+                cur.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur.fetchall()
 
                 coso = {row[0]: {"macs": row[0], "tencs": row[1], "diachi": row[2]} for row in coso_rows}
@@ -109,10 +109,10 @@ def lop_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
-                cur.execute("SELECT * FROM KHOA")
+                cur.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur.fetchall()
 
                 khoa = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
@@ -140,18 +140,18 @@ def gv_table(request):
         db1 = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw=PASSWORD)
         with db1.connect_to_database() as con1:
             with con1.cursor() as cur1:
-                cur1.execute("SELECT * FROM KHOA")
+                cur1.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur1.fetchall()
                 khoa = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
 
         db2 = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         with db2.connect_to_database() as con2:
             with con2.cursor() as cur2:
-                cur2.execute("SELECT * FROM GIAOVIEN")
+                cur2.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur2.fetchall()
                 gv = [Giangvien(magv=row[0], ho=row[1], ten=row[2], diachi=row[3], khoa=khoa[row[4]]) for row in gv_rows]
 
-                cur2.execute("SELECT * FROM KHOA")
+                cur2.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur2.fetchall()
                 khoa_list = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
 
@@ -176,10 +176,10 @@ def sv_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
-                cur.execute("SELECT * FROM SINHVIEN")
+                cur.execute("SELECT * FROM V_SINHVIENTABLE")
                 sv_rows = cur.fetchall()
                 
                 for row in lop_rows:
@@ -209,7 +209,7 @@ def mon_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 rows = cur.fetchall()
                 
                 for row in rows:
@@ -238,19 +238,19 @@ def bode_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM GIAOVIEN")
+                cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
                 
                 for row in gv_rows:
                     gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
                 
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
-                cur.execute("SELECT * FROM BODE")
+                cur.execute("SELECT * FROM V_BODETABLE")
                 bode_rows = cur.fetchall()
                 
                 for row in bode_rows:
@@ -281,12 +281,12 @@ def bode_table_gv(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
                 for row in lop_rows:
                     lop[row[0]] = {"malop": row[0], "tenlop": row[1]}
@@ -326,25 +326,25 @@ def dangky_table(request):
         
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM GIAOVIEN")
+                cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
 
                 for row in gv_rows:
                     gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
 
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
                     lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
 
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
-                cur.execute("SELECT * FROM GIAOVIEN_DANGKY")
+                cur.execute("SELECT * FROM V_GVDKTABLE")
                 dangky_rows = cur.fetchall()
 
                 for row in dangky_rows:
@@ -375,13 +375,13 @@ def dangky_table_gv(request):
         db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
         with db.connect_to_database() as con:
             with con.cursor() as cur:
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
 
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
@@ -429,19 +429,19 @@ def dangky_table_sv(request):
         with db.connect_to_database() as con:
             with con.cursor() as cur:
 
-                cur.execute("SELECT * FROM MONHOC")
+                cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
 
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
-                cur.execute("SELECT * FROM LOP")
+                cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
                     lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
 
-                cur.execute("SELECT * FROM GIAOVIEN")
+                cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
 
                 for row in gv_rows:
