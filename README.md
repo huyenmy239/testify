@@ -147,6 +147,7 @@
         <td>
             <ul>
                 <li>Thành viên có mặt rất năng suất, nhưng hay tạo ra những cái bug oái ăm, rất đáng bị ăn đòn.</li>
+                <li><a href="https://giphy.com/gifs/morning-monday-zzz-gePUWJ4AXHu92">via GIPHY</a></li>
             </ul>
         </td>
     </tr>
@@ -157,7 +158,7 @@
         <td>
             <ul>
                 <li>Thành viên có mặt mang tính chất đủ team, tạo tiếng cười.</li>
-                <li><a href="https://giphy.com/gifs/tongue-goodnight-sJWNLTclcvVmw">via GIPHY</a></li>
+                <li><a href="https://giphy.com/gifs/tongue-goodnight-sJWNLTclcvVmw">Gif</a></li>
             </ul>
         </td>
     </tr>
