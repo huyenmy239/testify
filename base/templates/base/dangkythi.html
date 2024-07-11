@@ -36,6 +36,7 @@
                                         <th class="text-center">Số câu thi</th>
                                         <th class="text-center">Thời gian (phút)</th>
                                         <th></th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,7 +74,12 @@
                                                 data-toggle="modal" data-target="#thithuModal" data-thoigian="{{ dk.thoigian }}"
                                                 data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
-                                                <button type="button" class="btn btn-secondary btn-report" 
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            
+                                            {% if request.session.base_template == "main_GV.html" %}
+                                            <button type="button" class="btn btn-secondary btn-report" 
                                                 data-toggle="modal" data-target="#reportModal" 
                                                 data-lan="{{ dk.lan }}" data-mamh="{{ dk.monhoc.mamon }}" data-tenmh="{{ dk.monhoc.tenmh }}"
                                                 data-malop="{{ dk.lop.malop }}" data-tenlop="{{ dk.lop.tenlop }}">Danh sách điểm</button>
@@ -119,6 +125,7 @@
                                         {% else %}
                                         <th></th>
                                         {% endif %}
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -286,6 +293,10 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var table = $('#main-table').DataTable({
@@ -412,12 +423,21 @@
                         });
 
                         $(modal).modal('show');
-
+                        // $(modal).modal({
+                        //     'show': true,
+                        //     'backdrop': 'static',
+                        //     'keyboard': false
+                        // })
                         $(modal).off('shown.bs.modal');
                         $(modal).on('shown.bs.modal', function () {
                             var display = modal.querySelector('#timer');
                             startTimer(timeLimit, display, mabt);
                         });
+
+                        // $(modal).modal({
+                        //     'backdrop': 'static',
+                        //     'keyboard': false
+                        // })
 
                         $(modal).off('hidden.bs.modal');
                         $(modal).on('hidden.bs.modal', function () {
@@ -472,10 +492,6 @@
                 var submitButton = document.getElementById('submitExamButton');
                 submitButton.addEventListener('click', function(event) {
                     event.preventDefault();
-                    // $(modal).off('hidden.bs.modal');
-                    // $(modal).on('hidden.bs.modal', function () {
-                    //     clearInterval(timerInterval);
-                    // });
                     submitAlert()
                 });
     
@@ -501,11 +517,10 @@
                 }
         
                 function submitAlert() {
-                    var thiModal = document.getElementById('thiModal');
                     if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
                         //event.preventDefault();
                         // clearInterval(timerInterval);
-                        $(thiModal).modal('hide');
+                        $(modal).modal('hide');
                         $(modal).off('hidden.bs.modal');
                         $(modal).on('hidden.bs.modal', function () {
                             clearInterval(timerInterval);
