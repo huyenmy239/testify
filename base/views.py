@@ -4,10 +4,11 @@ from django.http import HttpResponse
 from .models import *
 
 DATABASE = "TTN"
-SERVER_LIST = ["MIE"]
+SERVER_LIST = ["LAPTOP-KJ4L2LKH"]
 # Password for all instances
-PASSWORD = "239003"
-temp = DatabaseModel(server=SERVER_LIST[0], database=DATABASE, login="sa", pw=PASSWORD)
+PASSWORD = "Ntn@2003"
+temp = DatabaseModel(
+    server=SERVER_LIST[0], database=DATABASE, login="sa", pw=PASSWORD)
 temp.load_info()
 DB_CONNECTION = {
     "servers": SERVER_LIST + temp.server_list,
@@ -27,8 +28,9 @@ def login_register(request):
     danhsach_sv = []
 
     try:
-        db = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw=PASSWORD)
-        
+        db = DatabaseModel(
+            server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw=PASSWORD)
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_DSSINHVIENDANGKY")
@@ -39,7 +41,7 @@ def login_register(request):
 
     context = {"danhsach_cs": danhsach_cs, "danhsach_sv": danhsach_sv}
     return render(request, 'login_register.html', context)
-        
+
 
 def coso_table(request):
     db_alias = request.session.get('current_server')
@@ -48,14 +50,16 @@ def coso_table(request):
     coso = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM COSO")
                 rows = cur.fetchall()
 
-                coso = [Coso(macs=row[0], tencs=row[1], diachi=row[2]) for row in rows]
+                coso = [Coso(macs=row[0], tencs=row[1], diachi=row[2])
+                        for row in rows]
 
     except pyodbc.Error as e:
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -74,8 +78,9 @@ def khoa_table(request):
     khoa = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_COSOTABLE")
@@ -84,9 +89,11 @@ def khoa_table(request):
                 cur.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur.fetchall()
 
-                coso = {row[0]: {"macs": row[0], "tencs": row[1], "diachi": row[2]} for row in coso_rows}
+                coso = {row[0]: {"macs": row[0], "tencs": row[1],
+                                 "diachi": row[2]} for row in coso_rows}
 
-                khoa = [Khoa(makh=row[0], tenkh=row[1], coso=coso[row[2]]) for row in khoa_rows]
+                khoa = [Khoa(makh=row[0], tenkh=row[1], coso=coso[row[2]])
+                        for row in khoa_rows]
 
     except pyodbc.Error as e:
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -105,8 +112,9 @@ def lop_table(request):
     lop = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_LOPTABLE")
@@ -115,9 +123,11 @@ def lop_table(request):
                 cur.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur.fetchall()
 
-                khoa = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
+                khoa = {row[0]: {"makh": row[0], "tenkh": row[1],
+                                 "macs": row[2]} for row in khoa_rows}
 
-                lop = [Lop(malop=row[0], tenlop=row[1], khoa=khoa[row[2]]) for row in lop_rows]
+                lop = [Lop(malop=row[0], tenlop=row[1], khoa=khoa[row[2]])
+                       for row in lop_rows]
 
     except pyodbc.Error as e:
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -137,23 +147,28 @@ def gv_table(request):
     khoa_list = {}
 
     try:
-        db1 = DatabaseModel(server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw=PASSWORD)
+        db1 = DatabaseModel(
+            server=DB_CONNECTION["servers"][0], database=DATABASE, login="sa", pw=PASSWORD)
         with db1.connect_to_database() as con1:
             with con1.cursor() as cur1:
                 cur1.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur1.fetchall()
-                khoa = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
+                khoa = {row[0]: {"makh": row[0], "tenkh": row[1],
+                                 "macs": row[2]} for row in khoa_rows}
 
-        db2 = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+        db2 = DatabaseModel(server=db_alias, database=DATABASE, login=login.get(
+            'username'), pw=login.get('password'))
         with db2.connect_to_database() as con2:
             with con2.cursor() as cur2:
                 cur2.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur2.fetchall()
-                gv = [Giangvien(magv=row[0], ho=row[1], ten=row[2], diachi=row[3], khoa=khoa[row[4]]) for row in gv_rows]
+                gv = [Giangvien(magv=row[0], ho=row[1], ten=row[2],
+                                diachi=row[3], khoa=khoa[row[4]]) for row in gv_rows]
 
                 cur2.execute("SELECT * FROM V_KHOATABLE")
                 khoa_rows = cur2.fetchall()
-                khoa_list = {row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
+                khoa_list = {
+                    row[0]: {"makh": row[0], "tenkh": row[1], "macs": row[2]} for row in khoa_rows}
 
     except pyodbc.Error as e:
         return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
@@ -172,8 +187,9 @@ def sv_table(request):
     sv = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_LOPTABLE")
@@ -181,12 +197,14 @@ def sv_table(request):
 
                 cur.execute("SELECT * FROM V_SINHVIENTABLE")
                 sv_rows = cur.fetchall()
-                
+
                 for row in lop_rows:
-                    lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+                    lop[row[0]] = {"malop": row[0],
+                                   "tenlop": row[1], "makh": row[2]}
 
                 for row in sv_rows:
-                    sv_object = Sinhvien(masv=row[0], ho=row[1], ten=row[2], ngaysinh=row[3], diachi=row[4], lop=lop[row[5]])
+                    sv_object = Sinhvien(
+                        masv=row[0], ho=row[1], ten=row[2], ngaysinh=row[3], diachi=row[4], lop=lop[row[5]])
                     sv.append(sv_object)
 
     except pyodbc.Error as e:
@@ -205,13 +223,14 @@ def mon_table(request):
     mon = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
                 rows = cur.fetchall()
-                
+
                 for row in rows:
                     mon_object = Mon(mamh=row[0], tenmh=row[1])
                     mon.append(mon_object)
@@ -234,25 +253,27 @@ def bode_table(request):
     bode = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
-                
+
                 for row in gv_rows:
-                    gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+                    gv[row[0]] = {"magv": row[0], "ho": row[1],
+                                  "ten": row[2], "diachi": row[3], "makh": row[4]}
 
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
-                
+
                 for row in mon_rows:
                     mon[row[0]] = {"mamon": row[0], "tenmh": row[1]}
 
                 cur.execute("SELECT * FROM V_BODETABLE")
                 bode_rows = cur.fetchall()
-                
+
                 for row in bode_rows:
                     bode_object = Bode(cauhoi=row[0], monhoc=mon[row[1]], trinhdo=row[2], noidung=row[3],
                                        a=row[4], b=row[5], c=row[6], d=row[7], dapan=row[8], gv=gv[row[9]])
@@ -270,15 +291,16 @@ def bode_table(request):
 def bode_table_gv(request):
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
-    
+
     mon = {}
     lop = {}
     gv = {}
     bode = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
@@ -297,7 +319,7 @@ def bode_table_gv(request):
 
                 cur.execute(f"EXEC SP_LayCauHoiTheoMAGV '{magv}'")
                 bode_rows = cur.fetchall()
-                
+
                 for row in bode_rows:
                     bode_object = Bode(cauhoi=row[0], monhoc=mon[row[1]], trinhdo=row[2], noidung=row[3],
                                        a=row[4], b=row[5], c=row[6], d=row[7], dapan=row[8], gv=gv[magv]["tengv"])
@@ -308,7 +330,8 @@ def bode_table_gv(request):
 
     info = request.session.get('current_info')
 
-    context = {"bode": bode, "thongtin": info, "mon": mon, "gv": gv, "lop": lop}
+    context = {"bode": bode, "thongtin": info,
+               "mon": mon, "gv": gv, "lop": lop}
     return render(request, 'base/bode.html', context)
 
 
@@ -320,23 +343,26 @@ def dangky_table(request):
     lop = {}
     mon = {}
     dangky = []
-    
+
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
-        
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
+
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
 
                 for row in gv_rows:
-                    gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+                    gv[row[0]] = {"magv": row[0], "ho": row[1],
+                                  "ten": row[2], "diachi": row[3], "makh": row[4]}
 
                 cur.execute("SELECT * FROM V_LOPTABLE")
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
-                    lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+                    lop[row[0]] = {"malop": row[0],
+                                   "tenlop": row[1], "makh": row[2]}
 
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
                 mon_rows = cur.fetchall()
@@ -357,7 +383,8 @@ def dangky_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"dangky": dangky, "thongtin": info, "mon": mon, "gv": gv, "lop": lop}
+    context = {"dangky": dangky, "thongtin": info,
+               "mon": mon, "gv": gv, "lop": lop}
     return render(request, 'base/dangkythi.html', context)
 
 
@@ -372,7 +399,8 @@ def dangky_table_gv(request):
     input_lop = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
         with db.connect_to_database() as con:
             with con.cursor() as cur:
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
@@ -385,7 +413,8 @@ def dangky_table_gv(request):
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
-                    lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+                    lop[row[0]] = {"malop": row[0],
+                                   "tenlop": row[1], "makh": row[2]}
 
                 magv = request.session.get("current_info")[0]
                 tengv = request.session.get("current_info")[1]
@@ -396,7 +425,7 @@ def dangky_table_gv(request):
 
                 for row in dangky_rows:
                     dangky_object = Dangky(gv=gv[magv], monhoc=mon[row[1]], lop=lop[row[2]], trinhdo=row[3],
-                                        ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
+                                           ngaythi=row[4], lan=row[5], socauthi=row[6], thoigian=row[7])
                     input_mon.append(mon[row[1]]["tenmh"])
                     input_lop.append(lop[row[2]]["tenlop"])
                     dangky.append(dangky_object)
@@ -424,7 +453,8 @@ def dangky_table_sv(request):
     dangky = []
 
     try:
-        db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+        db = DatabaseModel(server=db_alias, database=DATABASE,
+                           login=login.get('username'), pw=login.get('password'))
 
         with db.connect_to_database() as con:
             with con.cursor() as cur:
@@ -439,13 +469,15 @@ def dangky_table_sv(request):
                 lop_rows = cur.fetchall()
 
                 for row in lop_rows:
-                    lop[row[0]] = {"malop": row[0], "tenlop": row[1], "makh": row[2]}
+                    lop[row[0]] = {"malop": row[0],
+                                   "tenlop": row[1], "makh": row[2]}
 
                 cur.execute("SELECT * FROM V_GIAOVIENTABLE")
                 gv_rows = cur.fetchall()
 
                 for row in gv_rows:
-                    gv[row[0]] = {"magv": row[0], "ho": row[1], "ten": row[2], "diachi": row[3], "makh": row[4]}
+                    gv[row[0]] = {"magv": row[0], "ho": row[1],
+                                  "ten": row[2], "diachi": row[3], "makh": row[4]}
 
                 masv = request.session.get("current_info")[0]
 

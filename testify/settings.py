@@ -77,52 +77,52 @@ WSGI_APPLICATION = 'testify.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 DATABASE_ROUTERS = ['base.db_router.DatabaseRouter']
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'TTN',
-        'USER': 'sa',
-        'PASSWORD': '239003',
-        'HOST': 'MIE',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        }
-    },
-
-    'first_sv': {
-        'ENGINE': 'mssql',
-        'NAME': 'TTN',
-        'USER': 'sa',
-        'PASSWORD': '239003',
-        'HOST': 'MIE\\MSSQLSERVER01',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        }
-    },
-
-    'second_sv': {
-        'ENGINE': 'mssql',
-        'NAME': 'TTN',
-        'USER': 'sa',
-        'PASSWORD': '239003',
-        'HOST': 'MIE\\MSSQLSERVER02',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        }
-    },
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'TTN',
+#         'USER': 'sa',
+#         'PASSWORD': '239003',
+#         'HOST': 'MIE',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         }
+#     },
+#
+#     'first_sv': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'TTN',
+#         'USER': 'sa',
+#         'PASSWORD': '239003',
+#         'HOST': 'MIE\\MSSQLSERVER01',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         }
+#     },
+#
+#     'second_sv': {
+#         'ENGINE': 'mssql',
+#         'NAME': 'TTN',
+#         'USER': 'sa',
+#         'PASSWORD': '239003',
+#         'HOST': 'MIE\\MSSQLSERVER02',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         }
+#     },
+# }
 
 DATABASE_CONNECTION_POOLING = False
 
