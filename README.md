@@ -157,7 +157,7 @@
         <td>
             <ul>
                 <li>Thành viên có mặt mang tính chất đủ team, tạo tiếng cười.</li>
-                <li><div style="width:480px"><iframe allow="fullscreen" frameBorder="0" height="480" src="https://giphy.com/embed/5l4m6iKzuMVqjGdER8/video" width="480"></iframe></div></li>
+                <li><iframe src="https://giphy.com/embed/5l4m6iKzuMVqjGdER8/video"></iframe></li>
             </ul>
         </td>
     </tr>
