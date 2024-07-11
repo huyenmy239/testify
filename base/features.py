@@ -1267,11 +1267,13 @@ def set_score(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = f"EXEC SP_TinhDiem {int(mabt)}, {int(socau)}"
-            print(f"Query: {query}")
             cur.execute(query)
             con.commit()
 
-            diemthi = "Thành công"
+            query = f"EXEC SP_LayThongTinBaiThiTheoMaBT {int(mabt)}"
+            cur.execute(query)
+
+            diemthi = cur.fetchall()[0][5]
                 
 
         except pyodbc.Error as e:

@@ -72,7 +72,7 @@
                                                 {% elif request.session.base_template == "main_GV.html" %}
                                                 <button type="button" class="btn btn-success btn-thithu" 
                                                 data-toggle="modal" data-target="#thithuModal" data-thoigian="{{ dk.thoigian }}"
-                                                data-lan="{{ dk.lan }}" data-monhoc="{{ dk.monhoc.mamon }}"
+                                                data-monhoc="{{ dk.monhoc.mamon }}"
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
                                             {% endif %}
                                         </td>
@@ -259,6 +259,38 @@
     </div>
 </div>
 
+<!-- Modal Thi thử -->
+<div class="modal fade" id="thithu" tabindex="-1" role="dialog" aria-labelledby="thithuLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header sticky-top">
+                <div class="container-fluid">
+                    <div class="row">
+                        <h5 class="modal-title col-md-6" id="thithuLabel">Thi thử</h5>
+                        <div class="col-md-6 text-right">
+                            <label class="text-right" for="timer">Thời gian còn lại: <span id="timer"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form id="thiForm" method="post" action="submit">
+                    <!-- Question List -->
+                </form>
+            </div>
+            <div class="modal-footer sticky-bottom">
+                <div class="container-fluid">
+                    <div class="row justify-content-end">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary" id="submitExamButton">Nộp bài</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Report Modal -->
 <div class="modal fade custom-modal" id="reportModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -293,9 +325,9 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
