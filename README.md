@@ -146,6 +146,7 @@
         <td><a href="https://github.com/huyenmy239">huyenmy239</a></td>
         <td>
             <ul>
+                <li>Thành viên có mặt rất năng suất, nhưng hay tạo ra những cái bug oái ăm, rất đáng bị ăn đòn.</li>
             </ul>
         </td>
     </tr>
@@ -155,6 +156,8 @@
         <td><a href="https://github.com/thanhthuyne2211">thanhthuyne2211</a></td>
         <td>
             <ul>
+                <li>Thành viên có mặt mang tính chất đủ team, tạo tiếng cười.</li>
+                <li><div style="width:480px"><iframe allow="fullscreen" frameBorder="0" height="480" src="https://giphy.com/embed/5l4m6iKzuMVqjGdER8/video" width="480"></iframe></div></li>
             </ul>
         </td>
     </tr>
@@ -164,6 +167,7 @@
         <td><a href="https://github.com/KonstanNguyen">KonstanNguyen</a></td>
         <td>
             <ul>
+                <li>Thành viên bị 2 thành viên còn lại căm ghét, đòi đánh đập, hành hạ, sỉ vả.</li>
             </ul>
         </td>
     </tr>
