@@ -149,12 +149,13 @@ class DangkySV:
 
 
 class Dotthi:
-    def __init__(self, monhoc: Dict, trinhdo: str, lan: int, ngaythi: datetime, diem: float):
+    def __init__(self, monhoc: Dict, trinhdo: str, lan: int, ngaythi: datetime, diem: float, mabt: int):
         self.monhoc = monhoc
         self.trinhdo = trinhdo
         self.lan = lan
         self.ngaythi = ngaythi
         self.diem = diem
+        self.mabt = mabt
 
 # class Baithi(models.Model):
 #     mabt = models.CharField(db_column='MABT', primary_key=True, max_length=10, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.

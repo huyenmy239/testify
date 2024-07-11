@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from .models import *
 
 DATABASE = "TTN"
-SERVER_LIST = ["LAPTOP-KJ4L2LKH"]
+SERVER_LIST = ["MIE"]
 # Password for all instances
-PASSWORD = "Ntn@2003"
+PASSWORD = "239003"
 temp = DatabaseModel(
     server=SERVER_LIST[0], database=DATABASE, login="sa", pw=PASSWORD)
 temp.load_info()
@@ -524,7 +524,7 @@ def dathi_table_sv(request):
 
                 for row in dangky_rows:
                     dangky_object = Dotthi(monhoc=mon[row[0]], trinhdo=row[1], lan=row[2],
-                                           ngaythi=row[3], diem=row[4])
+                                           ngaythi=row[3], diem=row[4], mabt=row[5])
                     dangky.append(dangky_object)
 
     except pyodbc.Error as e:

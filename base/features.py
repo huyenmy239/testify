@@ -1340,7 +1340,7 @@ def exam_registration_list(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_DSDangKyThi '{formatted_fDate}', '{formatted_tDate}'"
+            query = f"EXEC SP_REPORT_DSDangKyThi '{formatted_fDate}', '{formatted_tDate}'"
             cur.execute(query)
             res = cur.fetchall()
 
@@ -1350,6 +1350,7 @@ def exam_registration_list(request):
                                     "socauthi": row[5], "ngaythi": row[6], "lan": row[7], "dathi": row[8], "ghichu": row[9]})
         except pyodbc.Error as e:
             # messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            print(messages.error(request, e))
             messages.error(request, e)
             return redirect("cauhoi")
         finally:
@@ -1362,6 +1363,53 @@ def exam_registration_list(request):
             'from_date': formatted_fDate,
             'to_date': formatted_tDate,
             'report_data': report_list,
+        }
+        return JsonResponse(response)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def review_result(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+    if request.method == 'POST':
+        
+        mabt = int(request.POST.get('mabt').strip())
+
+        exam_info = {}
+        questions = []
+        
+        cur, con = None, None
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = f"EXEC SP_LayThongTinBaiThiTheoMaBT {mabt}"
+            cur.execute(query)
+            res = cur.fetchall()[0]
+            exam_info = {"tenlop": res[0], "hoten": res[1],
+                        "tenmh": res[2], "ngaythi": res[3], "lan": res[4]}
+            
+            query = f"EXEC SP_LayChiTietBaiThi {mabt}"
+            cur.execute(query)
+            res = cur.fetchall()
+
+            for row in res:
+                questions.append({"stt": row[0], "cauhoi": row[1], "noidung": row[2], "a": row[3],
+                                  "b": row[4], "c": row[5], "d": row[6], "dapan": row[7], "dachon": row[8]})
+
+        except pyodbc.Error as e:
+            # messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            messages.error(request, e)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+        
+        response = {
+            'exam_info': exam_info,
+            "questions": questions
         }
         return JsonResponse(response)
     

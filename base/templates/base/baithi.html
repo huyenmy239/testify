@@ -34,7 +34,7 @@
                                         <td>{{dk.ngaythi}}</td>
                                         <td>{{dk.diem}}</td>
                                         <td>
-                                            <button type="button" class="btn btn-primary">Xem lại</button>
+                                            <button type="button" class="btn btn-primary btn-review" data-mabt="{{dk.mabt}}" data-bs-toggle="modal" data-bs-target="#resultModal">Xem lại</button>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -51,8 +51,8 @@
                                 </tfoot>
                             </table>
                         </div>
-                        
-                        
+
+
                     </div>
                 </div>
             </div>
@@ -60,9 +60,136 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalLabel">Thông tin chi tiết đề thi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Lớp:</strong> <span id="modalLop">xxxxxxxxxxxxxxxxxxxxxxx</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Họ tên:</strong> <span id="modalHoTen">xxxxxxxxxxxxxxxxxxxxxxx</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Môn thi:</strong> <span id="modalMonThi">xxxxxxxxxxxxxxx</span>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Ngày thi:</strong> <span id="modalNgayThi">dd/mm/yyyy</span>
+                        <strong>Lần thi:</strong> <span id="modalLanThi">##</span>
+                    </div>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Câu số (trong bộ đề)</th>
+                            <th scope="col">Nội dung</th>
+                            <th scope="col">Các lựa chọn</th>
+                            <th scope="col">Đáp án</th>
+                            <th scope="col">Đã chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu câu hỏi sẽ được thêm vào đây bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         var table = $('#main-table').DataTable();
+
+        $('#main-table').on('click', '.btn-xem-lai', function () {
+            var rowData = table.row($(this).closest('tr')).data();
+            $('#modalMonThi').text(rowData[0]);
+            $('#modalTrinhDo').text(rowData[1]);
+            $('#modalLanThi').text(rowData[2]);
+            $('#modalNgayThi').text(rowData[3]);
+            $('#resultModal').modal('show');
+        });
+    });
+
+    // Show exam result
+    document.addEventListener("DOMContentLoaded", function() {
+        var reviewButtons = document.querySelectorAll('.btn-review');
+
+        reviewButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var modal = document.getElementById('resultModal');
+                var mabt = button.getAttribute('data-mabt');
+
+                var lop = document.getElementById('modalLop')
+                var hoten = document.getElementById('modalHoTen')
+                var monthi = document.getElementById('modalMonThi')
+                var ngaythi = document.getElementById('modalNgayThi')
+                var lan = document.getElementById('modalLanThi')
+
+                $.ajax({
+                    url: '{% url "review-result" %}',
+                    type: 'POST',
+                    data: {
+                        mabt: mabt,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        console.log("Get data successfully!");
+
+                        // Hiển thị thông tin chung của đề thi
+                        $('#modalLop').text(response.exam_info.tenlop);
+                        $('#modalHoTen').text(response.exam_info.hoten);
+                        $('#modalMonThi').text(response.exam_info.tenmh);
+                        $('#modalNgayThi').text(response.exam_info.ngaythi);
+                        $('#modalLanThi').text(response.exam_info.lan);
+
+                        // Hiển thị các câu hỏi trong bảng
+                        var tbody = $('#resultModal').find('tbody');
+                        tbody.empty(); // Xóa hết các dòng cũ trong tbody trước khi thêm mới
+
+                        response.questions.forEach((question, index) => {
+                            var row = `
+                                <tr>
+                                    <td>${question.stt}</td>
+                                    <td>${question.cauhoi}</td>
+                                    <td>${question.noidung}</td>
+                                    <td>
+                                        <ul>
+                                            <li>A. ${question.a}</li>
+                                            <li>B. ${question.b}</li>
+                                            <li>C. ${question.c}</li>
+                                            <li>D. ${question.d}</li>
+                                        </ul>
+                                    </td>
+                                    <td>${question.dapan}</td>
+                                    <td>${question.dachon}</td>
+                                </tr>
+                            `;
+                            tbody.append(row);
+                        });
+
+                        // Hiển thị modal
+                        $('#resultModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+        
+    
     });
 </script>
 
