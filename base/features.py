@@ -998,6 +998,44 @@ def delete_Sinhvien(request):
     return redirect('sinhvien')
 
 
+def undo_Monhoc(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["monhoc"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["monhoc"].pop()
+            mess = query.split("'")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không có gì để Undo.")
+
+    return redirect('monhoc')
+
+
 @csrf_exempt
 def add_Monhoc(request):
     db_alias = request.session.get('current_server')
@@ -1015,6 +1053,8 @@ def add_Monhoc(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_MONHOC '{mamh}', N'{tenmh}'"
             cur.execute(query)
+
+            UNDO['monhoc'].append(f"EXEC SP_DELETE_MONHOC '{mamh}'")
             con.commit()
 
             messages.success(request, "Thêm Môn học thành công.")
@@ -1042,6 +1082,8 @@ def update_Monhoc(request):
         mamh = request.POST.get('editMamh').strip().upper()
         tenmh = request.POST.get('editTenmh').strip().upper()
 
+        oldtenmh = request.POST.get('oldTenmh')
+
         con, cur = None, None
 
         try:
@@ -1050,6 +1092,8 @@ def update_Monhoc(request):
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_MONHOC '{mamh}', N'{tenmh}'"
             cur.execute(query)
+
+            UNDO['monhoc'].append(f"EXEC SP_UPDATE_MONHOC '{mamh}', N'{oldtenmh}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Môn học thành công.")
@@ -1075,6 +1119,7 @@ def delete_Monhoc(request):
 
     if request.method == 'POST':
         mamh = request.POST.get('deleteMamh').strip().upper()
+        tenmh = request.POST.get('deleteTenmh')
 
         con, cur = None, None
 
@@ -1084,6 +1129,8 @@ def delete_Monhoc(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_MONHOC '{mamh}'"
             cur.execute(query)
+
+            UNDO['monhoc'].append(f"EXEC SP_INSERT_MONHOC '{mamh}', N'{tenmh}'")
             con.commit()
 
             messages.success(request, "Xóa Môn học thành công.")

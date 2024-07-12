@@ -13,7 +13,7 @@
                 <div class="feature">
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/> Thêm</a>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'undo-monhoc' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/> Undo</a>
                 </div>
                 {% endif %}
@@ -43,7 +43,7 @@
                                             </button>
                                             <button type="button" class="btn btn-danger btn-delete"
                                                 data-toggle="modal" data-target="#deleteModal"
-                                                data-mamh="{{ mh.mamh }}">
+                                                data-mamh="{{ mh.mamh }}" data-tenmh="{{ mh.tenmh }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -109,6 +109,7 @@
                     <div class="form-group">
                         <label for="editTenmh">Tên môn học:</label>
                         <input type="text" class="form-control" id="editTenmh" name="editTenmh">
+                        <input type="hidden" id="oldTenmh" name="oldTenmh">
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </form>
@@ -129,6 +130,7 @@
                 <form id="deleteForm" method="post" action="{% url 'delete-monhoc' %}">
                     {% csrf_token %}
                     <input type="hidden" id="deleteMamh" name="deleteMamh">
+                    <input type="hidden" id="deleteTenmh" name="deleteTenmh">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -157,6 +159,7 @@
 
                     modal.querySelector('#editMamh').value = mamh;
                     modal.querySelector('#editTenmh').value = tenmh;
+                    modal.querySelector('#oldTenmh').value = tenmh;
 
                     $(modal).modal('show');
                 });
@@ -166,8 +169,10 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var mamh = button.getAttribute('data-mamh');
+                    var tenmh = button.getAttribute('data-tenmh');
                     
                     modal.querySelector('#deleteMamh').value = mamh;
+                    modal.querySelector('#deleteTenmh').value = tenmh;
 
                     $(modal).modal('show');
                 });
