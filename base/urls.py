@@ -53,6 +53,7 @@ urlpatterns = [
     path('add_sinhvien/', features.add_Sinhvien, name='add-sinhvien'),
     path('update_sinhvien/', features.update_Sinhvien, name='update-sinhvien'),
     path('delete_sinhvien/', features.delete_Sinhvien, name='delete-sinhvien'),
+    path('undo_sv/', features.undo_Sinhvien, name='undo-sv'),
 
     path('add_monhoc/', features.add_Monhoc, name='add-monhoc'),
     path('update_monhoc/', features.update_Monhoc, name='update-monhoc'),

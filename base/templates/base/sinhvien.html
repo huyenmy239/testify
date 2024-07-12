@@ -13,7 +13,7 @@
                 <div class="feature">
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/> Thêm</a>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'undo-sv' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/> Undo</a>
                 </div>
                 {% endif %}
@@ -53,7 +53,9 @@
                                             </button>
                                             <button type="button" class="btn btn-danger btn-delete"
                                                 data-toggle="modal" data-target="#deleteModal"
-                                                data-masv="{{ sv.masv }}">
+                                                data-masv="{{ sv.masv }}" data-ho="{{ sv.ho }}"
+                                                data-ten="{{ sv.ten }}" data-ngaysinh="{{ sv.ngaysinh }}"
+                                                data-diachi="{{ sv.diachi }}" data-lop="{{ sv.lop.malop }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -143,18 +145,22 @@
                     <div class="form-group">
                         <label for="editHo">Họ:</label>
                         <input type="text" class="form-control" id="editHo" name="editHo">
+                        <input type="hidden" id="oldHo" name="oldHo">
                     </div>
                     <div class="form-group">
                         <label for="editTen">Tên:</label>
                         <input type="text" class="form-control" id="editTen" name="editTen">
+                        <input type="hidden" id="oldTen" name="oldTen">
                     </div>
                     <div class="form-group">
                         <label for="editNgaysinh">Ngày sinh:</label>
                         <input type="date" class="form-control" id="editNgaysinh" name="editNgaysinh">
+                        <input type="hidden" id="oldNgaysinh" name="oldNgaysinh">
                     </div>
                     <div class="form-group">
                         <label for="editDiachi">Địa chỉ:</label>
                         <input type="text" class="form-control" id="editDiachi" name="editDiachi">
+                        <input type="hidden" id="oldDiachi" name="oldDiachi">
                     </div>
                     <div class="form-group">
                         <label for="editLop">Lớp:</label>
@@ -179,6 +185,11 @@
                 <form id="deleteForm" method="post" action="{% url 'delete-sinhvien' %}">
                     {% csrf_token %}
                     <input type="hidden" id="deleteMasv" name="deleteMasv">
+                    <input type="hidden" id="deleteHo" name="deleteHo">
+                    <input type="hidden" id="deleteTen" name="deleteTen">
+                    <input type="hidden" id="deleteNgaysinh" name="deleteNgaysinh">
+                    <input type="hidden" id="deleteDiachi" name="deleteDiachi">
+                    <input type="hidden" id="deleteMalop" name="deleteMalop">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -218,6 +229,11 @@
                     modal.querySelector('#editDiachi').value = diachi;
                     modal.querySelector('#editLop').value = lop;
 
+                    modal.querySelector('#oldHo').value = ho;
+                    modal.querySelector('#oldTen').value = ten;
+                    modal.querySelector('#oldNgaysinh').value = ngaysinhFormatted;
+                    modal.querySelector('#oldDiachi').value = diachi;
+
                     $(modal).modal('show');
                 });
             });
@@ -226,8 +242,20 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var masv = button.getAttribute('data-masv');
+                    var ho = button.getAttribute('data-ho');
+                    var ten = button.getAttribute('data-ten');
+                    var diachi = button.getAttribute('data-diachi');
+                    var ngaysinh = button.getAttribute('data-ngaysinh');
+                    var date = new Date(ngaysinh);
+                    var ngaysinhFormatted = date.toLocaleDateString('en-CA');
+                    var lop = button.getAttribute('data-lop');
                     
                     modal.querySelector('#deleteMasv').value = masv;
+                    modal.querySelector('#deleteHo').value = ho;
+                    modal.querySelector('#deleteTen').value = ten;
+                    modal.querySelector('#deleteNgaysinh').value = ngaysinhFormatted;
+                    modal.querySelector('#deleteDiachi').value = diachi;
+                    modal.querySelector('#deleteMalop').value = lop;
 
                     $(modal).modal('show');
                 });

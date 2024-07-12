@@ -833,6 +833,44 @@ def delete_Giangvien(request):
     return redirect('giangvien')
 
 
+def undo_Sinhvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["sv"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["sv"].pop()
+            mess = query.split("'")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không có gì để Undo.")
+
+    return redirect('sinhvien')
+
+
 @csrf_exempt
 def add_Sinhvien(request):
     db_alias = request.session.get('current_server')
@@ -854,6 +892,8 @@ def add_Sinhvien(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_SINHVIEN '{masv}', N'{ho}', N'{ten}', '{ngaysinh}', N'{diachi}', '{malop}'"
             cur.execute(query)
+
+            UNDO['sv'].append(f"EXEC SP_DELETE_SINHVIEN '{masv}'")
             con.commit()
 
             messages.success(request, "Thêm Sinh viên thành công.")
@@ -884,6 +924,11 @@ def update_Sinhvien(request):
         ngaysinh = request.POST.get('editNgaysinh')
         diachi = request.POST.get('editDiachi').strip().title()
 
+        oldho = request.POST.get('oldHo')
+        oldten = request.POST.get('oldTen')
+        oldngaysinh = request.POST.get('oldNgaysinh')
+        olddiachi = request.POST.get('oldDiachi')
+
         con, cur = None, None
 
         try:
@@ -892,6 +937,8 @@ def update_Sinhvien(request):
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_SINHVIEN '{masv}', N'{ho}', N'{ten}', '{ngaysinh}', N'{diachi}'"
             cur.execute(query)
+
+            UNDO['sv'].append(f"EXEC SP_UPDATE_SINHVIEN '{masv}', N'{oldho}', N'{oldten}', '{oldngaysinh}', N'{olddiachi}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Sinh viên thành công.")
@@ -917,6 +964,11 @@ def delete_Sinhvien(request):
 
     if request.method == 'POST':
         masv = request.POST.get('deleteMasv').strip()
+        ho = request.POST.get('deleteHo')
+        ten = request.POST.get('deleteTen')
+        ngaysinh = request.POST.get('deleteNgaysinh')
+        diachi = request.POST.get('deleteDiachi')
+        malop = request.POST.get('deleteMalop')
 
         con, cur = None, None
 
@@ -926,6 +978,8 @@ def delete_Sinhvien(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_SINHVIEN '{masv}'"
             cur.execute(query)
+
+            UNDO['sv'].append(f"EXEC SP_INSERT_SINHVIEN '{masv}', N'{ho}', N'{ten}', '{ngaysinh}', N'{diachi}', '{malop}'")
             con.commit()
 
             messages.success(request, "Xóa Sinh viên thành công.")
