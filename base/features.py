@@ -1149,6 +1149,44 @@ def delete_Monhoc(request):
     return redirect('monhoc')
 
 
+def undo_Bode(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["bode"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["bode"].pop()
+            mess = query.split("'")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không có gì để Undo.")
+
+    return redirect('bode')
+
+
 @csrf_exempt
 def add_Bode(request):
     db_alias = request.session.get('current_server')
@@ -1179,6 +1217,9 @@ def add_Bode(request):
 
             query = f"EXEC SP_INSERT_BODE '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'"
             cur.execute(query)
+
+            id = int(cur.fetchall()[0][0])
+            UNDO['bode'].append(f"EXEC SP_DELETE_BODE '{id}'")
             con.commit()
 
             messages.success(request, "Thêm Câu hỏi thành công.")
@@ -1215,6 +1256,14 @@ def update_Bode(request):
         d = request.POST.get('editD').strip().lower()
         dapan = request.POST.get('editDapan').strip().upper()
 
+        oldtrinhdo = request.POST.get('oldTrinhdo')
+        oldnoidung = request.POST.get('oldNoidung')
+        olda = request.POST.get('oldA')
+        oldb = request.POST.get('oldB')
+        oldc = request.POST.get('oldC')
+        oldd = request.POST.get('oldD')
+        olddapan = request.POST.get('oldDapan')
+
         con, cur = None, None
 
         try:
@@ -1223,6 +1272,8 @@ def update_Bode(request):
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_BODE '{cauhoi}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}'"
             cur.execute(query)
+
+            UNDO['bode'].append(f"EXEC SP_UPDATE_BODE '{cauhoi}', N'{oldtrinhdo}', N'{oldnoidung}', N'{olda}', N'{oldb}', N'{oldc}', N'{oldd}', N'{olddapan}'")
             con.commit()
 
             messages.success(request, "Thay đổi nội dung Câu hỏi thành công.")
@@ -1251,6 +1302,15 @@ def delete_Bode(request):
 
     if request.method == 'POST':
         cauhoi = request.POST.get('deleteCauhoi').strip().upper()
+        mamh = request.POST.get('deleteMamh')
+        trinhdo = request.POST.get('deleteTrinhdo')
+        noidung = request.POST.get('deleteNoidung')
+        a = request.POST.get('deleteA')
+        b = request.POST.get('deleteB')
+        c = request.POST.get('deleteC')
+        d = request.POST.get('deleteD')
+        dapan = request.POST.get('deleteDapan')
+        magv = request.POST.get('deleteMagv')
 
         con, cur = None, None
 
@@ -1260,6 +1320,8 @@ def delete_Bode(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_BODE '{cauhoi}'"
             cur.execute(query)
+
+            UNDO['bode'].append(f"EXEC SP_INSERT_BODE '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'")
             con.commit()
 
             messages.success(request, "Xóa Câu hỏi thành công.")

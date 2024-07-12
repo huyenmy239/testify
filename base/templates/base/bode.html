@@ -14,9 +14,11 @@
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/> Thêm
                     </a>
-                    <a href="#" class="btn btn-primary">
+                    {% if request.session.base_template == "main_CS.html" %}
+                    <a href="{% url 'undo-bode' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/> Undo
                     </a>
+                    {% endif %}
                 </div>
                 {% endif %}
 
@@ -69,7 +71,11 @@
                                             </button>
                                             <button type="button" class="btn btn-danger btn-delete"
                                                 data-toggle="modal" data-target="#deleteModal"
-                                                data-cauhoi="{{ ch.cauhoi }}">
+                                                data-cauhoi="{{ ch.cauhoi }}" data-monhoc="{{ ch.monhoc.mamon }}"
+                                                data-trinhdo="{{ ch.trinhdo }}" data-noidung="{{ ch.noidung }}"
+                                                data-a="{{ ch.a }}" data-b="{{ ch.b }}" data-c="{{ ch.c }}"
+                                                data-d="{{ ch.d }}" data-dapan="{{ ch.dapan }}"
+                                                data-giaovien="{{ ch.gv.magv }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -195,6 +201,7 @@
                     </div>
                     <div class="form-group">
                         <label for="editTrinhdo">Trình độ:</label>
+                        <input type="hidden" id="oldTrinhdo" name="oldTrinhdo">
                         <select class="form-control" id="editTrinhdo" name="editTrinhdo" required>
                             <option value="A">A</option>
                             <option value="B">B</option>
@@ -203,26 +210,32 @@
                     </div>
                     <div class="form-group">
                         <label for="editNoidung">Nội dung:</label>
+                        <input type="hidden" id="oldNoidung" name="oldNoidung">
                         <textarea class="form-control" id="editNoidung" name="editNoidung"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="editA">Đáp án A:</label>
+                        <input type="hidden" id="oldA" name="oldA">
                         <input type="text" class="form-control" id="editA" name="editA">
                     </div>
                     <div class="form-group">
                         <label for="editB">Đáp án B:</label>
+                        <input type="hidden" id="oldB" name="oldB">
                         <input type="text" class="form-control" id="editB" name="editB">
                     </div>
                     <div class="form-group">
                         <label for="editC">Đáp án C:</label>
+                        <input type="hidden" id="oldC" name="oldC">
                         <input type="text" class="form-control" id="editC" name="editC">
                     </div>
                     <div class="form-group">
                         <label for="editD">Đáp án D:</label>
+                        <input type="hidden" id="oldD" name="oldD">
                         <input type="text" class="form-control" id="editD" name="editD">
                     </div>
                     <div class="form-group">
                         <label for="editDapan">Đáp án đúng:</label>
+                        <input type="hidden" id="oldDapan" name="oldDapan">
                         <select class="form-control" id="editDapan" name="editDapan">
                             <option value="A">A</option>
                             <option value="B">B</option>
@@ -257,6 +270,15 @@
                 <form id="deleteForm" method="post" action="{% url 'delete-bode' %}">
                     {% csrf_token %}
                     <input type="hidden" name="deleteCauhoi" id="deleteCauhoi">
+                    <input type="hidden" name="deleteMamh" id="deleteMamh">
+                    <input type="hidden" name="deleteTrinhdo" id="deleteTrinhdo">
+                    <input type="hidden" name="deleteNoidung" id="deleteNoidung">
+                    <input type="hidden" name="deleteA" id="deleteA">
+                    <input type="hidden" name="deleteB" id="deleteB">
+                    <input type="hidden" name="deleteC" id="deleteC">
+                    <input type="hidden" name="deleteD" id="deleteD">
+                    <input type="hidden" name="deleteDapan" id="deleteDapan">
+                    <input type="hidden" name="deleteMagv" id="deleteMagv">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -302,6 +324,14 @@
                     modal.querySelector('#editDapan').value = dapan;
                     modal.querySelector('#editGiaovien').value = giaovien;
 
+                    modal.querySelector('#oldTrinhdo').value = trinhdo;
+                    modal.querySelector('#oldNoidung').value = noidung;
+                    modal.querySelector('#oldA').value = a;
+                    modal.querySelector('#oldB').value = b;
+                    modal.querySelector('#oldC').value = c;
+                    modal.querySelector('#oldD').value = d;
+                    modal.querySelector('#oldDapan').value = dapan;
+
                     $(modal).modal('show');
                 });
             });
@@ -310,8 +340,26 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var cauhoi = button.getAttribute('data-cauhoi');
+                    var mamh = button.getAttribute('data-monhoc');
+                    var magv = button.getAttribute('data-giaovien');
+                    var trinhdo = button.getAttribute('data-trinhdo');
+                    var noidung = button.getAttribute('data-noidung');
+                    var a = button.getAttribute('data-a');
+                    var b = button.getAttribute('data-b');
+                    var c = button.getAttribute('data-c');
+                    var d = button.getAttribute('data-d');
+                    var dapan = button.getAttribute('data-dapan');
                     
                     modal.querySelector('#deleteCauhoi').value = cauhoi;
+                    modal.querySelector('#deleteMamh').value = mamh;
+                    modal.querySelector('#deleteTrinhdo').value = trinhdo;
+                    modal.querySelector('#deleteNoidung').value = noidung;
+                    modal.querySelector('#deleteA').value = a;
+                    modal.querySelector('#deleteB').value = b;
+                    modal.querySelector('#deleteC').value = c;
+                    modal.querySelector('#deleteD').value = d;
+                    modal.querySelector('#deleteDapan').value = dapan;
+                    modal.querySelector('#deleteMagv').value = magv;
 
                     $(modal).modal('show');
                 });

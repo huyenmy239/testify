@@ -63,6 +63,7 @@ urlpatterns = [
     path('add_bode/', features.add_Bode, name='add-bode'),
     path('update_bode/', features.update_Bode, name='update-bode'),
     path('delete_bode/', features.delete_Bode, name='delete-bode'),
+    path('undo_bode/', features.undo_Bode, name='undo-bode'),
 
     path('add_dangkythi/', features.add_Dangky, name='add-dangkythi'),
     path('delete_dangkythi/', features.delete_Dangky, name='delete-dangkythi'),
