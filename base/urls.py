@@ -61,4 +61,5 @@ urlpatterns = [
 
     path('add_dangkythi/', features.add_Dangky, name='add-dangkythi'),
     path('delete_dangkythi/', features.delete_Dangky, name='delete-dangkythi'),
+    path('ds-cauhoithithu', features.ds_cauhoithithu, name='ds-cauhoithithu'),
 ]

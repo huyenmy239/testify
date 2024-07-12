@@ -72,7 +72,7 @@
                                                 {% elif request.session.base_template == "main_GV.html" %}
                                                 <button type="button" class="btn btn-success btn-thithu" 
                                                 data-toggle="modal" data-target="#thithuModal" data-thoigian="{{ dk.thoigian }}"
-                                                data-monhoc="{{ dk.monhoc.mamon }}"
+                                                data-monhoc="{{ dk.monhoc.mamon }}" 
                                                 data-socauthi="{{ dk.socauthi }}" data-trinhdo="{{ dk.trinhdo }}">Thi thử</button>
                                             {% endif %}
                                         </td>
@@ -260,7 +260,7 @@
 </div>
 
 <!-- Modal Thi thử -->
-<div class="modal fade" id="thithu" tabindex="-1" role="dialog" aria-labelledby="thithuLabel" aria-hidden="true">
+<div class="modal fade" id="thithuModal" tabindex="-1" role="dialog" aria-labelledby="thithuLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header sticky-top">
@@ -268,13 +268,13 @@
                     <div class="row">
                         <h5 class="modal-title col-md-6" id="thithuLabel">Thi thử</h5>
                         <div class="col-md-6 text-right">
-                            <label class="text-right" for="timer">Thời gian còn lại: <span id="timer"></span></label>
+                            <label class="text-right" for="thithuTimer">Thời gian còn lại: <span id="thithuTimer"></span></label>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                <form id="thiForm" method="post" action="submit">
+                <form id="thithuForm" method="post" action="submit">
                     <!-- Question List -->
                 </form>
             </div>
@@ -282,7 +282,7 @@
                 <div class="container-fluid">
                     <div class="row justify-content-end">
                         <div class="col-md-6">
-                            <button type="submit" class="btn btn-primary" id="submitExamButton">Nộp bài</button>
+                            <button type="submit" class="btn btn-primary" id="submitThithu">Nộp bài</button>
                         </div>
                     </div>
                 </div>
@@ -592,6 +592,141 @@
             }
         });
     });
+
+    
+    document.addEventListener("DOMContentLoaded", function() {
+    var thithuButtons = document.querySelectorAll('.btn-thithu');
+    var timerInterval;
+
+    thithuButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var thithumodal = document.getElementById('thithuModal');
+            var monhoc = button.getAttribute('data-monhoc');
+            var trinhdo = button.getAttribute('data-trinhdo');
+            var socauthi = button.getAttribute('data-socauthi');
+            var timeLimit = 60 * parseInt(button.getAttribute('data-thoigian'), 10);
+
+            var questionList;
+
+            $.ajax({
+                url: '{% url "ds-cauhoithithu" %}',
+                type: 'POST',
+                data: {
+                    mamh: monhoc,
+                    trinhdo: trinhdo,
+                    socau: socauthi,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    const form = document.getElementById('thithuForm');
+                    form.innerHTML = '';
+
+                    questionList = response.questions;
+
+                    response.questions.forEach((question, index) => {
+                        const questionContainer = document.createElement('div');
+                        questionContainer.classList.add('form-group');
+
+                        questionContainer.innerHTML = `
+                            <label>Câu ${index + 1}: </label>
+                            <label>${question.noidung}</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionA-${question.id}" value="A">
+                                <label class="form-check-label" for="optionA-${question.id}">${question.a}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionB-${question.id}" value="B">
+                                <label class="form-check-label" for="optionB-${question.id}">${question.b}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionC-${question.id}" value="C">
+                                <label class="form-check-label" for="optionC-${question.id}">${question.c}</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="Answer-${question.id}" id="optionD-${question.id}" value="D">
+                                <label class="form-check-label" for="optionD-${question.id}">${question.d}</label>
+                            </div>
+                        `;
+
+                        form.appendChild(questionContainer);
+                    });
+
+                    $(thithumodal).modal('show');
+
+                    $(thithumodal).off('shown.bs.modal');
+                    $(thithumodal).on('shown.bs.modal', function () {
+                        var display = thithumodal.querySelector('#thithuTimer');
+                        thithuTimer(timeLimit, display);
+                    });
+
+                    $(thithumodal).off('hidden.bs.modal');
+                    $(thithumodal).on('hidden.bs.modal', function () {
+                        clearInterval(timerInterval);
+                    });
+
+                    document.getElementById('submitThithu').removeEventListener('click', submitExamHandler);
+                        document.getElementById('submitThithu').addEventListener('click', function(event) {
+                        event.preventDefault();
+                        submitExam(response.questions);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+
+
+            function thithuTimer(duration, display) {
+                var timer = duration, minutes, seconds;
+                clearInterval(timerInterval);
+                timerInterval = setInterval(function () {
+                    minutes = Math.floor(timer / 60);
+                    seconds = Math.floor(timer % 60);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    display.textContent = minutes + ":" + seconds;
+
+                    if (--timer < 0) {
+                        clearInterval(timerInterval);
+                        alert("Đã hết thời gian làm bài");
+                        submitExam(questionList);
+                    }
+                }, 1000);
+            }
+
+            function submitExam(questions) {
+                const form = document.getElementById('thithuForm');
+                const answers = form.querySelectorAll('.form-check-input:checked');
+                const userAnswers = {};
+
+                answers.forEach(answer => {
+                    const questionId = answer.name.split('-')[1];
+                    userAnswers[questionId] = answer.value;
+                });
+
+                let correctAnswers = 0;
+                questions.forEach(question => {
+                    if (userAnswers[question.id] === question.dapan) {
+                        correctAnswers++;
+                    }
+                });
+
+                alert(`Bạn đã trả lời đúng ${correctAnswers} trên ${questions.length} câu.`);
+                $(thithumodal).modal('hide');
+            }
+
+            function submitExamHandler(event) {
+                event.preventDefault();
+                submitExam();
+            }
+        });
+    });
+});
+
+
+
 
     // Report
     document.addEventListener('DOMContentLoaded', function() {

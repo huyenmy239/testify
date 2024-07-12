@@ -1129,7 +1129,42 @@ def delete_Dangky(request):
 
 
 
+def ds_cauhoithithu(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
 
+    if request.method == 'POST':
+        mamh = request.POST.get('mamh').strip()
+        trinhdo = request.POST.get('trinhdo')
+        socau = int(request.POST.get('socau'))
+        cur, con = None, None
+
+        questions = []
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            cur.execute(f"EXEC SP_TaoCauHoi '{mamh}', N'{trinhdo}', {socau}")
+            # cur.commit()
+            res = cur.fetchall()
+
+            for row in res:
+                questions.append({"id": row[0], "noidung": row[1], "a": row[2], "b": row[3],
+                                  "c": row[4], "d": row[5], "dapan": row[6]})
+                
+        except pyodbc.Error as e:
+            print(f"Error connecting to database: {e}")
+            return HttpResponse(f"Error connecting to the database.\nError: {e}", status=500)
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+                
+        print(questions)
+        return JsonResponse({"questions": questions})
+    return JsonResponse({'questions': None})
 
 
 # import time
@@ -1154,7 +1189,6 @@ def get_list_questions(request):
             print("Connect database thành công!")
             cur.execute(f"EXEC SP_ThongTinBaiThi '{masv}', '{mamh}', {lan}, N'{trinhdo}', {socau}")
             res = cur.fetchall()[0]
-            print(f"Result sau SP_ThongTin: {res}")
             con.commit()
             tt_baithi = {"malop": res[0], "lop": res[1], "hoten": res[2], "tenmh": res[3],
                          "ngaythi": res[4], "lan": res[5], "tgcl": res[6], "mabt": res[7]}
@@ -1187,7 +1221,6 @@ def get_list_questions(request):
                 cur.close()
             if con is not None:
                 con.close()
-        print(f"Danh sách câu hỏi: {questions}")
         # context = {"questions": questions, "time": tt_baithi['tgcl']}
         return JsonResponse({"questions": questions, "time": tt_baithi['tgcl'], "examID": tt_baithi['mabt']})
 
