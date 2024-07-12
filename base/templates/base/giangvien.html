@@ -14,7 +14,7 @@
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/>
                         Thêm</a>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'undo-gv' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/>
                         Undo</a>
                 </div>
@@ -51,7 +51,10 @@
                                                 data-khoa="{{ gv.khoa.tenkh }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-magv="{{ gv.magv }}">
+                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal"
+                                                data-magv="{{ gv.magv }}" data-ho="{{ gv.ho }}"
+                                                data-ten="{{ gv.ten }}" data-diachi="{{ gv.diachi }}"
+                                                data-khoa="{{ gv.khoa.makh }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -132,18 +135,22 @@
                     <div class="form-group">
                         <label for="editMagv">Mã giảng viên:</label>
                         <input type="text" class="form-control" name="editMagv" id="editMagv" readonly>
+                        <input type="hidden" id="oldMagv" name="oldMagv">
                     </div>
                     <div class="form-group">
                         <label for="editHo">Họ:</label>
                         <input type="text" class="form-control" id="editHo" name="editHo">
+                        <input type="hidden" id="oldHo" name="oldHo">
                     </div>
                     <div class="form-group">
                         <label for="editTen">Tên:</label>
                         <input type="text" class="form-control" id="editTen" name="editTen">
+                        <input type="hidden" id="oldTen" name="oldTen">
                     </div>
                     <div class="form-group">
                         <label for="editDiachi">Địa chỉ:</label>
                         <input type="text" class="form-control" id="editDiachi" name="editDiachi">
+                        <input type="hidden" id="oldDiachi" name="oldDiachi">
                     </div>
                     <div class="form-group">
                         <label for="editKhoa">Khoa:</label>
@@ -168,6 +175,10 @@
                 <form id="deleteForm" method="post" action="{% url 'delete-gv' %}">
                     {% csrf_token %}
                     <input type="hidden" id="deleteMagv" name="deleteMagv">
+                    <input type="hidden" id="deleteHo" name="deleteHo">
+                    <input type="hidden" id="deleteTen" name="deleteTen">
+                    <input type="hidden" id="deleteDiachi" name="deleteDiachi">
+                    <input type="hidden" id="deleteMakh" name="deleteMakh">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -199,11 +210,16 @@
                 var diachi = button.getAttribute('data-diachi');
                 var khoa = button.getAttribute('data-khoa');
 
-                    modal.querySelector('#editMagv').value = magv;
-                    modal.querySelector('#editHo').value = ho;
-                    modal.querySelector('#editTen').value = ten;
-                    modal.querySelector('#editDiachi').value = diachi;
-                    modal.querySelector('#editKhoa').value = khoa;
+                modal.querySelector('#editMagv').value = magv;
+                modal.querySelector('#editHo').value = ho;
+                modal.querySelector('#editTen').value = ten;
+                modal.querySelector('#editDiachi').value = diachi;
+                modal.querySelector('#editKhoa').value = khoa;
+
+                modal.querySelector('#oldMagv').value = magv;
+                modal.querySelector('#oldHo').value = ho;
+                modal.querySelector('#oldTen').value = ten;
+                modal.querySelector('#oldDiachi').value = diachi;
 
                 $(modal).modal('show');
             });
@@ -213,8 +229,16 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var magv = button.getAttribute('data-magv');
+                    var ho = button.getAttribute('data-ho');
+                    var ten = button.getAttribute('data-ten');
+                    var diachi = button.getAttribute('data-diachi');
+                    var khoa = button.getAttribute('data-khoa');
                     
                     modal.querySelector('#deleteMagv').value = magv;
+                    modal.querySelector('#deleteHo').value = ho;
+                    modal.querySelector('#deleteTen').value = ten;
+                    modal.querySelector('#deleteDiachi').value = diachi;
+                    modal.querySelector('#deleteMakh').value = khoa;
 
                     $(modal).modal('show');
                 });

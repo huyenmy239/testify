@@ -671,6 +671,44 @@ def delete_Lop(request):
     return redirect('lop')
 
 
+def undo_Giangvien(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["gv"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["gv"].pop()
+            mess = query.split("'")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không có gì để Undo.")
+
+    return redirect('giangvien')
+
+
 @csrf_exempt
 def add_Giangvien(request):
     db_alias = request.session.get('current_server')
@@ -691,6 +729,8 @@ def add_Giangvien(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'"
             cur.execute(query)
+
+            UNDO['gv'].append(f"EXEC SP_DELETE_GIAOVIEN '{magv}'")
             con.commit()
 
             messages.success(request, "Thêm Giảng viên thành công.")
@@ -720,6 +760,11 @@ def update_Giangvien(request):
         ten = request.POST.get('editTen').strip().upper()
         diachi = request.POST.get('editDiachi').strip().title()
 
+        oldmagv = request.POST.get('oldMagv').strip()
+        oldho = request.POST.get('oldHo').strip()
+        oldten = request.POST.get('oldTen').strip()
+        olddiachi = request.POST.get('oldDiachi')
+
         con, cur = None, None
 
         try:
@@ -728,6 +773,8 @@ def update_Giangvien(request):
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}'"
             cur.execute(query)
+
+            UNDO['gv'].append(f"EXEC SP_UPDATE_GIAOVIEN '{oldmagv}', N'{oldho}', N'{oldten}', N'{olddiachi}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Giảng viên thành công.")
@@ -752,7 +799,11 @@ def delete_Giangvien(request):
     login = request.session.get('current_user')
 
     if request.method == 'POST':
-        magv = request.POST.get('deleteMagv').strip().upper()
+        magv = request.POST.get('deleteMagv').strip()
+        ho = request.POST.get('deleteHo').strip()
+        ten = request.POST.get('deleteTen').strip()
+        diachi = request.POST.get('deleteDiachi')
+        makh = request.POST.get('deleteMakh').strip()
 
         con, cur = None, None
 
@@ -762,6 +813,8 @@ def delete_Giangvien(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_GIAOVIEN '{magv}'"
             cur.execute(query)
+
+            UNDO['gv'].append(f"EXEC SP_INSERT_GIAOVIEN '{magv}', N'{ho}', N'{ten}', N'{diachi}', '{makh}'")
             con.commit()
 
             messages.success(request, "Xóa Giảng viên thành công.")

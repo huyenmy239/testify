@@ -48,6 +48,7 @@ urlpatterns = [
     path('add_gv/', features.add_Giangvien, name='add-gv'),
     path('update_gv/', features.update_Giangvien, name='update-gv'),
     path('delete_gv/', features.delete_Giangvien, name='delete-gv'),
+    path('undo_gv/', features.undo_Giangvien, name='undo-gv'),
 
     path('add_sinhvien/', features.add_Sinhvien, name='add-sinhvien'),
     path('update_sinhvien/', features.update_Sinhvien, name='update-sinhvien'),

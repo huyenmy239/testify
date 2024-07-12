@@ -86,6 +86,10 @@ def coso_table(request):
 
 
 def khoa_table(request):
+    for key, value in UNDO.items():
+        if key != "khoa":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -120,6 +124,10 @@ def khoa_table(request):
 
 
 def lop_table(request):
+    for key, value in UNDO.items():
+        if key != "lop":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -154,6 +162,10 @@ def lop_table(request):
 
 
 def gv_table(request):
+    for key, value in UNDO.items():
+        if key != "gv":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -195,6 +207,10 @@ def gv_table(request):
 
 
 def sv_table(request):
+    for key, value in UNDO.items():
+        if key != "sv":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -232,6 +248,10 @@ def sv_table(request):
 
 
 def mon_table(request):
+    for key, value in UNDO.items():
+        if key != "monhoc":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -260,6 +280,10 @@ def mon_table(request):
 
 
 def bode_table(request):
+    for key, value in UNDO.items():
+        if key != "bode":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -359,6 +383,10 @@ def bode_table_gv(request):
 
 
 def dangky_table(request):
+    for key, value in UNDO.items():
+        if key != "dangky":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
