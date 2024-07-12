@@ -422,7 +422,7 @@ def add_Khoa(request):
             query = f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{coso}'"
             cur.execute(query)
 
-            UNDO["khoa"].append(f"EXEC SP_DELETE_KHOA '{makh}'")
+            UNDO['khoa'].append(f"EXEC SP_DELETE_KHOA '{makh}'")
             con.commit()
 
             messages.success(request, "Thêm Khoa thành công.")
@@ -462,7 +462,7 @@ def update_Khoa(request):
             query = f"EXEC SP_UPDATE_KHOA '{makh}', N'{tenkh}'"
             cur.execute(query)
 
-            UNDO["khoa"].append(f"EXEC SP_UPDATE_KHOA '{old_makh}', N'{old_tenkh}'")
+            UNDO['khoa'].append(f"EXEC SP_UPDATE_KHOA '{old_makh}', N'{old_tenkh}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Khoa thành công.")
@@ -500,7 +500,7 @@ def delete_Khoa(request):
             query = f"EXEC SP_DELETE_KHOA '{makh}'"
             cur.execute(query)
 
-            UNDO["khoa"].append(f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{macs}'")
+            UNDO['khoa'].append(f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{macs}'")
             con.commit()
 
             messages.success(request, "Xóa Khoa thành công.")
@@ -531,7 +531,7 @@ def undo_Lop(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = UNDO["lop"].pop()
+            query = UNDO['lop'].pop()
             mess = query.split("'")
             cur.execute(query)
             con.commit()
@@ -576,7 +576,8 @@ def add_Lop(request):
             query = f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'"
             cur.execute(query)
 
-            UNDO["lop"].append(f"EXEC SP_DELETE_LOP '{malop}'")
+            # UNDO['lop'].append(f"EXEC SP_DELETE_LOP '{malop}'")
+            UNDO['lop'].append(f"EXEC SP_DELETE_LOP '{malop}'")
             con.commit()
 
             messages.success(request, "Thêm Lớp thành công.")
@@ -615,7 +616,7 @@ def update_Lop(request):
             query = f"EXEC SP_UPDATE_LOP '{malop}', N'{tenlop}'"
             cur.execute(query)
 
-            UNDO["lop"].append(f"EXEC SP_UPDATE_LOP '{oldMalop}', N'{oldTenlop}'")
+            UNDO['lop'].append(f"EXEC SP_UPDATE_LOP '{oldMalop}', N'{oldTenlop}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Lớp thành công.")
@@ -652,7 +653,7 @@ def delete_Lop(request):
             query = f"EXEC SP_DELETE_LOP '{malop}'"
             cur.execute(query)
 
-            UNDO["lop"].append(f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'")
+            UNDO['lop'].append(f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'")
             con.commit()
 
             messages.success(request, "Xóa Lớp thành công.")
@@ -1162,16 +1163,15 @@ def undo_Bode(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = UNDO["bode"].pop()
-            mess = query.split("'")
             cur.execute(query)
             con.commit()
 
             if "INSERT" in query:
-                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+                messages.success(request, f"Thêm thành công.")
             elif "UPDATE" in query:
-                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+                messages.success(request, f"Sửa thành công.")
             else:
-                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+                messages.success(request, f"Xóa thành công.")
 
         except pyodbc.Error as e:
             messages.error(request, e.__str__().split("]")[4].split("(")[0])
@@ -1219,7 +1219,7 @@ def add_Bode(request):
             cur.execute(query)
 
             id = int(cur.fetchall()[0][0])
-            UNDO['bode'].append(f"EXEC SP_DELETE_BODE '{id}'")
+            UNDO['bode'].append(f"EXEC SP_DELETE_BODE {id}")
             con.commit()
 
             messages.success(request, "Thêm Câu hỏi thành công.")
@@ -1318,7 +1318,8 @@ def delete_Bode(request):
             db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
             con = db.connect_to_database()
             cur = con.cursor()
-            query = f"EXEC SP_DELETE_BODE '{cauhoi}'"
+            query = f"EXEC SP_DELETE_BODE {int(cauhoi)}"
+            print(f"Query: {query}")
             cur.execute(query)
 
             UNDO['bode'].append(f"EXEC SP_INSERT_BODE '{mamh}', N'{trinhdo}', N'{noidung}', N'{a}', N'{b}', N'{c}', N'{d}', N'{dapan}', '{magv}'")
@@ -1327,7 +1328,7 @@ def delete_Bode(request):
             messages.success(request, "Xóa Câu hỏi thành công.")
 
         except pyodbc.Error as e:
-            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+            messages.error(request, e.__str__().split("]")[4].split('(5')[0])
         finally:
             if cur is not None:
                 cur.close()

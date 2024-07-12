@@ -70,7 +70,14 @@
                                         <th>Tên</th>
                                         <th>Ngày sinh</th>
                                         <th>Địa chỉ</th>
-                                        <th>Lớp</th>
+                                        <th>
+                                            <select>
+                                                <option value="">Lớp</option>
+                                                {% for key, val in lop_list.items %}
+                                                <option value="{{val.tenlop}}">{{val.tenlop}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -199,7 +206,18 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var table = $('#main-table').DataTable();
+        var table = $('#main-table').DataTable({
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    $('select', column.footer()).on('keyup change clear', function () {
+                        if (column.search() !== this.value) {
+                            column.search(this.value).draw();
+                        }
+                    });
+                });
+            }
+        });
 
         table.on('draw', function() {
             attachEventListeners();

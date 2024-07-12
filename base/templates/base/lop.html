@@ -55,7 +55,14 @@
                                     <tr>
                                         <th>Mã lớp</th>
                                         <th>Tên lớp</th>
-                                        <th>Khoa</th>
+                                        <th>
+                                            <select>
+                                                <option value="">Khoa</option>
+                                                {% for key, val in khoa_list.items %}
+                                                <option value="{{val.tenkh}}">{{val.tenkh}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -155,7 +162,18 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var table = $('#main-table').DataTable();
+        var table = $('#main-table').DataTable({
+            initComplete: function () {
+                this.api().columns().every(function () {
+                    var column = this;
+                    $('select', column.footer()).on('keyup change clear', function () {
+                        if (column.search() !== this.value) {
+                            column.search(this.value).draw();
+                        }
+                    });
+                });
+            }
+        });
 
         table.on('draw', function() {
             attachEventListeners();

@@ -15,9 +15,6 @@
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/> Thêm
                     </a>
-                    <a href="#" class="btn btn-primary">
-                        <img src="{% static 'images/undo.png' %}"/> Undo
-                    </a>
                 </div>
                 {% endif %}
 
@@ -376,22 +373,6 @@
     var socau = "";
 
     document.addEventListener("DOMContentLoaded", function() {
-        var thiModal = document.getElementById('thiModal');
-
-        var submitButton = document.getElementById('submitExamButton');
-
-        submitButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            submitAlert();
-        });
-
-        document.addEventListener('click', function(event) {
-            var isClickInside = thiModal.contains(event.target);
-
-            if (!isClickInside && $(thiModal).is(':visible')) {
-                alert("Bạn cần thao tác bên trong bài thi.");
-            }
-        });
 
         var thiButtons = document.querySelectorAll('.btn-thi');
         var timerInterval;
@@ -512,7 +493,12 @@
 
                         if (--timer < 0) {
                             alert("Đã hết thời gian làm bài");
-                            submitAlert();
+                            $(modal).modal('hide');
+                            $(modal).off('hidden.bs.modal');
+                            $(modal).on('hidden.bs.modal', function () {
+                                clearInterval(timerInterval);
+                            });
+                            handleSubmitExam();
                         }
                     }, 1000);
                 }
