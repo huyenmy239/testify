@@ -38,6 +38,7 @@ urlpatterns = [
     path('add_khoa/', features.add_Khoa, name='add-khoa'),
     path('update_khoa/', features.update_Khoa, name='update-khoa'),
     path('delete_khoa/', features.delete_Khoa, name='delete-khoa'),
+    path('undo_khoa/', features.undo_Khoa, name='undo-khoa'),
 
     path('add_lop/', features.add_Lop, name='add-lop'),
     path('update_lop/', features.update_Lop, name='update-lop'),

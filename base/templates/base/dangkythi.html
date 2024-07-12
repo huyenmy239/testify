@@ -155,7 +155,7 @@
                     <div class="form-group">
                         <label for="addGiangvien">Giảng viên:</label>
                         <select class="form-control" id="addGiangvien" name="addGiangvien" required>
-                            {% for key, val in gv.items %}
+                            {% for key, val in gvcs.items %}
                             <option value="{{key}}">{{val.ho}} {{val.ten}}</option>
                             {% endfor %}
                         </select>

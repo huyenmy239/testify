@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
-from .views import DATABASE, DB_CONNECTION
+from .views import DATABASE, DB_CONNECTION, UNDO
 from datetime import datetime
 
 db_alias = "default"
@@ -358,6 +358,47 @@ def register_giangvien(request):
     return redirect("coso")
 
 
+def undo_Khoa(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["khoa"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["khoa"].pop()
+            mess = query.split("'")
+            print(f"Undo query: {query}")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa {mess[1]} thành công.")
+
+
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không còn gì để Undo.")
+
+    return redirect('khoa')
+
+
 @csrf_exempt
 def add_Khoa(request):
     db_alias = request.session.get('current_server')
@@ -380,6 +421,9 @@ def add_Khoa(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{coso}'"
             cur.execute(query)
+            # print("Add khoa")
+            UNDO["khoa"].append(f"EXEC SP_DELETE_KHOA '{makh}'")
+            print(f"UNDO list: {UNDO['khoa']}")
             con.commit()
 
             messages.success(request, "Thêm Khoa thành công.")
@@ -407,6 +451,9 @@ def update_Khoa(request):
         makh = request.POST.get('editMakh').strip().upper()
         tenkh = request.POST.get('editTenkh').strip().title()
 
+        old_makh = request.POST.get('oldMakh').strip().upper()
+        old_tenkh = request.POST.get('oldTenkh').strip().title()
+
         con, cur = None, None
 
         try:
@@ -414,8 +461,9 @@ def update_Khoa(request):
             con = db.connect_to_database()
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_KHOA '{makh}', N'{tenkh}'"
-            print(f"Query: {query}")
             cur.execute(query)
+
+            UNDO["khoa"].append(f"EXEC SP_UPDATE_KHOA '{old_makh}', N'{old_tenkh}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Khoa thành công.")
@@ -441,6 +489,8 @@ def delete_Khoa(request):
 
     if request.method == 'POST':
         makh = request.POST.get('deleteMakh').strip().upper()
+        tenkh = request.POST.get('deleteTenkh').strip().title()
+        macs = request.POST.get('deleteMacs').strip().upper()
 
         con, cur = None, None
 
@@ -450,6 +500,8 @@ def delete_Khoa(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_KHOA '{makh}'"
             cur.execute(query)
+
+            UNDO["khoa"].append(f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{macs}'")
             con.commit()
 
             messages.success(request, "Xóa Khoa thành công.")

@@ -14,7 +14,7 @@
                     <a href="#" class="btn btn-add btn-primary" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/> Thêm
                     </a>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'undo-khoa' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/> Undo
                     </a>
                 </div>
@@ -40,10 +40,10 @@
                                         <td>{{ k.coso.tencs }}</td>
                                         <td>
                                             {% if request.session.base_template == "main_CS.html" %}
-                                            <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-makh="{{ k.makh }}" data-tenkh="{{ k.tenkh }}">
+                                            <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-makh="{{ k.makh }}" data-tenkh="{{ k.tenkh }}" data-macs="{{ k.coso.macs }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-makh="{{ k.makh }}">
+                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-makh="{{ k.makh }}" data-tenkh="{{ k.tenkh }}" data-macs="{{ k.coso.macs }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -80,10 +80,12 @@
                     <div class="form-group">
                         <label for="editMakh">Mã khoa:</label>
                         <input type="text" class="form-control" id="editMakh" name="editMakh" readonly>
+                        <input type="hidden" id="oldMakh" name="oldMakh">
                     </div>
                     <div class="form-group">
                         <label for="editTenkh">Tên khoa:</label>
                         <input type="text" class="form-control" id="editTenkh" name="editTenkh">
+                        <input type="hidden" id="oldTenkh" name="oldTenkh">
                     </div>
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </form>
@@ -131,6 +133,8 @@
                 <form id="deleteForm" action="{% url 'delete-khoa' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" id="deleteMakh" name="deleteMakh">
+                    <input type="hidden" id="deleteTenkh" name="deleteTenkh">
+                    <input type="hidden" id="deleteMacs" name="deleteMacs">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -161,7 +165,9 @@
                 var tenkh = button.getAttribute('data-tenkh');
 
                 modal.querySelector('#editMakh').value = makh;
+                modal.querySelector('#oldMakh').value = makh;
                 modal.querySelector('#editTenkh').value = tenkh;
+                modal.querySelector('#oldTenkh').value = tenkh;
 
                 $(modal).modal('show');
             });
@@ -183,7 +189,11 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var makh = button.getAttribute('data-makh');
+                    var tenkh = button.getAttribute('data-tenkh');
+                    var macs = button.getAttribute('data-macs');
                     modal.querySelector('#deleteMakh').value = makh;
+                    modal.querySelector('#deleteTenkh').value = tenkh;
+                    modal.querySelector('#deleteMacs').value = macs;
 
                     $(modal).modal('show');
                 });

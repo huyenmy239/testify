@@ -17,6 +17,16 @@ DB_CONNECTION = {
 
 CURRENT_DB = DatabaseModel
 
+UNDO = {
+    "khoa": [],
+    "lop": [],
+    "gv": [],
+    "sv": [],
+    "monhoc": [],
+    "bode": [],
+    "dangky": []
+}
+
 
 # Create your views here.
 
@@ -44,6 +54,11 @@ def login_register(request):
 
 
 def coso_table(request):
+
+    for key, value in UNDO.items():
+        if key != "Coso":
+            UNDO[key] = {}
+
     db_alias = request.session.get('current_server')
     login = request.session.get('current_user')
 
@@ -249,6 +264,7 @@ def bode_table(request):
     login = request.session.get('current_user')
 
     gv = {}
+    gv_cs = {}
     mon = {}
     bode = []
 
@@ -263,6 +279,13 @@ def bode_table(request):
 
                 for row in gv_rows:
                     gv[row[0]] = {"magv": row[0], "ho": row[1],
+                                  "ten": row[2], "diachi": row[3], "makh": row[4]}
+                    
+                cur.execute("SELECT * FROM V_GIAOVIENCOSOTABLE")
+                gv_rows = cur.fetchall()
+
+                for row in gv_rows:
+                    gv_cs[row[0]] = {"magv": row[0], "ho": row[1],
                                   "ten": row[2], "diachi": row[3], "makh": row[4]}
 
                 cur.execute("SELECT * FROM V_MONHOCTABLE")
@@ -284,7 +307,7 @@ def bode_table(request):
 
     info = request.session.get('current_info')
 
-    context = {"bode": bode, "thongtin": info, "gv": gv, "mon": mon}
+    context = {"bode": bode, "thongtin": info, "gv": gv, "gvcs": gv_cs, "mon": mon}
     return render(request, 'base/bode.html', context)
 
 
@@ -340,6 +363,7 @@ def dangky_table(request):
     login = request.session.get('current_user')
 
     gv = {}
+    gv_cs = {}
     lop = {}
     mon = {}
     dangky = []
@@ -355,6 +379,13 @@ def dangky_table(request):
 
                 for row in gv_rows:
                     gv[row[0]] = {"magv": row[0], "ho": row[1],
+                                  "ten": row[2], "diachi": row[3], "makh": row[4]}
+                    
+                cur.execute("SELECT * FROM V_GIAOVIENCOSOTABLE")
+                gv_rows = cur.fetchall()
+
+                for row in gv_rows:
+                    gv_cs[row[0]] = {"magv": row[0], "ho": row[1],
                                   "ten": row[2], "diachi": row[3], "makh": row[4]}
 
                 cur.execute("SELECT * FROM V_LOPTABLE")
@@ -384,7 +415,7 @@ def dangky_table(request):
     info = request.session.get('current_info')
 
     context = {"dangky": dangky, "thongtin": info,
-               "mon": mon, "gv": gv, "lop": lop}
+               "mon": mon, "gv": gv, "gvcs": gv_cs, "lop": lop}
     return render(request, 'base/dangkythi.html', context)
 
 

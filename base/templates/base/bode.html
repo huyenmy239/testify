@@ -160,7 +160,7 @@
                         {% if request.session.base_template == "main_CS.html"%}
                         <label for="addGiaovien">Giáo viên:</label>
                         <select class="form-control" id="addGiaovien" name="addGiaovien" required>
-                            {% for key, val in gv.items %}
+                            {% for key, val in gvcs.items %}
                             <option value="{{key}}">{{val.ho}} {{val.ten}}</option>
                             {% endfor %}
                         </select>
