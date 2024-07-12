@@ -43,6 +43,7 @@ urlpatterns = [
     path('add_lop/', features.add_Lop, name='add-lop'),
     path('update_lop/', features.update_Lop, name='update-lop'),
     path('delete_lop/', features.delete_Lop, name='delete-lop'),
+    path('undo_lop/', features.undo_Lop, name='undo-lop'),
 
     path('add_gv/', features.add_Giangvien, name='add-gv'),
     path('update_gv/', features.update_Giangvien, name='update-gv'),

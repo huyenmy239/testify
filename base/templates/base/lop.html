@@ -14,7 +14,7 @@
                     <a href="#" class="btn btn-primary btn-add" data-toggle="modal" data-target="#addModal">
                         <img src="{% static 'images/add.png' %}"/>
                         Thêm</a>
-                    <a href="#" class="btn btn-primary">
+                    <a href="{% url 'undo-lop' %}" class="btn btn-primary">
                         <img src="{% static 'images/undo.png' %}"/>
                         Undo</a>
                 </div>
@@ -43,7 +43,7 @@
                                             <button type="button" class="btn btn-warning btn-edit" data-toggle="modal" data-target="#editModal" data-malop="{{ l.malop }}" data-tenlop="{{ l.tenlop }}" data-khoa="{{ l.khoa.makh }}">
                                                 <img src="{% static 'images/save.png' %}"/> Sửa
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-malop="{{ l.malop }}">
+                                            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#deleteModal" data-malop="{{ l.malop }}" data-tenlop="{{ l.tenlop }}" data-khoa="{{ l.khoa.makh }}">
                                                 <img src="{% static 'images/bin.png' %}"/> Xóa
                                             </button>
                                             {% endif %}
@@ -114,10 +114,12 @@
                     <div class="form-group">
                         <label for="editMalop">Mã lớp:</label>
                         <input type="text" class="form-control" name="editMalop" id="editMalop" readonly>
+                        <input type="hidden" id="oldMalop" name="oldMalop">
                     </div>
                     <div class="form-group">
                         <label for="editTenlop">Tên lớp:</label>
                         <input type="text" class="form-control" id="editTenlop" name="editTenlop">
+                        <input type="hidden" id="oldTenlop" name="oldTenlop">
                     </div>
                     <div class="form-group">
                         <label for="editKhoa">Khoa:</label>
@@ -142,6 +144,8 @@
                 <form id="deleteForm" method="post" action="{% url 'delete-lop' %}">
                     {% csrf_token %}
                     <input type="hidden" id="deleteMalop" name="deleteMalop">
+                    <input type="hidden" id="deleteTenlop" name="deleteTenlop">
+                    <input type="hidden" id="deleteMakh" name="deleteMakh">
                     <button type="submit" class="btn btn-danger">Xóa</button>
                 </form>
             </div>
@@ -172,7 +176,9 @@
                 var khoa = button.getAttribute('data-khoa');
 
                     modal.querySelector('#editMalop').value = malop;
+                    modal.querySelector('#oldMalop').value = malop;
                     modal.querySelector('#editTenlop').value = tenlop;
+                    modal.querySelector('#oldTenlop').value = tenlop;
                     modal.querySelector('#editKhoa').value = khoa;
 
                 $(modal).modal('show');
@@ -183,8 +189,12 @@
                 button.addEventListener('click', function() {
                     var modal = document.getElementById('deleteModal');
                     var malop = button.getAttribute('data-malop');
+                    var tenlop = button.getAttribute('data-tenlop');
+                    var makh = button.getAttribute('data-khoa');
                     
                     modal.querySelector('#deleteMalop').value = malop;
+                    modal.querySelector('#deleteTenlop').value = tenlop;
+                    modal.querySelector('#deleteMakh').value = makh;
 
                     $(modal).modal('show');
                 });

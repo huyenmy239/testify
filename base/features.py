@@ -377,11 +377,11 @@ def undo_Khoa(request):
             con.commit()
 
             if "INSERT" in query:
-                messages.success(request, f"Thêm {mess[1]} thành công.")
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
             elif "UPDATE" in query:
-                messages.success(request, f"Sửa {mess[1]} thành công.")
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
             else:
-                messages.success(request, f"Xóa {mess[1]} thành công.")
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
 
 
 
@@ -394,7 +394,7 @@ def undo_Khoa(request):
                 con.close()
     
     else:
-        messages.success(request, "Không còn gì để Undo.")
+        messages.success(request, "Không có gì để Undo.")
 
     return redirect('khoa')
 
@@ -421,9 +421,8 @@ def add_Khoa(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_KHOA '{makh}', N'{tenkh}', '{coso}'"
             cur.execute(query)
-            # print("Add khoa")
+
             UNDO["khoa"].append(f"EXEC SP_DELETE_KHOA '{makh}'")
-            print(f"UNDO list: {UNDO['khoa']}")
             con.commit()
 
             messages.success(request, "Thêm Khoa thành công.")
@@ -520,6 +519,44 @@ def delete_Khoa(request):
     return redirect('khoa')
 
 
+def undo_Lop(request):
+    db_alias = request.session.get('current_server')
+    login = request.session.get('current_user')
+
+    con, cur = None, None
+
+    if UNDO["lop"]:
+
+        try:
+            db = DatabaseModel(server=db_alias, database=DATABASE, login=login.get('username'), pw=login.get('password'))
+            con = db.connect_to_database()
+            cur = con.cursor()
+            query = UNDO["lop"].pop()
+            mess = query.split("'")
+            cur.execute(query)
+            con.commit()
+
+            if "INSERT" in query:
+                messages.success(request, f"Thêm mã {mess[1]} thành công.")
+            elif "UPDATE" in query:
+                messages.success(request, f"Sửa mã {mess[1]} thành công.")
+            else:
+                messages.success(request, f"Xóa mã {mess[1]} thành công.")
+
+        except pyodbc.Error as e:
+            messages.error(request, e.__str__().split("]")[4].split("(")[0])
+        finally:
+            if cur is not None:
+                cur.close()
+            if con is not None:
+                con.close()
+    
+    else:
+        messages.success(request, "Không có gì để Undo.")
+
+    return redirect('lop')
+
+
 @csrf_exempt
 def add_Lop(request):
     db_alias = request.session.get('current_server')
@@ -538,6 +575,8 @@ def add_Lop(request):
             cur = con.cursor()
             query = f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'"
             cur.execute(query)
+
+            UNDO["lop"].append(f"EXEC SP_DELETE_LOP '{malop}'")
             con.commit()
 
             messages.success(request, "Thêm Lớp thành công.")
@@ -564,6 +603,9 @@ def update_Lop(request):
         malop = request.POST.get('editMalop').strip().upper()
         tenlop = request.POST.get('editTenlop').strip().title()
 
+        oldMalop = request.POST.get('oldMalop').strip().upper()
+        oldTenlop = request.POST.get('oldTenlop').strip().title()
+
         con, cur = None, None
 
         try:
@@ -572,6 +614,8 @@ def update_Lop(request):
             cur = con.cursor()
             query = f"EXEC SP_UPDATE_LOP '{malop}', N'{tenlop}'"
             cur.execute(query)
+
+            UNDO["lop"].append(f"EXEC SP_UPDATE_LOP '{oldMalop}', N'{oldTenlop}'")
             con.commit()
 
             messages.success(request, "Thay đổi thông tin Lớp thành công.")
@@ -596,6 +640,8 @@ def delete_Lop(request):
 
     if request.method == 'POST':
         malop = request.POST.get('deleteMalop').strip().upper()
+        tenlop = request.POST.get('deleteTenlop').strip()
+        makh = request.POST.get('deleteMakh').strip().upper()
 
         con, cur = None, None
 
@@ -605,6 +651,8 @@ def delete_Lop(request):
             cur = con.cursor()
             query = f"EXEC SP_DELETE_LOP '{malop}'"
             cur.execute(query)
+
+            UNDO["lop"].append(f"EXEC SP_INSERT_LOP '{malop}', N'{tenlop}', '{makh}'")
             con.commit()
 
             messages.success(request, "Xóa Lớp thành công.")
