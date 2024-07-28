@@ -145,10 +145,6 @@
         <td><img title="huyenmy239-avatar" style="width:30pt; height: auto; align:center; border:solid" src="https://avatars.githubusercontent.com/u/92309591?v=4"/></td>
         <td><a href="https://github.com/huyenmy239">huyenmy239</a></td>
         <td>
-            <ul>
-                <li>Thành viên có mặt rất năng suất, nhưng hay tạo ra những cái bug oái ăm, rất đáng bị ăn đòn.</li>
-                <li><a href="https://giphy.com/gifs/morning-monday-zzz-gePUWJ4AXHu92">via GIPHY</a></li>
-            </ul>
         </td>
     </tr>
     <tr>
@@ -156,10 +152,6 @@
         <td><img title="thanhthuyne2211-avatar" style="width:30pt; height: auto; align:center; border:solid" src="https://avatars.githubusercontent.com/u/120545208?v=4"/></td>
         <td><a href="https://github.com/thanhthuyne2211">thanhthuyne2211</a></td>
         <td>
-            <ul>
-                <li>Thành viên có mặt mang tính chất đủ team, tạo tiếng cười.</li>
-                <li><a href="https://giphy.com/gifs/tongue-goodnight-sJWNLTclcvVmw">Gif</a></li>
-            </ul>
         </td>
     </tr>
     <tr>
@@ -167,9 +159,6 @@
         <td><img title="KonstanNguyen-avatar" style="width:30pt; height: auto; align:center; border:solid" src="https://avatars.githubusercontent.com/u/106095525?v=4"/></td>
         <td><a href="https://github.com/KonstanNguyen">KonstanNguyen</a></td>
         <td>
-            <ul>
-                <li>Thành viên bị 2 thành viên còn lại căm ghét, đòi đánh đập, hành hạ, sỉ vả.</li>
-            </ul>
         </td>
     </tr>
 </table>
