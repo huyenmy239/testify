@@ -173,6 +173,12 @@
 	thì lúc truy vấn, dữ liệu sẽ ưu tiên trả về dữ liệu ở server gốc.
 	
 	- Database ban đầu của thầy gửi cho tụi mình có thiếu một số bảng (table) và một vài trường (field) gây ra việc có vài tính năng không thể xử lý được.
+
+   	- Mình đã gỡ hết tất cả đoạn code tối ưu truy vấn để các bạn có thể tự suy nghĩ.
+ 
+   	- Job đang bị sai.
+ 
+   	- SP lấy câu hỏi mặc dù chạy đúng nhưng thầy nhận xét là không những không tối ưu mà còn dư thừa rất nhiều các bạn có thể tự tìm hiểu để code lại cho đúng yêu cầu, tương lai có thời gian thì mình sẽ viết lại.
 	
 - Suggestions:
 
