@@ -1,14 +1,12 @@
-# [Thi trắc nghiệm](#ecommerce-shop) <a id="ecommerce-shop"></a>
+# [Multiple-choice Examination System]
 
-## [Table of Contents](#table-of-contents) <a id="table-of-contents"></a>
+## [Table of Contents](#table-of-contents)
 
 - [Tables of Contents](#table-of-contents)
 
 - [Instruction](#introduction)
 
-- [Structure](#structure)
-
-- [Featured](#feature)
+- [Features](#features)
 
 - [Prerequisites](#prerequisites)
 
@@ -18,54 +16,50 @@
 
 - [Problems and suggestions](#problems-and-suggestions)
 
-## [Introduction](#introduction) <a id="introduction"></a>
+## [Introduction](#introduction)
 
-- Đây là đồ án cuối kì môn "Cơ sở dữ liệu phân tán" của thầy Lưu Nguyễn Kỳ Thư trường PTITHCM (Học viên Công nghệ Buu chính Viễn thông tại cơ sở tại Thành phố Hồ Chí Minh).
+- This project is the final course assignment for the subject “Distributed Databases”, instructed by Mr. Lưu Nguyễn Kỳ Thư at Posts and Telecommunications Institute of Technology – Ho Chi Minh City Campus (PTITHCM).
 
-- Ban đầu nhóm mình làm đồ án này bằng app, nhưng có 1 số vấn đề về mặt giao diện (style cho các table, button,...) nếu làm thì khá là tốn công sức đi nghiên cứu nên nhóm mình quyết định chuyển sang dùng web.
+- Initially, the team developed this project as a desktop application. However, due to UI-related issues (styling tables, buttons, etc.) that required significant effort, the team decided to switch to a web-based solution.
 
-- Mục đích:
+- Objectives of the project:
 
-	1. Hiểu hệ thống phân tán.
+	1. Understand distributed systems.
 	
-	2. Thiết kế Kiến trúc có thể mở rộng.
+	2. Design a scalable architecture.
 	
-	3. Triển khai phân chia dữ liệu.
+	3. Implement data fragmentation and distribution.
 	
 
-## [Structure](#structure) <a id="structure"></a>
+## [Features](#features)
 
-    
+- Lecturer:
 
-## [Features](#feature) <a id="feature"></a>
-
-- Giảng viên:
-
-	- Thêm, xóa, cập nhật ngân hàng câu hỏi của mình.
+	- Add, delete, and update their own question banks.
 	
-	- Có thể làm trước bài kiểm tra cho kỳ thi đó nhưng không tính điểm.
+	- Preview an exam before the official test without recording scores.
 
-- Giảng viên nắm quyền cơ sở:
+- Branch-level Lecturer (Campus Authority):
 
-	- Quản lý thông tin giảng viên, nhân viên, sinh viên, lịch thi,... tại cơ sở tương ứng.
+	- Manage lecturers, staff, students, exam schedules, etc. within the assigned campus.
 	
-	- Tạo báo cáo danh sách điểm của sinh viên, danh sách đăng ký thi theo một khoảng thời gian.
+	- Generate reports on student scores and exam registrations within a specific time range.
 	
-- Giảng viên thuộc quyền trường:
+- University-level Lecturer (School Authority)
 
-	- Theo dõi, tạo báo cáo của của cả 2 cơ sở.
+	- Monitor and generate reports for both campuses.
 	
-	- Được xem các thông tin như khoa, lớp, trường... nhưng không thể thao tác với dữ liệu đó.
+	- View information such as faculties, classes, and campuses, but without permission to modify data.
 
-- Sinh viên:
+- Student:
 
-	- Xem danh sách các bài thi chưa thi, đã từng thi và không thi của chính mình.
+	- View lists of upcoming exams, completed exams, and missed exams.
 	
-	- Tham gia thi và được tính điểm.
+	- Participate in exams and receive scores.
 	
-	- Xem lại bài thi và kết quả chi tiết.
+	- Review completed exams with detailed results.
 
-## [Prerequisites](#prerequisites) <a id="prerequisites"></a>
+## [Prerequisites](#prerequisites)
 
 1. [Download SQL Server Management Studio (SSMS) 20.1](https://aka.ms/ssmsfullsetup)
 
@@ -73,23 +67,23 @@
 
 3. [Download Python](https://www.python.org/downloads/)
 
-## [Utilization](#utilization) <a id="utilization"></a>
+## [Utilization](#utilization)
 
-1. Đầu tiên bạn cần phải đảm bảo đã tải đầy đủ các tài nguyên cần thiết [ở đây](#prerequisites).
+1. Ensure all required resources are installed as listed in the [Prerequisites](#prerequisites) section.
 
-2. [Cấu hình phân tán](./doc/Configure-Distribution/README.md):
+2. [Distributed configuration](./doc/Configure-Distribution/README.md):
 
-3. Tạo link và database.
+3. Create database and linked server:
 
-    - Tạo database mới với tên: **TTN**
+    - Create a new database named **TTN**
 
-    - Tạo LINK0 tại Server gốc -> chính nó. ([Hướng dẫn tạo link](./doc/Create-Linked-Servers/README.md))
+    - Create **LINK0** on the root server pointing to itself. ([Linked server creation guide](./doc/Create-Linked-Servers/README.md))
 
-    - Mở file sql [TTN_1](./TTN_1.sql) và chạy.
+    - Open and execute the SQL file [TTN_1](./TTN_1.sql).
 
-4. Phân tán: 
+4. Distribution: 
 
-    Tạo ra 3 server:
+    Create three servers:
 
     - Server 1: [TTN_CS1](./doc/Create-new-Publication/README-TTN-CS1.md)
 
@@ -99,39 +93,39 @@
 
         ![List of publications](./imgs/Publications.png)
 
-    - Sau đó ta đẩy xuống các site tương ứng: 
+    - Push data to the corresponding sites.
 
-5. [Phân quyền](./doc/Authorize/README.md)
+5. [Authorization setup](./doc/Authorize/README.md)
 
-6. Clone repo này về.
+6. Clone this repository:
 
     ```bash
     git clone 
     cd testify
     ```
 
-7. Tải các package cần thiết.
+7. Install required packages:
 
     ```bash
     pip install --upgrade pip
     pip install -r requirements.txt
     ```
 
-8. Cấu hình lại project.
+8. Configure the project:
 
-    - Mở file [/base/views.py](./base/views.py).
+    - Open file [/base/views.py](./base/views.py).
 
-    - SERVER_LIST: Tên server của bạn.
+    - Update `SERVER_LIST` with your server names.
 
-    - PASSWORD: Mật khẩu server của bạn.
+    - Update `PASSWORD` with your server password.
 
-9. Chạy project:
+9. Run the project:
 
     ```bash
     python manage.py runserver
     ```
 
-## [Contributors](#contributors) <a id="contributors"></a>
+## [Contributors](#contributors)
 
 <table>
     <tr>
@@ -163,34 +157,33 @@
     </tr>
 </table>
 
-## [Problems and suggestions](#problems-and-suggestions) <a id="problems-and-suggestions"></a>
+## [Problems and suggestions](#problems-and-suggestions)
 
 - Problems:
 
-	- Python nói chung và Django nói riêng hỗ trợ khá tốt ở các database khác nhưng về SQL Server thì có phần hơi hạn chế nên cần phải cân nhắc.
+	- Python in general, and Django in particular, provide good support for many databases, but support for SQL Server is limited and requires careful consideration.
 	
-	- Django không phù hợp với Cơ sở dữ liệu phân tán trên SQL Server. Vì Django ORM khi ánh xạ với các bảng và khi connect với một server phân mảnh
-	thì lúc truy vấn, dữ liệu sẽ ưu tiên trả về dữ liệu ở server gốc.
+	- Django is not well-suited for distributed databases on SQL Server. When using Django ORM with fragmented servers, query results tend to prioritize data from the root server.
 	
-	- Database ban đầu của thầy gửi cho tụi mình có thiếu một số bảng (table) và một vài trường (field) gây ra việc có vài tính năng không thể xử lý được.
+	- The initial database provided by the instructor lacked several tables and fields, which caused some features to be unimplementable.
 
-   	- Mình đã gỡ hết tất cả đoạn code tối ưu truy vấn để các bạn có thể tự suy nghĩ.
+   	- All query optimization code has been removed so that readers can analyze and improve it themselves.
  
-   	- Job đang bị sai.
+   	- Some scheduled jobs are incorrect.
  
-   	- SP lấy câu hỏi mặc dù chạy đúng nhưng thầy nhận xét là không những không tối ưu mà còn dư thừa rất nhiều các bạn có thể tự tìm hiểu để code lại cho đúng yêu cầu, tương lai có thời gian thì mình sẽ viết lại.
+   	- The stored procedure for retrieving questions works correctly but is not optimized and contains redundant logic. This was pointed out by the instructor. It can be rewritten for better performance in the future.
 	
 - Suggestions:
 
-	- Nhóm mình dùng pyodbc để connect với server thay thế cho việc configure DATABASE sẵn có trong file `settings.py` của Django. Tự tạo model thay vì dùng
-	Django ORM để ánh xạ với các bảng trong Cơ sở dữ liệu.
+	- The team uses **pyodbc** to connect directly to SQL Server instead of configuring Django’s `DATABASES` in `settings.py`.
+  
+ 	- Models are manually defined instead of using Django ORM to map database tables.
 	
-	- Cân nhắc bổ sung field, xóa, thay đổi cho thích hợp với nhu cầu của bạn. Đây là 1 số thay đổi của nhóm mình:
+	- Consider adding, removing, or modifying fields to suit your needs. Some changes made by the team include:
 	
-		- Thêm bảng CT_BAITHI(MABT, CAUHOI, TRALOI).
+		- Added table **CT_BAITHI(MABT, CAUHOI, TRALOI)**.
 		
-		- Thêm field TGCL (thời gian còn lại) vào bảng BAITHI.
+		- Added field **TGCL** (remaining time) to table **BAITHI**.
 		
-		- Ngoài ra bạn có thể cân nhắc về việc thay đổi kiểu dữ liệu của MABT(ở bảng BAITHI). Nhưng vì nhóm đã phân tán xong
-		nên việc thay đổi rất khó khăn nên nhóm vẫn quyết định giữ lại một số thứ, chi tiết bạn có thể xem file đã phân tán [tại đây]().
+		- You may also consider changing the data type of **MABT** in **BAITHI**. However, since data distribution was already completed, changes were difficult, so the team kept the existing structure. For details, you can view the distributed file [here]().
 		
